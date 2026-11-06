@@ -1,0 +1,90 @@
+.stage {
+  position: relative;
+  height: 300vh;
+}
+
+/* Where the "Progetti" link lands: the point where the cards are already composed */
+.stage__anchor {
+  position: absolute;
+  left: 0;
+  top: 180vh;
+}
+
+.stage__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--pad) 6vh;
+  text-align: center;
+}
+
+.hero__name {
+  font-weight: 700;
+  font-size: clamp(48px, 12.5vw, 180px);
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  white-space: nowrap;
+  /* Lit from above: warm white on top, falling into shadow below */
+  background: linear-gradient(180deg, #fff7ec 0%, #f0e8dc 42%, #9a9186 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero__role {
+  margin-top: 36px;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.hero__lead {
+  margin: 12px auto 0;
+  max-width: 640px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.hero__meta {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.hero__hint {
+  color: var(--amber);
+}
+
+.hero__arrow {
+  display: inline-block;
+  animation: hint-bob 2.2s ease-in-out infinite;
+}
+
+@keyframes hint-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}

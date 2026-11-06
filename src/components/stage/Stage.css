@@ -88,3 +88,263 @@
     transform: translateY(4px);
   }
 }
+
+/* ---------- Code window (chrome only: the code itself is drawn on the canvas) ---------- */
+.code-win {
+  position: absolute;
+  z-index: 3;
+  opacity: 0;
+  visibility: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #141312, #0e0d0d);
+  box-shadow:
+    0 60px 120px -40px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 181, 71, 0.03),
+    inset 0 1px 0 rgba(255, 236, 214, 0.05);
+}
+
+.code-win__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.code-win__bar i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #2a2724;
+}
+
+.code-win__file {
+  margin-left: 12px;
+  color: #c9c1b6;
+}
+
+.code-win__lang {
+  margin-left: auto;
+}
+
+.stage__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ---------- Work ---------- */
+.work {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 47%;
+  width: min(1200px, calc(100vw - 2 * var(--pad)));
+  transform: translate(-50%, -50%);
+}
+
+.work__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 22px;
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0;
+}
+
+.work__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  padding: 28px;
+  border: 1px solid rgba(201, 143, 78, 0.35);
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 60% at 50% -10%, rgba(255, 181, 71, 0.09), transparent 60%),
+    linear-gradient(180deg, #151413, #0e0d0d);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    border-color 0.4s,
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.5s;
+}
+
+.card:hover {
+  border-color: rgba(255, 181, 71, 0.7);
+  transform: translateY(-4px);
+  box-shadow: 0 30px 80px -30px rgba(255, 150, 50, 0.35);
+}
+
+.card__top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.card__index {
+  color: var(--amber);
+}
+
+.card__arrow {
+  color: var(--muted);
+  transition:
+    transform 0.4s,
+    color 0.4s;
+}
+
+.card:hover .card__arrow {
+  transform: translate(3px, -3px);
+  color: var(--amber);
+}
+
+.card__title {
+  margin-top: auto;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: var(--text);
+}
+
+.card__desc {
+  min-height: 4.5em;
+  margin-top: 14px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.card__tag {
+  padding: 6px 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 11.5px;
+  color: #cfc8be;
+}
+
+.decode__bits {
+  color: var(--amber);
+}
+
+.decode__ghost {
+  color: transparent;
+}
+
+/* ---------- Phase indicator ---------- */
+.phase {
+  position: absolute;
+  z-index: 6;
+  left: var(--pad);
+  bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0;
+}
+
+.phase__bar {
+  position: relative;
+  width: 120px;
+  height: 1px;
+  overflow: hidden;
+  background: var(--line-strong);
+}
+
+.phase__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ---------- Static layout for reduced motion ---------- */
+.stage--static {
+  height: auto;
+}
+
+.stage--static .stage__anchor {
+  top: 100vh;
+}
+
+.stage--static .stage__sticky {
+  position: relative;
+  height: auto;
+  overflow: visible;
+}
+
+.stage--static .hero {
+  position: relative;
+  min-height: 100vh;
+}
+
+.stage--static .hero__hint,
+.stage--static .code-win,
+.stage--static .stage__canvas,
+.stage--static .phase {
+  display: none;
+}
+
+.stage--static .work {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  margin: 0 auto;
+  padding: 40px 0 160px;
+}
+
+.stage--static .work__head,
+.stage--static .card {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 960px) {
+  .work__cards {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    min-height: 0;
+    padding: 20px;
+  }
+
+  .card__title {
+    margin-top: 18px;
+    font-size: 30px;
+  }
+
+  .card__desc {
+    min-height: 0;
+    font-size: 14px;
+  }
+
+  .card__tags {
+    margin-top: 14px;
+  }
+}

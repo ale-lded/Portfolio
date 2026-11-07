@@ -35,15 +35,39 @@ export const layerT = (i: number, p: number) => {
   return clamp((p - (start + i * step)) / length)
 }
 
+/**
+ * How a layer window is split along the scroll: the choreography up to the moment the
+ * card is readable plays in the first READ_WINDOW[0] of it, the card then holds still
+ * until READ_WINDOW[1], and the exit uses the rest. Short way in, long read, short way out.
+ */
+export const READ_WINDOW = [0.18, 0.86] as const
+
+/**
+ * Remaps scroll-local progress u to choreography time t, given the span of t in which
+ * the card is readable ([r0, r1]): that span gets most of the scroll.
+ */
+export function readWarp(u: number, r0: number, r1: number) {
+  const [a, b] = READ_WINDOW
+  if (u <= a) return (u / a) * r0
+  if (u >= b) return r1 + ((u - b) / (1 - b)) * (1 - r1)
+  return r0 + ((u - a) / (b - a)) * (r1 - r0)
+}
+
+/**
+ * Scroll positions (fractions of the stage) the page snaps to: the middle of each
+ * layer's reading hold, and the finished stack. See .stack__snap in Stack.css.
+ */
+export const SNAP_POINTS = [
+  ...Array.from({ length: 4 }, (_, i) => S.layers.start + i * S.layers.step + S.layers.length * ((READ_WINDOW[0] + READ_WINDOW[1]) / 2)),
+  0.985,
+]
+
 /** Within a layer window: how far the entrance and the exit have gone. */
 export const enterOf = (t: number) => sstep(0, 0.28, t)
 export const exitOf = (t: number) => sstep(0.72, 1, t)
 
-/** How much layer i is in focus at progress p: 0 dark → 1 lit. */
-export const layerFocus = (i: number, p: number) => {
-  const t = layerT(i, p)
-  return enterOf(t) * (1 - exitOf(t))
-}
+/** How much a layer is in focus at choreography time t: 0 dark → 1 lit. */
+export const focusOf = (t: number) => enterOf(t) * (1 - exitOf(t))
 
 export const STACK_PHASES: [end: number, label: string][] = [
   [0.35, '01 — Assemblaggio'],

@@ -1,6 +1,7 @@
 import { clamp, lerp, sstep } from '../../lib/math'
 import type { Point } from './project'
 import { PixelDissolve } from './pixelDissolve'
+import { readWarp } from './timeline'
 
 /**
  * The choreographies of the exploded view: how each plate moves and how its text
@@ -17,6 +18,15 @@ export type LayerStyle = 'fly' | 'stand'
 
 /** Which choreography each layer plays, top to bottom. Swap freely. */
 export const LAYER_STYLES: LayerStyle[] = ['fly', 'stand', 'fly', 'fly']
+
+/** The span of choreography time in which the card is readable (text fully in the panel). */
+const READABLE: Record<LayerStyle, [number, number]> = {
+  fly: [0.42, 0.72],
+  stand: [0.46, 0.6],
+}
+
+/** Choreography time for a layer at scroll-local progress u: short way in, long read, short way out. */
+export const layerTime = (style: LayerStyle, u: number) => readWarp(u, ...READABLE[style])
 
 export type PlateMove = {
   /** Along the plate's own x axis, px */

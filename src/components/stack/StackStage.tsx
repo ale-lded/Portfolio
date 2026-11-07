@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type CSSProperties } from 'react'
 import { stack } from '../../content'
 import { clamp, lerp, sstep } from '../../lib/math'
 import { Spotlight } from '../../lib/spotlight'
@@ -6,9 +6,9 @@ import { useReducedMotion } from '../../lib/useReducedMotion'
 import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { LayerArt } from './LayerArt'
-import { LAYER_STYLES, LayerPanel, plateMove, plateNameOpacity, STAND_SPOT } from './layerFx'
+import { LAYER_STYLES, layerTime, LayerPanel, plateMove, plateNameOpacity, STAND_SPOT } from './layerFx'
 import { fromCamera, projectOnPlate, type View } from './project'
-import { CAMERA, layerFocus, layerT, S, STACK_PHASES } from './timeline'
+import { CAMERA, focusOf, layerT, S, SNAP_POINTS, STACK_PHASES } from './timeline'
 import './Stack.css'
 
 const LAYERS = stack.skills.length
@@ -139,7 +139,7 @@ export function StackStage() {
       const free = 1 - compress
 
       // Where every plate is this frame
-      const ts = plates.map((_, i) => layerT(i, p))
+      const ts = plates.map((_, i) => layerTime(LAYER_STYLES[i], layerT(i, p)))
       const moves = ts.map((t, i) => plateMove(LAYER_STYLES[i], t, W, H))
       // A standing plate goes to a fixed spot in front of the camera, whatever the stack's angle
       // Same depth everywhere (any closer and the plate above cuts through it); centred on phones
@@ -165,7 +165,7 @@ export function StackStage() {
 
       plates.forEach((plate, i) => {
         const { tx, ty, tz, face } = pos[i]
-        const act = layerFocus(i, p)
+        const act = focusOf(ts[i])
         // Turning to face the viewer = undoing the group's rotation, partially
         const turn = face > 0.001 ? ` rotateZ(${(-rz * face).toFixed(3)}deg) rotateX(${(-rx * face).toFixed(3)}deg)` : ''
         plate.el.style.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, ${tz.toFixed(2)}px)${turn}`
@@ -251,27 +251,46 @@ export function StackStage() {
      * view below the viewport: scrolling down into it again plays it from the start.
      */
     let latched = false
+    let collapsed = false
+    let collapseTimer = 0
+
+    /**
+     * Shrinks the finished stage to one screen. Only done once scrolling has come to
+     * rest: changing the page height in the middle of a smooth scroll (a nav link, say)
+     * would cut that scroll short.
+     */
+    const collapse = () => {
+      if (!latched || collapsed) return
+      const r = stage.getBoundingClientRect()
+      if (r.bottom > window.innerHeight - 1) return
+      // The sticky is already resting at the bottom of the stage, exactly where it sits in
+      // the collapsed stage, so keeping the next section in place makes the swap invisible.
+      const next = stage.nextElementSibling as HTMLElement | null
+      const before = next?.getBoundingClientRect().top ?? 0
+      stage.classList.add('stack--done')
+      collapsed = true
+      const after = next?.getBoundingClientRect().top ?? 0
+      if (after !== before) window.scrollBy({ top: after - before, behavior: 'instant' })
+      lastY = window.scrollY
+    }
 
     const updateLatch = () => {
       const r = stage.getBoundingClientRect()
       if (!latched && progress() >= 1 && r.bottom < window.innerHeight - 1) {
-        // The sticky is already resting at the bottom of the stage, exactly where it sits in
-        // the collapsed stage, so keeping the next section in place makes the swap invisible.
-        const next = stage.nextElementSibling as HTMLElement | null
-        const before = next?.getBoundingClientRect().top ?? 0
+        // Finished and moving on: freeze on the final frame
         latched = true
         current = 1
-        stage.classList.add('stack--done')
-        const after = next?.getBoundingClientRect().top ?? 0
-        if (after !== before) window.scrollBy({ top: after - before, behavior: 'instant' })
         apply(1)
       } else if (latched && r.top >= window.innerHeight) {
-        // Height changes below the viewport do not move anything on screen
+        // Out of view below: re-arm. Height changes below the viewport move nothing on screen.
         latched = false
+        collapsed = false
         stage.classList.remove('stack--done')
         current = 0
         apply(0)
       }
+      window.clearTimeout(collapseTimer)
+      if (latched && !collapsed) collapseTimer = window.setTimeout(collapse, 180)
     }
 
     let current = progress()
@@ -296,7 +315,71 @@ export function StackStage() {
     const request = () => {
       if (inView && !raf) raf = requestAnimationFrame(tick)
     }
+    /**
+     * Reading stops for wheel and trackpad. CSS snapping alone lets a fast flick fly past
+     * several cards, so when a scroll crosses a card's stop the page is held there: further
+     * wheel input (including trackpad momentum) is swallowed for at least STOP_MIN ms, until
+     * the gesture goes quiet or STOP_MAX ms have passed. Reversing direction releases at once.
+     * Touch scrolling has no wheel events and keeps the CSS snap points only.
+     */
+    const STOP_MIN = 650
+    const STOP_QUIET = 160
+    const STOP_MAX = 1400
+    let stopStarted = 0
+    let stopDir = 0
+    let lastWheel = 0
+    let lastY = window.scrollY
+
+    const stopAt = (y: number, dir: number) => {
+      window.scrollTo({ top: y, behavior: 'instant' })
+      lastY = y
+      stopStarted = performance.now()
+      stopDir = dir
+    }
+
+    /** The first stop between scroll positions a and b, in the direction of travel. */
+    const stopBetween = (a: number, b: number) => {
+      if (latched || a === b) return null
+      const top = stage.getBoundingClientRect().top + window.scrollY
+      const total = stage.offsetHeight - window.innerHeight
+      const ys = SNAP_POINTS.map((point) => top + point * total)
+      if (b < a) ys.reverse()
+      return ys.find((y) => (b > a ? a < y - 1 && b >= y : a > y + 1 && b <= y)) ?? null
+    }
+
+    const onWheel = (e: WheelEvent) => {
+      if (latched || !inView || e.ctrlKey) return
+      const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY
+      if (!dy) return
+      const now = performance.now()
+      const dir = Math.sign(dy)
+      const quiet = now - lastWheel
+      lastWheel = now
+      if (stopStarted) {
+        const held = now - stopStarted
+        const release = dir !== stopDir || (held > STOP_MIN && quiet > STOP_QUIET) || held > STOP_MAX
+        if (!release) {
+          e.preventDefault()
+          return
+        }
+        stopStarted = 0
+      }
+      const y = window.scrollY
+      const stop = stopBetween(y, y + dy)
+      if (stop !== null) {
+        e.preventDefault()
+        stopAt(stop, dir)
+      }
+    }
+
     const onScroll = () => {
+      // Smooth wheel scrolling can land past a stop between two wheel events: pull it back
+      const y = window.scrollY
+      if (!stopStarted && performance.now() - lastWheel < 120) {
+        const stop = stopBetween(lastY, y)
+        if (stop !== null) stopAt(stop, Math.sign(y - lastY))
+      }
+      lastY = window.scrollY
       updateLatch()
       request()
     }
@@ -317,6 +400,7 @@ export function StackStage() {
     let resizeTimer = 0
     const resizeObserver = new ResizeObserver(() => {
       window.clearTimeout(resizeTimer)
+      window.clearTimeout(collapseTimer)
       resizeTimer = window.setTimeout(() => {
         build()
         apply(current)
@@ -337,6 +421,7 @@ export function StackStage() {
     })
 
     window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('wheel', onWheel, { passive: false })
     if (finePointer) window.addEventListener('pointermove', onPointer, { passive: true })
     io.observe(stage)
     resizeObserver.observe(sticky)
@@ -346,6 +431,7 @@ export function StackStage() {
       cancelAnimationFrame(raf)
       window.clearTimeout(resizeTimer)
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('wheel', onWheel)
       stage.classList.remove('stack--done')
       window.removeEventListener('pointermove', onPointer)
       spotlight?.dispose()
@@ -419,6 +505,13 @@ export function StackStage() {
         <canvas className="stack__fx" ref={fxRef} aria-hidden="true" />
 
         <PhaseIndicator ref={phaseRef} label={STACK_PHASES[0][1]} />
+      </div>
+
+      {/* Magnetic stops: one per readable card, plus the finished stack */}
+      <div className="stack__snaps" aria-hidden="true">
+        {SNAP_POINTS.map((point) => (
+          <span key={point} className="stack__snap" style={{ '--at': point } as CSSProperties} />
+        ))}
       </div>
     </section>
   )

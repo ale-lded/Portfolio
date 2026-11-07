@@ -1,0 +1,575 @@
+/* The game screen: a lit panel backstage, under the lamp */
+.race {
+  --green: #39ff6a;
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 28px);
+  width: min(1240px, calc(100vw - 2 * var(--pad)));
+  height: min(calc(100vh - 170px), 760px);
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  border: 1px solid rgba(255, 181, 71, 0.22);
+  border-radius: 18px;
+  background: #0b0b0d;
+  box-shadow:
+    0 50px 120px -40px rgba(0, 0, 0, 0.9),
+    0 0 80px -30px rgba(255, 170, 80, 0.25);
+  color: var(--text);
+}
+
+.race__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- HUD ---------- */
+.race__hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.race__hud[hidden] {
+  display: none;
+}
+
+.race__hud-main {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 20px 26px 30px;
+  background: linear-gradient(180deg, rgba(8, 8, 10, 0.75), transparent);
+}
+
+.race__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.race__stat span {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.race__stat strong {
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.race__stat--lap strong {
+  font-size: 30px;
+  color: var(--amber);
+}
+
+.race__stat--small {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: baseline;
+  padding-top: 4px;
+}
+
+.race__stat--small b {
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #d9d3ca;
+}
+
+.race__hud-car {
+  position: absolute;
+  left: 26px;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Tyre life: green while fresh, amber once they are going */
+.race__wear {
+  --left: 1;
+  position: relative;
+  width: 170px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 236, 214, 0.1);
+  overflow: hidden;
+}
+
+.race__wear::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: calc(var(--left) * 100%);
+  border-radius: inherit;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(57, 255, 106, 0.6);
+}
+
+.race__wear[data-low='true']::before {
+  background: var(--amber-deep);
+  box-shadow: 0 0 10px rgba(255, 138, 31, 0.6);
+}
+
+.race__speed {
+  position: absolute;
+  right: 26px;
+  bottom: 18px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.race__speed strong {
+  font-size: 34px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+/* Start lights: three lamps that come on one by one, then go out together */
+.race__lights {
+  position: absolute;
+  left: 50%;
+  top: 22px;
+  display: flex;
+  gap: 14px;
+  padding: 10px 14px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(8, 8, 10, 0.8);
+  transition: opacity 0.3s;
+}
+
+.race__lights[data-lit='0'] {
+  opacity: 0;
+}
+
+.race__lights i {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #241a10;
+  transition:
+    background 0.12s,
+    box-shadow 0.12s;
+}
+
+.race__lights[data-lit='1'] i:nth-child(-n + 1),
+.race__lights[data-lit='2'] i:nth-child(-n + 2),
+.race__lights[data-lit='3'] i {
+  background: var(--amber-deep);
+  box-shadow: 0 0 18px rgba(255, 138, 31, 0.8);
+}
+
+.race__go {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  font-family: var(--display);
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: var(--green);
+  text-shadow: 0 0 40px rgba(57, 255, 106, 0.6);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: race-go 0.9s ease-out;
+}
+
+@keyframes race-go {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.25);
+  }
+}
+
+/* ---------- Screens over the canvas ---------- */
+.race__screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 20px;
+  padding: 26px;
+  background: rgba(7, 7, 9, 0.5);
+}
+
+.race__screen--select {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.race__screen--center {
+  justify-content: center;
+  align-items: center;
+  background: rgba(7, 7, 9, 0.62);
+}
+
+.race__panel {
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: rgba(13, 13, 15, 0.9);
+  padding: 22px 24px;
+  backdrop-filter: blur(6px);
+}
+
+.race__panel--choose {
+  width: min(600px, 62%);
+  max-height: 100%;
+  overflow: auto;
+}
+
+.race__kicker {
+  font-size: 11px;
+  color: var(--green);
+}
+
+.race__title {
+  margin-top: 6px;
+  font-family: var(--display);
+  font-size: clamp(26px, 2.6vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+/* Choice cards */
+.race__choices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 18px;
+  border: 0;
+}
+
+.race__choices legend {
+  margin-bottom: 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.race__choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 12px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.race__choice:hover {
+  border-color: var(--line-strong);
+}
+
+.race__choice[data-on='true'] {
+  border-color: rgba(255, 181, 71, 0.7);
+  background: var(--amber-soft);
+}
+
+.race__choice:has(input:focus-visible) {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+/* The radio is there for the keyboard (arrows) and screen readers; the card is the visual */
+.race__choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.race__choice-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.race__choice-text {
+  min-height: 2.8em;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.race__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.race__bar {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  align-items: center;
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.race__bar i {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--amber) calc(var(--v) * 100%), rgba(255, 236, 214, 0.08) 0);
+}
+
+.race__go-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--amber);
+  font: 600 14px var(--sans);
+  color: #1a0f00;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+.race__go-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px -10px rgba(255, 181, 71, 0.7);
+}
+
+.race__go-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.race__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+kbd {
+  padding: 2px 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: #d9d3ca;
+}
+
+/* ---------- Leaderboard ---------- */
+.race__panel--board {
+  width: 300px;
+  flex: none;
+}
+
+.race__board {
+  margin-top: 14px;
+  list-style: none;
+}
+
+.race__board li {
+  display: grid;
+  grid-template-columns: 22px 48px 1fr;
+  row-gap: 2px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.race__board li:first-child {
+  border-top: 0;
+}
+
+.race__rank {
+  font-size: 12px;
+  color: var(--amber);
+}
+
+.race__name {
+  font-size: 15px;
+  letter-spacing: 0.12em;
+}
+
+.race__time {
+  justify-self: end;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.race__car {
+  grid-column: 2 / -1;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.race__board li[data-new='true'] .race__name,
+.race__board li[data-new='true'] .race__time {
+  color: var(--green);
+  text-shadow: 0 0 12px rgba(57, 255, 106, 0.5);
+}
+
+.race__empty {
+  margin-top: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.race__local {
+  margin-top: 14px;
+  font-size: 10px;
+  color: #5f5b56;
+}
+
+/* ---------- Pause and results ---------- */
+.race__panel--menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+}
+
+.race__panel--menu .race__title {
+  margin: 0 0 8px;
+}
+
+.race__menu-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: none;
+  font: 500 14px var(--sans);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.race__menu-btn:hover {
+  border-color: rgba(255, 181, 71, 0.6);
+  background: var(--amber-soft);
+}
+
+.race__panel--result {
+  width: 340px;
+}
+
+.race__total {
+  margin-top: 4px;
+  font-family: var(--display);
+  font-size: 48px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.race__laps {
+  margin-top: 14px;
+  list-style: none;
+  font-size: 13px;
+}
+
+.race__laps li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px solid var(--line);
+  color: #c9c3ba;
+  font-variant-numeric: tabular-nums;
+}
+
+.race__laps li[data-best='true'] {
+  color: var(--green);
+}
+
+.race__combo {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.race__save {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.race__save label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.race__record {
+  font-size: 11px;
+  color: var(--green);
+}
+
+.race__initials-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.race__initials {
+  width: 7ch;
+  padding: 4px 0;
+  border: 0;
+  border-bottom: 2px solid var(--amber);
+  background: none;
+  font-size: 28px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text);
+  outline: none;
+}
+
+.race__initials::placeholder {
+  color: #3a3733;
+}
+
+.race__save .race__go-btn {
+  margin-top: 14px;
+}
+
+.race__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+}

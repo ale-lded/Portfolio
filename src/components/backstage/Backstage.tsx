@@ -1,8 +1,11 @@
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { backstage, person } from '../../content'
 import { isBackstageUrl, leaveBackstage } from '../../lib/backstage'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 import './Backstage.css'
+
+/** The minigame is only downloaded by those who find the bug. */
+const Race = lazy(() => import('./Race').then((m) => ({ default: m.Race })))
 
 /** Walking forward across the stage: the set grows, blurs and slides under you. */
 const WALK: Keyframe[] = [
@@ -10,13 +13,17 @@ const WALK: Keyframe[] = [
   { transform: 'translateY(5vh) scale(1.9)', filter: 'blur(10px)', opacity: 0.55 },
 ]
 
-/** The view behind the page. Placeholder for now: the minigame will live here. */
+/** The view behind the page, where the minigame lives. */
 export function Backstage() {
   const reduced = useReducedMotion()
   const rootRef = useRef<HTMLDivElement>(null)
   const sceneRef = useRef<HTMLDivElement>(null)
   const washRef = useRef<HTMLDivElement>(null)
   const backRef = useRef<HTMLButtonElement>(null)
+  /** Fully open: the game only runs then */
+  const [open, setOpen] = useState(false)
+  /** Opened at least once: only then is the game loaded and mounted */
+  const [visited, setVisited] = useState(false)
 
   useEffect(() => {
     const root = rootRef.current!
@@ -36,6 +43,7 @@ export function Backstage() {
       wash.style.opacity = '0'
       coverPage(true)
       backRef.current?.focus({ preventScroll: true })
+      setOpen(true)
     }
 
     const finishClosed = () => {
@@ -46,6 +54,7 @@ export function Backstage() {
     }
 
     const enter = async (animate: boolean) => {
+      setVisited(true)
       root.hidden = false
       html.classList.add('is-backstage')
       if (!animate) return finishOpen()
@@ -78,6 +87,7 @@ export function Backstage() {
     }
 
     const leave = async (animate: boolean) => {
+      setOpen(false)
       if (!animate) return finishClosed()
       root.dataset.state = 'leaving'
       coverPage(false)
@@ -110,18 +120,19 @@ export function Backstage() {
     }
 
     // Transitions run one after another: Back pressed mid-way plays once the first one is over
-    let open = false
+    let isOpen = false
     let queue = Promise.resolve()
     const sync = (animate: boolean) => {
       const want = isBackstageUrl()
-      if (want === open) return
-      open = want
+      if (want === isOpen) return
+      isOpen = want
       queue = queue.then(() => (want ? enter(animate) : leave(animate)))
     }
 
     const onPop = () => sync(true)
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && open) leaveBackstage()
+      // The game takes Escape first while a race is on (to pause it)
+      if (e.key === 'Escape' && isOpen && !e.defaultPrevented) leaveBackstage()
     }
 
     sync(false)
@@ -152,11 +163,11 @@ export function Backstage() {
           <div className="backstage__lamp" />
         </div>
 
-        <div className="backstage__note">
-          <span className="backstage__bug" aria-hidden="true" />
-          <p className="backstage__label mono">{backstage.note}</p>
-          <p className="backstage__title">{backstage.title}</p>
-        </div>
+        {visited && (
+          <Suspense fallback={null}>
+            <Race active={open} />
+          </Suspense>
+        )}
 
         <button type="button" className="backstage__back mono" ref={backRef} onClick={leaveBackstage}>
           <span aria-hidden="true">←</span> {backstage.back} <kbd>esc</kbd>

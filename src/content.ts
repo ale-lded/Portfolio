@@ -151,7 +151,50 @@ export const backstage = {
   /** Accessible name of the bug hidden in the hero */
   bug: 'A pixel out of place',
   label: 'Backstage',
-  note: '// backstage',
-  title: 'Still setting the stage.',
   back: 'Back to the stage',
+}
+
+/** The minigame behind the stage: a 3-lap time trial. */
+export const race = {
+  title: 'Backstage GP',
+  subtitle: '// 3 laps · time trial',
+  tyresLabel: 'Tyres',
+  setupLabel: 'Setup',
+  tyres: {
+    soft: { name: 'Soft', text: 'Most grip. Gone by lap 3.' },
+    medium: { name: 'Medium', text: 'A bit of everything.' },
+    hard: { name: 'Hard', text: 'Less grip, lasts the race.' },
+  },
+  setups: {
+    speed: { name: 'Top speed', text: 'Flies on the straights, lazy in the turns.' },
+    balanced: { name: 'Balanced', text: 'No surprises.' },
+    corner: { name: 'Cornering', text: 'Sharp in the turns, short on top speed.' },
+  },
+  stats: { grip: 'Grip', life: 'Life', speed: 'Speed', handling: 'Handling' },
+  start: 'Start race',
+  controls: [
+    ['W A S D', 'drive'],
+    ['Space', 'handbrake'],
+    ['Esc', 'pause'],
+    ['R', 'restart'],
+  ],
+  board: 'Top 3',
+  empty: 'No times yet. Set the first one.',
+  local: 'Saved in this browser',
+  lap: 'Lap',
+  time: 'Time',
+  best: 'Best',
+  wear: 'Tyres',
+  speedUnit: 'km/h',
+  go: 'Go',
+  paused: 'Paused',
+  resume: 'Resume',
+  restart: 'Restart',
+  change: 'Change car',
+  quit: 'Back to the stage',
+  finish: 'Finish',
+  record: 'New top 3 time',
+  initials: 'Your initials',
+  save: 'Save',
+  again: 'Race again',
 }

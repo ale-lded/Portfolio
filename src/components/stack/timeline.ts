@@ -5,8 +5,8 @@ import { clamp, sstep } from '../../lib/math'
  * REFERENCE_VH (0 → 1). The real stage stretches or compresses parts of it on the
  * scroll (see ENTRANCE_SCALE, HOLD_SCALE and timelineAt).
  * Phases: 0–0.04 list · 0.04–0.35 the list folds into a pile and the layers open
- * · 0.35–0.89 exploded view, one layer at a time, each with its own choreography
- * (see layerFx.ts) · 0.89–0.95 the layers compress into one block · 0.95–1 still.
+ * · 0.35–0.935 exploded view, one layer at a time, all with the same choreography
+ * (see layerFx.ts) · 0.935–0.98 the layers compress into one block · 0.98–1 still.
  */
 export const S = {
   /** Flat list → isometric pile */
@@ -17,15 +17,17 @@ export const S = {
   explode: [0.27, 0.38],
   /**
    * Layer windows: layer i plays over [start + i·step, start + i·step + length].
-   * They overlap a little, so the next title takes off as the previous text leaves,
-   * but only once a standing plate is back in the stack.
+   * Every plate stands up in the same spot, so the next one may only leave the pile
+   * once the previous one is lying down again (plateMove, "up" over at t = 0.9, which
+   * readWarp puts at 96.5% of the window). The windows overlap just by the last slide
+   * back in, which runs parallel to the next slide out, a plate's gap apart.
    */
-  layers: { start: 0.35, step: 0.13, length: 0.15 },
+  layers: { start: 0.35, step: 0.145, length: 0.15 },
   /** Whole stack turns slowly while it is on screen */
-  sweep: [0.12, 0.98],
-  compress: [0.89, 0.95],
+  sweep: [0.12, 0.99],
+  compress: [0.935, 0.98],
   introOut: [0.25, 0.33],
-  outroIn: [0.93, 0.985],
+  outroIn: [0.965, 0.995],
 } as const
 
 /** Isometric camera: tilt back on X, turn on Z. Degrees. Perspective in px. */
@@ -114,7 +116,7 @@ export function timelineAt(scroll: number) {
  */
 export const SNAP_POINTS = [
   ...SPANS.filter((span) => span.hold).map((span) => scrollAt((span.from + span.to) / 2)),
-  scrollAt(0.985),
+  scrollAt(0.995),
 ]
 
 /** Within a layer window: how far the entrance and the exit have gone. */
@@ -126,7 +128,7 @@ export const focusOf = (t: number) => enterOf(t) * (1 - exitOf(t))
 
 export const STACK_PHASES: [end: number, label: string][] = [
   [0.35, '01 — Assemblaggio'],
-  [0.89, '02 — Vista esplosa'],
-  [0.96, '03 — Compressione'],
+  [0.935, '02 — Vista esplosa'],
+  [0.985, '03 — Compressione'],
   [1.01, '04 — Lo stack'],
 ]

@@ -122,16 +122,6 @@
   line-height: 1.08;
 }
 
-/* Pixels of the text crumbling away ("fly") */
-.stack__fx {
-  position: absolute;
-  z-index: 7;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-}
-
 .stack__text {
   max-width: 34ch;
   margin-top: 16px;
@@ -218,18 +208,21 @@
   pointer-events: none;
 }
 
+/* Name on top, note under it: side by side the longer names did not fit */
 .plate__head {
   display: grid;
   flex: none;
-  grid-template-columns: 40px 1fr auto;
+  grid-template-columns: 40px 1fr;
+  align-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 2px 12px;
   height: 64px;
   padding: 0 20px;
   border-bottom: 1px solid rgba(201, 143, 78, 0.25);
 }
 
 .plate__n {
+  grid-row: span 2;
   font-size: 12px;
   color: var(--amber);
 }
@@ -247,9 +240,12 @@
 }
 
 .plate__note {
+  grid-column: 2;
+  overflow: hidden;
   font-size: 12px;
   color: var(--muted);
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Read by screen readers here; shown on screen by the panel on the left */
@@ -449,8 +445,8 @@
   }
 
   .plate__head {
-    grid-template-columns: 28px 1fr auto;
-    gap: 8px;
+    grid-template-columns: 28px 1fr;
+    gap: 1px 8px;
     height: 52px;
     padding: 0 14px;
   }
@@ -468,12 +464,8 @@
   }
 }
 
-/* On phones the row is too short for the note next to the name */
+/* On phones the row is too short for the note under the name */
 @media (max-width: 600px) {
-  .plate__head {
-    grid-template-columns: 28px 1fr;
-  }
-
   .plate__note {
     display: none;
   }
@@ -495,7 +487,6 @@
 .stack--static .phase,
 .stack--static .stack__panel--layer,
 .stack--static .stack__panel--outro,
-.stack--static .stack__fx,
 .stack--static .stack__shadow,
 .stack--static .plate__body,
 .stack--static .plate__shade,

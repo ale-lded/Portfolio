@@ -6,15 +6,7 @@ import { useReducedMotion } from '../../lib/useReducedMotion'
 import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { LayerArt } from './LayerArt'
-import {
-  LAYER_FX,
-  LAYER_STYLES,
-  layerTime,
-  LayerPanel,
-  plateMove,
-  plateNameOpacity,
-  STAND_SPOT,
-} from './layerFx'
+import { layerTime, LayerPanel, plateMove, plateNameOpacity, STAND_SPOT } from './layerFx'
 import { fromCamera, projectOnPlate, type View } from './project'
 import { CAMERA, focusOf, layerT, S, SNAP_POINTS, STACK_PHASES, STACK_VH, timelineAt } from './timeline'
 import './Stack.css'
@@ -27,13 +19,11 @@ const PILLAR = 100
 /** Space between the rows while they are still a flat list */
 const ROW_GAP = 8
 const DEG = Math.PI / 180
-/** The standing plate whose spot the others are measured from */
-const FIRST_STAND = LAYER_STYLES.indexOf('stand')
 
 /**
  * The second scroll stage, between "Chi sono" and "Contatti". The skills start as
  * a plain list, fold into an isometric pile of plates, explode so each layer can be
- * read on its own (each with its own choreography, see layerFx.ts), then compress
+ * read on its own (one at a time, same choreography, see layerFx.ts), then compress
  * into a single block.
  *
  * Same contract as Stage: React builds the structure once, then every frame is a
@@ -48,7 +38,6 @@ export function StackStage() {
   const sceneRef = useRef<HTMLDivElement>(null)
   const groupRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef<HTMLDivElement>(null)
-  const fxRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (reduced) return
@@ -57,14 +46,10 @@ export function StackStage() {
     const scene = sceneRef.current!
     const group = groupRef.current!
     const phase = phaseRef.current!
-    const fx = fxRef.current!
-    const fxCtx = fx.getContext('2d')!
     const phaseLabel = phase.querySelector<HTMLElement>('.phase__label')!
     const phaseFill = phase.querySelector<HTMLElement>('.phase__fill')!
     const introOutro = [...sticky.querySelectorAll<HTMLElement>('.stack__panel--intro, .stack__panel--outro')]
-    const panels = [...sticky.querySelectorAll<HTMLElement>('.stack__panel--layer')].map(
-      (el, i) => new LayerPanel(el, LAYER_STYLES[i]),
-    )
+    const panels = [...sticky.querySelectorAll<HTMLElement>('.stack__panel--layer')].map((el) => new LayerPanel(el))
     const shadow = group.querySelector<HTMLElement>('.stack__shadow')!
     const plates = [...group.querySelectorAll<HTMLElement>('.plate')].map((el) => ({
       el,
@@ -89,7 +74,6 @@ export function StackStage() {
     let origin = { x: 0, y: 0 }
     /** The plate title's box in plate coordinates (same for every plate) */
     const title = { x: 0, y: 0, w: 0, h: 0 }
-    let fxDrawn = false
 
     const build = () => {
       const first = plates[0]
@@ -115,12 +99,6 @@ export function StackStage() {
       const at = scene.getBoundingClientRect()
       origin = { x: at.left - box.left, y: at.top - box.top }
       for (const panel of panels) panel.measure(box)
-
-      const dpr = Math.min(2, window.devicePixelRatio || 1)
-      fx.width = Math.round(sticky.clientWidth * dpr)
-      fx.height = Math.round(sticky.clientHeight * dpr)
-      fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      fxDrawn = true
     }
 
     // Pointer parallax: a few degrees of tilt, chased with inertia like the follow-spot
@@ -152,10 +130,10 @@ export function StackStage() {
       const free = 1 - compress
 
       // Where every plate is this frame
-      const ts = plates.map((_, i) => layerTime(LAYER_STYLES[i], layerT(i, p)))
-      const moves = ts.map((t, i) => plateMove(LAYER_FX[i], t, W, H))
+      const ts = plates.map((_, i) => layerTime(layerT(i, p)))
+      const moves = ts.map((t) => plateMove(t, W, H))
       // A standing plate goes to a fixed spot in front of the camera, whatever the stack's angle
-      // Same depth everywhere (any closer and the plate above cuts through it); centred on phones
+      // and whichever layer it is, so every layer is read in the same place; centred on phones
       const standSpot = fromCamera(view, {
         x: compact ? 0 : STAND_SPOT.x * W,
         y: STAND_SPOT.y * H,
@@ -169,12 +147,9 @@ export function StackStage() {
         let tz = ((LAYERS - 1) / 2 - i) * gap * fold + move.lift * free
         const stand = move.stand * free
         if (stand > 0) {
-          // Lower standing plates stand up at their own height: the spot shifts down the
-          // stack's axis by the distance between this plate and the first standing one
-          const own = (FIRST_STAND - i) * gap * fold
           tx = lerp(tx, standSpot.x, stand)
           ty = lerp(ty, standSpot.y, stand)
-          tz = lerp(tz, standSpot.z + own, stand)
+          tz = lerp(tz, standSpot.z, stand)
         }
         return { tx, ty, tz, face: move.face * free }
       })
@@ -189,7 +164,7 @@ export function StackStage() {
         plate.face.style.clipPath = `inset(0 0 ${(H - visibleH).toFixed(2)}px 0 round 6px)`
         plate.el.style.setProperty('--act', act.toFixed(3))
         plate.shade.style.opacity = ((1 - act) * 0.55 * focusPhase).toFixed(3)
-        plate.name.style.opacity = plateNameOpacity(LAYER_STYLES[i], ts[i]).toFixed(3)
+        plate.name.style.opacity = plateNameOpacity(ts[i]).toFixed(3)
 
         plate.front.style.transform = `translateY(${visibleH.toFixed(2)}px) rotateX(-90deg)`
         plate.front.style.opacity = fold.toFixed(3)
@@ -216,20 +191,12 @@ export function StackStage() {
       const onScreen = (i: number, x: number, y: number) => projectOnPlate(view, pos[i], x - W / 2, y - H / 2)
 
       // Layer panels: each title starts its flight from where it is printed on its plate
-      if (fxDrawn) {
-        fxCtx.clearRect(0, 0, fx.width, fx.height)
-        fxDrawn = false
-      }
+      const midY = title.y + title.h / 2
       panels.forEach((panel, i) => {
-        const midY = title.y + title.h / 2
-        const dissolve = panel.update(ts[i], {
+        panel.update(ts[i], {
           from: onScreen(i, title.x, midY),
           to: onScreen(i, title.x + title.w, midY),
         })
-        if (dissolve > 0 && dissolve < 1) {
-          panel.drawDissolve(fxCtx, dissolve)
-          fxDrawn = true
-        }
       })
 
       // Intro and outro copy
@@ -522,9 +489,6 @@ export function StackStage() {
             </ol>
           </div>
         </div>
-
-        {/* Pixels of the text that crumbles away */}
-        <canvas className="stack__fx" ref={fxRef} aria-hidden="true" />
 
         <PhaseIndicator ref={phaseRef} label={STACK_PHASES[0][1]} />
       </div>

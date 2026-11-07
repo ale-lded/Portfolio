@@ -1,5 +1,5 @@
 /**
- * The cipher terminal opens from the footer, but lives at the root of the app (next to
+ * The cipher terminal opens from the hero and the footer, but lives at the root of the app (next to
  * the backstage). A window event connects the two without threading props through.
  */
 const OPEN_EVENT = 'terminal:open'

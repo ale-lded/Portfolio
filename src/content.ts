@@ -203,7 +203,7 @@ export const race = {
   again: 'Race again',
 }
 
-/** The cipher terminal, opened by the stray cursor in the footer. */
+/** The cipher terminal, opened by a stray cursor: after the initials in the hero, and after the copyright in the footer. */
 export const terminal = {
   /** Accessible name of the hidden trigger */
   trigger: 'A stray cursor',

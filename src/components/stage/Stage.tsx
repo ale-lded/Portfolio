@@ -71,6 +71,10 @@ export function Stage() {
         height: sticky.clientHeight,
         dpr: Math.min(2, window.devicePixelRatio || 1),
         hero: textLinesFromElement(title, origin),
+        heroBox: {
+          top: title.getBoundingClientRect().top - origin.top,
+          bottom: title.getBoundingClientRect().bottom - origin.top,
+        },
         heroFontSize: parseFloat(getComputedStyle(title).fontSize),
         cards: cardSpecs,
       })

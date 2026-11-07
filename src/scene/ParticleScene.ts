@@ -16,6 +16,25 @@ const PALETTE = [
   // 12 card title · 13 card outline · 14 flash
   '#F2EEE8', '#C98F4E', '#FFF1D6',
 ]
+/**
+ * The hero title's CSS gradient (Stage.css .hero__title), as stops, sampled into
+ * HERO_SHADES steps so the pixel copy shades continuously like the real text.
+ */
+const HERO_GRADIENT: [number, [number, number, number]][] = [
+  [0, [0xff, 0xf7, 0xec]],
+  [0.42, [0xf0, 0xe8, 0xdc]],
+  [1, [0x9a, 0x91, 0x86]],
+]
+const HERO_SHADES = 12
+const HERO_FIRST = PALETTE.length
+for (let k = 0; k < HERO_SHADES; k++) {
+  const t = k / (HERO_SHADES - 1)
+  const j = HERO_GRADIENT.findIndex(([at]) => at >= t)
+  const [a0, c0] = HERO_GRADIENT[Math.max(0, j - 1)]
+  const [a1, c1] = HERO_GRADIENT[j]
+  const f = a1 === a0 ? 0 : (t - a0) / (a1 - a0)
+  PALETTE.push(`rgb(${c0.map((c, n) => Math.round(c + (c1[n] - c) * f)).join(',')})`)
+}
 const SYNTAX: Record<TokenKind, number> = { punct: 3, tag: 4, attr: 5, str: 6, text: 7 }
 const AMBER = [8, 9, 10, 11]
 const CARD_TITLE = 12
@@ -36,6 +55,8 @@ export type SceneInput = {
   dpr: number
   /** The service line, one spec per wrapped line */
   hero: TextSpec[]
+  /** Top and bottom of the title element: the span of its CSS gradient */
+  heroBox: { top: number; bottom: number }
   heroFontSize: number
   cards: CardSpec[]
 }
@@ -106,7 +127,7 @@ export class ParticleScene {
   private px = new Float32Array(0)
   private py = new Float32Array(0)
   private ps = new Float32Array(0)
-  private pb = new Uint8Array(0)
+  private pb = new Uint16Array(0)
   private visible = new Uint8Array(0)
   private sorted = new Uint32Array(0)
   private counts = new Uint32Array(BUCKETS + 1)
@@ -202,12 +223,6 @@ export class ParticleScene {
       hp.push(...pts)
     }
     const nA = hp.length / 2
-    let minY = Infinity
-    let maxY = -Infinity
-    for (let k = 1; k < hp.length; k += 2) {
-      minY = Math.min(minY, hp[k])
-      maxY = Math.max(maxY, hp[k])
-    }
 
     // ---- D: card titles and outlines, ordered left → right ----
     const dX: number[] = []
@@ -246,9 +261,10 @@ export class ParticleScene {
 
       this.ax[i] = hp[ai * 2]
       this.ay[i] = hp[ai * 2 + 1]
-      // Same top-lit gradient as the CSS title, across all its lines
-      const shade = clamp((this.ay[i] - minY) / Math.max(1, maxY - minY))
-      this.colA[i] = shade < 0.4 ? 0 : shade < 0.8 ? 1 : 2
+      // Same top-lit gradient as the CSS title, measured over the title's own box
+      const { top, bottom } = input.heroBox
+      const shade = clamp((this.ay[i] - top) / Math.max(1, bottom - top))
+      this.colA[i] = HERO_FIRST + Math.round(shade * (HERO_SHADES - 1))
 
       this.bx[i] = bX[bi]
       this.by[i] = bY[bi]
@@ -308,7 +324,7 @@ export class ParticleScene {
     this.line = u()
     this.wind = f(); this.lift = f(); this.bend = f()
     this.px = f(); this.py = f(); this.ps = f()
-    this.pb = u(); this.visible = u()
+    this.pb = new Uint16Array(N); this.visible = u()
     this.sorted = new Uint32Array(N)
   }
 

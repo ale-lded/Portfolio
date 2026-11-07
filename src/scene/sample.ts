@@ -10,7 +10,15 @@ export type TextSpec = {
   width: number
   ascent: number
   descent: number
+  /**
+   * Where the browser placed each character, relative to x. When present the text is
+   * drawn glyph by glyph at these positions, so letter-spacing and kerning match the
+   * DOM exactly even where canvas ignores letterSpacing (Safari).
+   */
+  glyphs?: Glyph[]
 }
+
+export type Glyph = { char: string; x: number }
 
 export type Rect = { x: number; y: number; w: number; h: number }
 
@@ -25,6 +33,11 @@ const scratchCtx = () => {
  * lands exactly on top of the real DOM text.
  */
 export function textSpecFromElement(el: HTMLElement, origin: DOMRect): TextSpec {
+  // Plain text: read it line by line, glyph positions included
+  if (el.firstChild instanceof Text && el.childNodes.length === 1) {
+    const lines = textLinesFromElement(el, origin)
+    if (lines.length === 1) return lines[0]
+  }
   const cs = getComputedStyle(el)
   const font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
   const text = el.textContent ?? ''
@@ -68,7 +81,7 @@ export function textLinesFromElement(el: HTMLElement, origin: DOMRect): TextSpec
   const ascent = m.fontBoundingBoxAscent
   const descent = m.fontBoundingBoxDescent
 
-  type Line = { start: number; end: number; left: number; right: number; top: number; height: number }
+  type Line = { start: number; end: number; left: number; right: number; top: number; height: number; glyphs: { char: string; left: number }[] }
   const lines: Line[] = []
   const range = document.createRange()
   for (let i = 0; i < node.data.length; i++) {
@@ -78,11 +91,13 @@ export function textLinesFromElement(el: HTMLElement, origin: DOMRect): TextSpec
     const r = range.getClientRects()[0]
     if (!r) continue
     const line = lines[lines.length - 1]
+    const glyph = { char: node.data[i], left: r.left }
     if (line && Math.abs(r.top - line.top) < r.height / 2) {
       line.end = i
       line.right = r.right
+      line.glyphs.push(glyph)
     } else {
-      lines.push({ start: i, end: i, left: r.left, right: r.right, top: r.top, height: r.height })
+      lines.push({ start: i, end: i, left: r.left, right: r.right, top: r.top, height: r.height, glyphs: [glyph] })
     }
   }
 
@@ -97,6 +112,7 @@ export function textLinesFromElement(el: HTMLElement, origin: DOMRect): TextSpec
       width: line.right - line.left,
       ascent,
       descent,
+      glyphs: line.glyphs.map((g) => ({ char: g.char, x: g.left - line.left })),
     }
   })
 }
@@ -114,10 +130,15 @@ export function sampleText(spec: TextSpec, step: number, threshold = 110): numbe
   canvas.height = h
   const g = canvas.getContext('2d', { willReadFrequently: true })!
   g.font = spec.font
-  g.letterSpacing = spec.letterSpacing
   g.textBaseline = 'alphabetic'
   g.fillStyle = '#fff'
-  g.fillText(spec.text, pad, pad + spec.ascent)
+  if (spec.glyphs) {
+    // Each glyph exactly where the browser put it; spacing is already in the positions
+    for (const glyph of spec.glyphs) g.fillText(glyph.char, pad + glyph.x, pad + spec.ascent)
+  } else {
+    g.letterSpacing = spec.letterSpacing
+    g.fillText(spec.text, pad, pad + spec.ascent)
+  }
   const data = g.getImageData(0, 0, w, h).data
 
   const out: number[] = []

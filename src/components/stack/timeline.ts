@@ -108,12 +108,6 @@ export function timelineAt(scroll: number) {
   return Math.min(1, at + left)
 }
 
-/** True while scroll progress is inside a layer's entrance (plate moving, title flying). */
-export function inEntrance(scroll: number) {
-  const time = timelineAt(scroll)
-  return SPANS.some((span) => !span.hold && time >= span.from && time < span.to)
-}
-
 /**
  * Scroll positions (fractions of the real stage) the page snaps to: the middle of each
  * layer's reading hold, and the finished stack. See .stack__snap in Stack.css.

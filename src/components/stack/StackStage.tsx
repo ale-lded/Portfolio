@@ -18,7 +18,7 @@ import {
   STAND_SPOT,
 } from './layerFx'
 import { fromCamera, projectOnPlate, type View } from './project'
-import { CAMERA, focusOf, inEntrance, layerT, S, SNAP_POINTS, STACK_PHASES, STACK_VH, timelineAt } from './timeline'
+import { CAMERA, focusOf, layerT, S, SNAP_POINTS, STACK_PHASES, STACK_VH, timelineAt } from './timeline'
 import './Stack.css'
 
 const LAYERS = stack.skills.length
@@ -306,7 +306,6 @@ export function StackStage() {
         // Finished and moving on: freeze on the final frame
         latched = true
         current = 1
-        velocity = 0
         apply(1)
       } else if (latched && r.top >= window.innerHeight) {
         // Out of view below: re-arm. Height changes below the viewport move nothing on screen.
@@ -314,7 +313,6 @@ export function StackStage() {
         collapsed = false
         stage.classList.remove('stack--done')
         current = 0
-        velocity = 0
         apply(0)
       }
       window.clearTimeout(collapseTimer)
@@ -322,37 +320,15 @@ export function StackStage() {
     }
 
     let current = progress()
-    /**
-     * The scene chases the scroll with a critically damped spring instead of a plain lerp:
-     * after a jump (a reading stop, a fast flick) it starts gently, speeds up and settles
-     * slowly, in about a second, rather than snapping at full speed.
-     */
-    const SPRING = 7
-    /**
-     * Speed limits for the chase, in vh of scroll per second. Through an entrance the scene
-     * never runs faster than ENTRANCE_SPEED, so even after a jump the title takes its time
-     * to fly in; through holds, where nothing moves, it can catch up quickly.
-     */
-    const ENTRANCE_SPEED = 25
-    const FREE_SPEED = 160
-    let velocity = 0
-    let lastFrame = 0
     let raf = 0
     let inView = false
 
-    const tick = (now: number) => {
+    // The scene follows the scroll directly, with only a light smoothing of the wheel steps
+    const tick = () => {
       raf = 0
-      const dt = lastFrame ? Math.min(0.05, (now - lastFrame) / 1000) : 1 / 60
-      lastFrame = now
       const target = latched ? 1 : progress()
-      velocity += (SPRING * SPRING * (target - current) - 2 * SPRING * velocity) * dt
-      const maxSpeed = (inEntrance(current) ? ENTRANCE_SPEED : FREE_SPEED) / (STACK_VH - 100)
-      velocity = clamp(velocity, -maxSpeed, maxSpeed)
-      current = clamp(current + velocity * dt)
-      if (Math.abs(target - current) < 0.0002 && Math.abs(velocity) < 0.001) {
-        current = target
-        velocity = 0
-      }
+      current += (target - current) * 0.12
+      if (Math.abs(target - current) < 0.0003) current = target
       tilt.x += (tilt.tx - tilt.x) * 0.06
       tilt.z += (tilt.tz - tilt.z) * 0.06
       const tiltSettled = Math.abs(tilt.tx - tilt.x) < 0.01 && Math.abs(tilt.tz - tilt.z) < 0.01
@@ -362,7 +338,6 @@ export function StackStage() {
       }
       apply(current)
       if (current !== target || !tiltSettled) raf = requestAnimationFrame(tick)
-      else lastFrame = 0
     }
     const request = () => {
       if (inView && !raf) raf = requestAnimationFrame(tick)

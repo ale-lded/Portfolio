@@ -15,6 +15,10 @@ export type View = {
   /** Screen position of the scene point, relative to the sticky viewport */
   ox: number
   oy: number
+  /** Uniform scale of the whole group (1 = none) */
+  zoom: number
+  /** px the whole group is raised on screen, in camera space before perspective */
+  raise: number
 }
 
 export type Point = { x: number; y: number }
@@ -36,11 +40,18 @@ const rotZ = (v: Vec3, a: number): Vec3 => ({
   z: v.z,
 })
 
-/** Group space → camera space (before perspective). */
-const toCamera = (view: View, v: Vec3) => rotX(rotZ(v, view.rz * DEG), view.rx * DEG)
+/**
+ * Group space → camera space (before perspective). Mirrors the group's CSS transform:
+ * translateY(-raise) scale3d(zoom) rotateX(rx) rotateZ(rz).
+ */
+const toCamera = (view: View, v: Vec3) => {
+  const c = rotX(rotZ(v, view.rz * DEG), view.rx * DEG)
+  return { x: c.x * view.zoom, y: c.y * view.zoom - view.raise, z: c.z * view.zoom }
+}
 
 /** Camera space → group space: where to put something so it ends up at v in front of the camera. */
-export const fromCamera = (view: View, v: Vec3) => rotZ(rotX(v, -view.rx * DEG), -view.rz * DEG)
+export const fromCamera = (view: View, v: Vec3) =>
+  rotZ(rotX({ x: v.x / view.zoom, y: (v.y + view.raise) / view.zoom, z: v.z / view.zoom }, -view.rx * DEG), -view.rz * DEG)
 
 /** (x, y, z) in group space → screen coordinates relative to the sticky viewport. */
 export function project(view: View, x: number, y: number, z: number): Point {

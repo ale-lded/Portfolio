@@ -47,11 +47,25 @@ export type PlateMove = {
 }
 
 /**
- * Where a drawer plate is pulled to, in camera space: in front of the stack and low on
- * the screen, as fractions of the plate size (x, y of W, H; depth of W). Same spot for
- * every drawer, so pulling out layer 3 leaves the top of layer 4 visible behind it.
+ * Where a drawer plate is pulled to, in camera space: in front of the stack and below
+ * it, as fractions of the plate size (x, y of W, H; depth of W). The rest of the stack
+ * stays as it is, so the drawer must sit clear of its bottom plate.
  */
-export const DRAWER_SPOT = { x: 0, y: 0.8, depth: 0.05 } as const
+export const DRAWER_SPOT = { x: 0, y: 0.95, depth: 0 } as const
+
+/**
+ * While a drawer is out, the whole stack makes room for it: it rises by `raise`
+ * (fraction of the viewport height) and shrinks to `zoom`.
+ */
+export const DRAWER_ROOM = { raise: 0.15, zoom: 0.8 } as const
+
+/**
+ * 0 → 1: how much a drawer layer needs the room above. Wider than the pull itself, so
+ * between two drawers in a row the stack does not drop back and rise again.
+ */
+export function drawerPresence(style: LayerStyle, t: number) {
+  return style === 'drawer' ? sstep(0, 0.14, t) * (1 - sstep(0.86, 1, t)) : 0
+}
 
 /** Where a standing plate ends up, in camera space, as fractions of the plate width */
 export const STAND_SPOT = { x: -0.12, y: 0, depth: 0.8 } as const

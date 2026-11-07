@@ -7,7 +7,9 @@ import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { LayerArt } from './LayerArt'
 import {
+  DRAWER_ROOM,
   DRAWER_SPOT,
+  drawerPresence,
   LAYER_STYLES,
   layerTime,
   LayerPanel,
@@ -138,8 +140,15 @@ export function StackStage() {
 
       const rx = CAMERA.rx * fold + tilt.x * fold
       const rz = lerp(0, CAMERA.rzStart, fold) + (CAMERA.rzEnd - CAMERA.rzStart) * sweep + tilt.z * fold
-      group.style.transform = `rotateX(${rx.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg)`
-      const view: View = { rx, rz, perspective: CAMERA.perspective, ox: origin.x, oy: origin.y }
+
+      // Where each layer is in its choreography; drawers need room before the camera is set
+      const ts = plates.map((_, i) => layerTime(LAYER_STYLES[i], layerT(i, p)))
+      const room = Math.max(0, ...ts.map((t, i) => drawerPresence(LAYER_STYLES[i], t))) * (1 - compress)
+      const zoom = lerp(1, DRAWER_ROOM.zoom, room)
+      const raise = DRAWER_ROOM.raise * sticky.clientHeight * room
+      const z = zoom.toFixed(4)
+      group.style.transform = `translateY(${(-raise).toFixed(2)}px) scale3d(${z}, ${z}, ${z}) rotateX(${rx.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg)`
+      const view: View = { rx, rz, perspective: CAMERA.perspective, ox: origin.x, oy: origin.y, zoom, raise }
 
       // Pile → exploded → compressed: the plates end up touching
       const gap = lerp(lerp(THICKNESS * 1.6, maxGap, explode), THICKNESS, compress)
@@ -149,7 +158,6 @@ export function StackStage() {
       const free = 1 - compress
 
       // Where every plate is this frame
-      const ts = plates.map((_, i) => layerTime(LAYER_STYLES[i], layerT(i, p)))
       const moves = ts.map((t, i) => plateMove(LAYER_STYLES[i], t, W, H))
       // A standing plate goes to a fixed spot in front of the camera, whatever the stack's angle
       // Same depth everywhere (any closer and the plate above cuts through it); centred on phones

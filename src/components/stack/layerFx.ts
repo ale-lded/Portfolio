@@ -3,10 +3,10 @@ import type { Point } from './project'
 import { readWarp } from './timeline'
 
 /**
- * The choreography of the exploded view, the same for every layer: the plate leaves
- * the stack and stands up in front of it, facing the viewer; its title flies out of
- * it to the panel on the left, then back in before the plate lies down and returns
- * to its place.
+ * The choreography of the exploded view, the same for every layer: the plate slides
+ * all the way out of the stack toward the viewer, like a drawer, and only then stands
+ * up in front of it, facing the viewer; its title flies out of it to the panel on the
+ * left, then back in before the plate lies down and slides back into its place.
  *
  * Everything is a pure function of the layer's local progress t (0 → 1, see layerT
  * in timeline.ts), so it all plays backwards. Every plate moves relative to its own
@@ -20,10 +20,8 @@ const READABLE: [number, number] = [0.46, 0.6]
 export const layerTime = (u: number) => readWarp(u, ...READABLE)
 
 export type PlateMove = {
-  /** Along the plate's own x axis, px */
-  slide: number
-  /** Toward the camera along the stack's axis, px */
-  lift: number
+  /** Along the plate's own y axis, toward the viewer, px */
+  pull: number
   /** 0 → 1: how much the plate turns to face the viewer */
   face: number
   /** 0 → 1: how far the plate has left the stack (its pillars fade out) */
@@ -34,16 +32,25 @@ export type PlateMove = {
 
 /**
  * Where a standing plate ends up, in camera space, as fractions of the plate width.
- * The same spot for every layer, so each one is read in the same place.
+ * The same spot for every layer, so each one is read in the same place. Far enough
+ * in front of the stack that a plate turning up or down never sweeps through the top
+ * plate (any depth under ~0.95 does, at every screen size).
  */
-export const STAND_SPOT = { x: -0.12, y: 0, depth: 0.8 } as const
+export const STAND_SPOT = { x: -0.12, y: 0, depth: 1 } as const
+
+/**
+ * How far a plate slides out of the stack before it turns, as a fraction of its depth:
+ * past 1 it is clear of the plates above, with a margin for the turn.
+ */
+const PULL = 1.25
 
 /** Extra motion of a plate on top of its place in the stack. */
-export function plateMove(t: number, W: number, H: number): PlateMove {
-  // Out of the pile first, then up; on the way back the same in reverse
-  const out = sstep(0, 0.12, t) * (1 - sstep(0.86, 1, t))
-  const up = sstep(0.08, 0.24, t) * (1 - sstep(0.74, 0.9, t))
-  return { slide: -out * W * 0.55, lift: out * H * 0.1, face: up, detach: out, stand: up }
+export function plateMove(t: number, H: number): PlateMove {
+  // Fully out of the pile first, only then up; on the way back down first, then in.
+  // The phases never overlap, so a turning plate is always clear of the stack.
+  const out = sstep(0, 0.14, t) * (1 - sstep(0.88, 1, t))
+  const up = sstep(0.14, 0.3, t) * (1 - sstep(0.72, 0.88, t))
+  return { pull: out * H * PULL, face: up, detach: out, stand: up }
 }
 
 /** When the title leaves its plate and comes back (fractions of t). */

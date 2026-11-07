@@ -143,7 +143,7 @@
 }
 
 .stack__group {
-  --pw: min(clamp(260px, 34vw, 480px), 58vh);
+  --pw: min(clamp(240px, 30vw, 430px), 52vh);
   --ph: calc(var(--pw) * 0.62);
   --t: 12px;
   position: absolute;
@@ -440,7 +440,7 @@
 
   /* Narrower than the column: once turned, the plate's diagonal must still fit the screen */
   .stack__group {
-    --pw: min(calc((100vw - 2 * var(--pad)) * 0.8), 340px);
+    --pw: min(calc((100vw - 2 * var(--pad)) * 0.72), 300px);
     --t: 9px;
   }
 

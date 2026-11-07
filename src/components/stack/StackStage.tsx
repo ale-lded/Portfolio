@@ -131,7 +131,7 @@ export function StackStage() {
 
       // Where every plate is this frame
       const ts = plates.map((_, i) => layerTime(layerT(i, p)))
-      const moves = ts.map((t) => plateMove(t, W, H))
+      const moves = ts.map((t) => plateMove(t, H))
       // A standing plate goes to a fixed spot in front of the camera, whatever the stack's angle
       // and whichever layer it is, so every layer is read in the same place; centred on phones
       const standSpot = fromCamera(view, {
@@ -141,10 +141,9 @@ export function StackStage() {
       })
       const pos = moves.map((move, i) => {
         // Keep the visible part of each plate centred while it opens downward
-        let ty = lerp((i - (LAYERS - 1) / 2) * (rowH + ROW_GAP), 0, fold) + (H - visibleH) / 2
-        // Phones have less room on the sides
-        let tx = move.slide * free * (compact ? 0.6 : 1)
-        let tz = ((LAYERS - 1) / 2 - i) * gap * fold + move.lift * free
+        let ty = lerp((i - (LAYERS - 1) / 2) * (rowH + ROW_GAP), 0, fold) + (H - visibleH) / 2 + move.pull * free
+        let tx = 0
+        let tz = ((LAYERS - 1) / 2 - i) * gap * fold
         const stand = move.stand * free
         if (stand > 0) {
           tx = lerp(tx, standSpot.x, stand)

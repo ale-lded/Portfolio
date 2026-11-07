@@ -1,4 +1,5 @@
 import { About } from './components/About'
+import { Backstage } from './components/backstage/Backstage'
 import { Contact } from './components/Contact'
 import { Nav } from './components/Nav'
 import { StackStage } from './components/stack/StackStage'
@@ -15,6 +16,7 @@ export default function App() {
         <StackStage />
         <Contact />
       </main>
+      <Backstage />
     </>
   )
 }

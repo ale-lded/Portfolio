@@ -7,6 +7,7 @@ import { ParticleScene, type CardSpec } from '../../scene/ParticleScene'
 import { textLinesFromElement, textSpecFromElement } from '../../scene/sample'
 import { PHASES, T } from '../../scene/timeline'
 import { PhaseIndicator } from '../PhaseIndicator'
+import { Bug } from '../backstage/Bug'
 import { PodiumLight } from '../PodiumLight'
 import { Hero } from './Hero'
 import { Work } from './Work'
@@ -39,6 +40,7 @@ export function Stage() {
     const phaseFill = phase.querySelector<HTMLElement>('.phase__fill')!
     const heroFades = [...hero.querySelectorAll<HTMLElement>('.hero__fade')]
     const hint = hero.querySelector<HTMLElement>('.hero__hint')!
+    const bug = sticky.querySelector<HTMLElement>('.bug')!
     const workHead = sticky.querySelector<HTMLElement>('.work__head')!
     const cards = [...sticky.querySelectorAll<HTMLElement>('.card')]
     const cardDecoders = cards.map((card, i) =>
@@ -96,6 +98,9 @@ export function Stage() {
         el.style.transform = copyOut ? `translateY(${-copyOut * 16}px)` : ''
       }
       hint.style.opacity = String(1 - sstep(T.hintOut[0], T.hintOut[1], p))
+      // The bug belongs to the hero: it leaves with its copy and can't be clicked once gone
+      bug.style.opacity = String(1 - copyOut)
+      bug.style.visibility = copyOut > 0.99 ? 'hidden' : ''
       title.style.opacity = String(1 - sstep(T.swap[0], T.swap[1], p))
 
       const winA = sstep(T.codeWindowIn[0], T.codeWindowIn[1], p) * (1 - sstep(T.codeWindowOut[0], T.codeWindowOut[1], p))
@@ -203,6 +208,7 @@ export function Stage() {
         </div>
         <Work />
         <canvas className="stage__canvas" ref={canvasRef} aria-hidden="true" />
+        {!reduced && <Bug />}
         <PhaseIndicator ref={phaseRef} label={PHASES[0][1]} />
       </div>
     </section>

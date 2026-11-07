@@ -1,0 +1,92 @@
+/* A generous, invisible hit area around four tiny pixels: hard to see, easy to click once found */
+.bug {
+  --bug-idle: rgba(255, 217, 160, 0.6);
+  --bug-green: #39ff6a;
+  position: absolute;
+  z-index: 6;
+  left: calc(50% + 21vw);
+  top: 81%;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: crosshair;
+}
+
+/* One 3px pixel plus three copies as shadows: a small, slightly broken cluster */
+.bug__px {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  margin: -5px 0 0 -5px;
+  color: var(--bug-idle);
+  background: currentColor;
+  box-shadow:
+    3px 0 currentColor,
+    3px 3px currentColor,
+    6px 6px currentColor;
+  /* Every few seconds it flashes green for a single frame: the only hint it is there */
+  animation: bug-blink 9s steps(1, end) infinite;
+}
+
+.bug:hover .bug__px {
+  color: var(--bug-green);
+  filter: drop-shadow(0 0 3px rgba(57, 255, 106, 0.9));
+  animation: bug-glitch 0.42s steps(1, end) infinite;
+}
+
+@keyframes bug-blink {
+  0% {
+    color: var(--bug-idle);
+  }
+  71% {
+    color: var(--bug-green);
+    transform: translateX(1px);
+  }
+  71.6% {
+    color: var(--bug-idle);
+    transform: none;
+  }
+}
+
+@keyframes bug-glitch {
+  0% {
+    transform: none;
+    box-shadow:
+      3px 0 currentColor,
+      3px 3px currentColor,
+      6px 6px currentColor;
+  }
+  25% {
+    transform: translate(1px, -1px);
+    box-shadow:
+      3px 0 currentColor,
+      6px 3px currentColor,
+      3px 6px currentColor;
+  }
+  50% {
+    transform: translate(-1px, 0);
+    box-shadow:
+      0 3px currentColor,
+      3px 3px currentColor,
+      6px 6px currentColor;
+  }
+  75% {
+    transform: translate(0, 1px);
+    box-shadow:
+      3px 0 currentColor,
+      6px 0 currentColor,
+      6px 6px currentColor;
+  }
+}
+
+/* Desktop only: no mouse, no bug */
+@media not ((hover: hover) and (pointer: fine)) {
+  .bug {
+    display: none;
+  }
+}

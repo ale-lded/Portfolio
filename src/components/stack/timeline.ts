@@ -1,7 +1,9 @@
 import { clamp, sstep } from '../../lib/math'
 
 /**
- * Every moment of the stack sequence, as a fraction of the stage scroll (0 → 1).
+ * Every moment of the stack sequence, as a fraction of a reference stage of
+ * REFERENCE_VH (0 → 1). The real stage is shorter: the reading holds are compressed
+ * (see HOLD_KEEP and timelineAt), everything else keeps its scroll length.
  * Phases: 0–0.04 list · 0.04–0.35 the list folds into a pile and the layers open
  * · 0.35–0.89 exploded view, one layer at a time, each with its own choreography
  * (see layerFx.ts) · 0.89–0.95 the layers compress into one block · 0.95–1 still.
@@ -53,14 +55,57 @@ export function readWarp(u: number, r0: number, r1: number) {
   return r0 + ((u - a) / (b - a)) * (r1 - r0)
 }
 
+/** Height of the stage the timeline fractions (S) are written for. */
+const REFERENCE_VH = 640
+
 /**
- * Scroll positions (fractions of the stage) the page snaps to: the middle of each
+ * Share of each reading hold that is kept on the scroll. Entrances, title flights and
+ * exits keep their full reference length; only the time a card sits still is shortened.
+ */
+export const HOLD_KEEP = 2 / 3
+
+/** The reading holds, as [from, to] on the reference timeline. Nothing else moves in them. */
+const HOLDS = Array.from({ length: 4 }, (_, i) => {
+  const s = S.layers.start + i * S.layers.step
+  return [s + S.layers.length * READ_WINDOW[0], s + S.layers.length * READ_WINDOW[1]] as const
+})
+
+/** Fraction of the reference scroll that the compressed holds remove. */
+const REMOVED = HOLDS.reduce((sum, [a, b]) => sum + (b - a) * (1 - HOLD_KEEP), 0)
+
+/** Real stage height, vh: the reference minus what the compressed holds remove. */
+export const STACK_VH = 100 + (REFERENCE_VH - 100) * (1 - REMOVED)
+
+/** Scroll progress of the real stage → time on the reference timeline. */
+export function timelineAt(scroll: number) {
+  let left = clamp(scroll) * (1 - REMOVED)
+  let at = 0
+  for (const [a, b] of HOLDS) {
+    if (left <= a - at) return at + left
+    left -= a - at
+    const kept = (b - a) * HOLD_KEEP
+    if (left <= kept) return a + left / HOLD_KEEP
+    left -= kept
+    at = b
+  }
+  return Math.min(1, at + left)
+}
+
+/** Time on the reference timeline → scroll progress of the real stage. */
+export function scrollAt(time: number) {
+  let removed = 0
+  for (const [a, b] of HOLDS) {
+    if (time <= a) break
+    removed += (Math.min(time, b) - a) * (1 - HOLD_KEEP)
+  }
+  return (time - removed) / (1 - REMOVED)
+}
+
+/**
+ * Scroll positions (fractions of the real stage) the page snaps to: the middle of each
  * layer's reading hold, and the finished stack. See .stack__snap in Stack.css.
  */
-export const SNAP_POINTS = [
-  ...Array.from({ length: 4 }, (_, i) => S.layers.start + i * S.layers.step + S.layers.length * ((READ_WINDOW[0] + READ_WINDOW[1]) / 2)),
-  0.985,
-]
+export const SNAP_POINTS = [...HOLDS.map(([a, b]) => scrollAt((a + b) / 2)), scrollAt(0.985)]
 
 /** Within a layer window: how far the entrance and the exit have gone. */
 export const enterOf = (t: number) => sstep(0, 0.28, t)

@@ -6,9 +6,17 @@ import { useReducedMotion } from '../../lib/useReducedMotion'
 import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { LayerArt } from './LayerArt'
-import { LAYER_STYLES, layerTime, LayerPanel, plateMove, plateNameOpacity, DRAWER_SPOT, STAND_SPOT } from './layerFx'
+import {
+  DRAWER_SPOT,
+  LAYER_STYLES,
+  layerTime,
+  LayerPanel,
+  plateMove,
+  plateNameOpacity,
+  STAND_SPOT,
+} from './layerFx'
 import { fromCamera, projectOnPlate, type View } from './project'
-import { CAMERA, focusOf, layerT, S, SNAP_POINTS, STACK_PHASES } from './timeline'
+import { CAMERA, focusOf, layerT, S, SNAP_POINTS, STACK_PHASES, STACK_VH, timelineAt } from './timeline'
 import './Stack.css'
 
 const LAYERS = stack.skills.length
@@ -119,7 +127,9 @@ export function StackStage() {
     const spotlight = finePointer ? new Spotlight({ root: sticky }) : null
     const tilt = { x: 0, z: 0, tx: 0, tz: 0 }
 
-    const apply = (p: number) => {
+    /** scroll: progress through the real stage. p: time on the reference timeline. */
+    const apply = (scroll: number) => {
+      const p = timelineAt(scroll)
       const fold = sstep(S.fold[0], S.fold[1], p)
       const open = sstep(S.open[0], S.open[1], p)
       const explode = sstep(S.explode[0], S.explode[1], p)
@@ -330,9 +340,9 @@ export function StackStage() {
      * the gesture goes quiet or STOP_MAX ms have passed. Reversing direction releases at once.
      * Touch scrolling has no wheel events and keeps the CSS snap points only.
      */
-    const STOP_MIN = 650
+    const STOP_MIN = 400
     const STOP_QUIET = 160
-    const STOP_MAX = 1400
+    const STOP_MAX = 900
     let stopStarted = 0
     let stopDir = 0
     let lastWheel = 0
@@ -449,7 +459,12 @@ export function StackStage() {
   }, [reduced])
 
   return (
-    <section className={`stack${reduced ? ' stack--static' : ''}`} ref={stageRef} aria-labelledby="stack-heading">
+    <section
+      className={`stack${reduced ? ' stack--static' : ''}`}
+      ref={stageRef}
+      aria-labelledby="stack-heading"
+      style={{ '--stack-h': `${STACK_VH.toFixed(2)}vh` } as CSSProperties}
+    >
       <div className="stack__sticky" ref={stickyRef}>
         <PodiumLight />
 

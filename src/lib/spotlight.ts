@@ -9,6 +9,9 @@ import { clamp, lerp, sstep } from './math'
 const HERO = { stiffness: 0.0007, damping: 0.963, maxSpeed: 14 }
 const CARDS = { stiffness: 0.012, damping: 0.85, maxSpeed: 12 }
 
+/** The beam's pivot, as a fraction of the viewport height: .podium__beam's top in PodiumLight.css. */
+const LAMP_Y = -0.02
+
 type CardOptions = {
   list: HTMLElement
   items: HTMLElement[]
@@ -19,7 +22,7 @@ type CardOptions = {
 }
 
 type Options = {
-  /** Element that receives --beam-angle and --floor-x */
+  /** Element that receives --beam-angle, --beam-tilt, --floor-x and --floor-a */
   root: HTMLElement
   /** Cards the beam can land on. Without them the light keeps the slow hero spring throughout. */
   cards?: CardOptions
@@ -58,6 +61,8 @@ export class Spotlight {
     window.removeEventListener('resize', this.wake)
     this.o.root.style.removeProperty('--beam-angle')
     this.o.root.style.removeProperty('--floor-x')
+    this.o.root.style.removeProperty('--floor-a')
+    this.o.root.style.removeProperty('--beam-tilt')
     this.light(null)
   }
 
@@ -114,15 +119,20 @@ export class Spotlight {
   private apply() {
     const W = window.innerWidth
     const H = window.innerHeight
-    // The beam pivots above the top centre. Aiming from a point well above the
-    // viewport keeps the swing gentle and avoids hitting the limit near the edges.
+    // Aimed from the beam's own pivot, so it points right at the light's target: the
+    // swing widens toward the top corners, where the beam lies almost horizontal
     const lampX = W / 2
-    const lampY = -0.5 * H
-    const angle = clamp(Math.atan2(this.x - lampX, this.y - lampY), -0.5, 0.5)
+    const lampY = LAMP_Y * H
+    const angle = clamp(Math.atan2(this.x - lampX, this.y - lampY), -Math.PI / 2, Math.PI / 2)
+    // Where the beam meets the floor; once that is off screen the pool of light fades out
     const floorY = H * 0.9
-    const floorX = clamp(Math.tan(angle) * (floorY - lampY), -W * 0.3, W * 0.3)
+    const hitX = Math.tan(angle) * (floorY - lampY)
+    const floorX = clamp(hitX, -W * 0.6, W * 0.6)
+    const floorA = 1 - sstep(W * 0.35, W * 0.6, Math.abs(hitX))
     this.o.root.style.setProperty('--beam-angle', `${(-angle).toFixed(4)}rad`)
     this.o.root.style.setProperty('--floor-x', `${floorX.toFixed(1)}px`)
+    this.o.root.style.setProperty('--floor-a', floorA.toFixed(3))
+    this.o.root.style.setProperty('--beam-tilt', (Math.abs(angle) / (Math.PI / 2)).toFixed(3))
 
     let lit: HTMLElement | null = null
     const cards = this.o.cards

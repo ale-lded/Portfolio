@@ -2,17 +2,30 @@
 .bug {
   --bug-idle: rgba(255, 217, 160, 0.6);
   --bug-green: #39ff6a;
-  position: absolute;
-  z-index: 6;
-  left: calc(50% + 21vw);
-  top: 81%;
   width: 28px;
   height: 28px;
-  margin: -14px 0 0 -14px;
   padding: 0;
   border: 0;
   background: none;
   cursor: crosshair;
+}
+
+/* On the stage floor, in the dust of the podium light */
+.bug--stage {
+  position: absolute;
+  z-index: 6;
+  left: calc(50% + 21vw);
+  top: 81%;
+  margin: -14px 0 0 -14px;
+}
+
+/* In the footer, right after the copyright: a stray cursor, grey like the text around it */
+.bug--footer {
+  --bug-idle: rgba(142, 138, 132, 0.75);
+  position: relative;
+  display: inline-block;
+  margin: -14px 0 -14px 2px;
+  vertical-align: middle;
 }
 
 /* One 3px pixel plus three copies as shadows: a small, slightly broken cluster */
@@ -84,9 +97,9 @@
   }
 }
 
-/* Desktop only: no mouse, no bug */
+/* The racing game is desktop only: no mouse, no stage bug. The cipher works on phones too. */
 @media not ((hover: hover) and (pointer: fine)) {
-  .bug {
+  .bug--stage {
     display: none;
   }
 }

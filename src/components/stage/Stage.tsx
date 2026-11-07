@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { hero } from '../../content'
+import { backstage, hero } from '../../content'
+import { enterBackstage } from '../../lib/backstage'
 import { Decoder } from '../../lib/decoder'
 import { clamp, sstep } from '../../lib/math'
 import { Spotlight } from '../../lib/spotlight'
@@ -209,7 +210,7 @@ export function Stage() {
         </div>
         <Work />
         <canvas className="stage__canvas" ref={canvasRef} aria-hidden="true" />
-        {!reduced && <Bug />}
+        {!reduced && <Bug className="bug--stage" label={backstage.bug} onClick={enterBackstage} />}
         <PhaseIndicator ref={phaseRef} label={PHASES[0][1]} />
       </div>
     </section>

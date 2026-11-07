@@ -1,4 +1,6 @@
-import { contact, person } from '../content'
+import { contact, person, terminal } from '../content'
+import { openTerminal } from '../lib/terminal'
+import { Bug } from './backstage/Bug'
 import './sections.css'
 
 export function Contact() {
@@ -19,7 +21,10 @@ export function Contact() {
         </div>
       </section>
       <footer className="footer mono">
-        <span>© 2026 {person.name}</span>
+        <span>
+          © 2026 {person.name}
+          <Bug className="bug--footer" label={terminal.trigger} onClick={openTerminal} />
+        </span>
         <a href="#top">{contact.backToTop} ↑</a>
       </footer>
     </>

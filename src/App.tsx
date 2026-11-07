@@ -4,6 +4,7 @@ import { Contact } from './components/Contact'
 import { Nav } from './components/Nav'
 import { StackStage } from './components/stack/StackStage'
 import { Stage } from './components/stage/Stage'
+import { TerminalHost } from './components/terminal/TerminalHost'
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Contact />
       </main>
       <Backstage />
+      <TerminalHost />
     </>
   )
 }

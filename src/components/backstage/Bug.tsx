@@ -1,15 +1,20 @@
-import { backstage } from '../../content'
-import { enterBackstage } from '../../lib/backstage'
 import './Bug.css'
 
+type BugProps = {
+  /** Accessible name: the only description a screen reader gets */
+  label: string
+  onClick: () => void
+  /** Placement modifier (bug--stage, bug--footer): each egg sits somewhere else */
+  className: string
+}
+
 /**
- * The easter egg: four stray pixels lying on the stage floor, the same colour as the
- * dust in the beam but perfectly still. They glitch green under the mouse and lead
- * backstage. Desktop only (see Bug.css) and left out of the tab order on purpose.
+ * An easter-egg trigger: four stray pixels, still and barely visible. They glitch green
+ * under the mouse and open something hidden. Left out of the tab order on purpose.
  */
-export function Bug() {
+export function Bug({ label, onClick, className }: BugProps) {
   return (
-    <button type="button" className="bug" tabIndex={-1} aria-label={backstage.bug} onClick={enterBackstage}>
+    <button type="button" className={`bug ${className}`} tabIndex={-1} aria-label={label} onClick={onClick}>
       <span className="bug__px" />
     </button>
   )

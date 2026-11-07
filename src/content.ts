@@ -202,3 +202,40 @@ export const race = {
   save: 'Save',
   again: 'Race again',
 }
+
+/** The cipher terminal, opened by the stray cursor in the footer. */
+export const terminal = {
+  /** Accessible name of the hidden trigger */
+  trigger: 'A stray cursor',
+  title: 'cipher.sys',
+  label: 'Cipher terminal',
+  /** Printed one line at a time when the terminal powers on */
+  boot: ['booting cipher.sys v1.0 …', 'loading backstage keyring … ok', 'link secure*  (*not really)'],
+  modeLabel: 'Mode',
+  modes: { encrypt: 'Encrypt', decrypt: 'Decrypt' },
+  keyLabel: 'Key',
+  keyPlaceholder: 'optional: share it with whoever reads the message',
+  inputLabel: { encrypt: 'Plain text', decrypt: 'Encrypted code' },
+  inputPlaceholder: {
+    encrypt: 'Type a secret message…',
+    decrypt: 'Paste a code that starts with AM:',
+  },
+  run: { encrypt: 'Encrypt', decrypt: 'Decrypt' },
+  runHint: '⌘ ↵',
+  output: 'Output',
+  idle: 'awaiting input_',
+  copy: 'Copy',
+  copied: 'Copied',
+  copyFailed: 'Select it and copy by hand',
+  swap: 'Use as input',
+  /** Shown in place of the output when decryption fails */
+  errors: {
+    empty: 'nothing to process',
+    format: 'unknown format: codes start with AM:',
+    key: 'ACCESS DENIED — wrong key',
+  },
+  /** Status line when a pasted code switches the mode by itself */
+  detected: 'code detected → decrypt mode',
+  disclaimer: 'Toy cipher for notes between friends. Not for passwords.',
+  close: 'Close',
+}

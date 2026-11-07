@@ -50,12 +50,52 @@ export const about = {
   bio: [
     'TODO — Bio provvisoria. Sono Alessio, designer e sviluppatore full stack: lavoro dove prodotto e codice si incontrano, dai prototipi alle interfacce fino ai dati che le alimentano.',
   ],
+}
+
+export type Skill = {
+  name: string
+  note?: string
+  /** One line shown when the layer is lit in the exploded view */
+  detail: string
+}
+
+/**
+ * The stack sequence between "Chi sono" and "Contatti": the skills become four
+ * stacked layers, from the interface on top down to the data.
+ * TODO: intro, dettagli e chiusura sono provvisori, da riscrivere con la tua voce.
+ */
+export const stack = {
+  label: 'Lo stack',
+  intro: {
+    heading: 'Quattro livelli, un solo prodotto.',
+    text: 'Ogni progetto attraversa gli stessi strati. Li seguo tutti, dal primo schizzo ai dati.',
+  },
   skills: [
-    { name: 'Design di prodotto' },
-    { name: 'Design system' },
-    { name: 'Front-end', note: 'React, TypeScript' },
-    { name: 'Back-end e database' },
-  ],
+    {
+      name: 'Design di prodotto',
+      note: 'Ricerca, prototipi',
+      detail: 'Flussi, wireframe e prototipi: capire cosa costruire, e perché.',
+    },
+    {
+      name: 'Design system',
+      note: 'Token, componenti',
+      detail: 'Regole e componenti condivisi che tengono coerente ogni schermata.',
+    },
+    {
+      name: 'Front-end',
+      note: 'React, TypeScript',
+      detail: 'Interfacce veloci e accessibili, curate fino all’ultimo pixel.',
+    },
+    {
+      name: 'Back-end e database',
+      note: 'API, SQL',
+      detail: 'API e dati solidi, che reggono il prodotto quando cresce.',
+    },
+  ] satisfies Skill[],
+  outro: {
+    heading: 'Dal pixel al database.',
+    text: 'Un unico interlocutore per tutto lo stack.',
+  },
 }
 
 export const contact = {

@@ -1,6 +1,7 @@
 import { About } from './components/About'
 import { Contact } from './components/Contact'
 import { Nav } from './components/Nav'
+import { StackStage } from './components/stack/StackStage'
 import { Stage } from './components/stage/Stage'
 
 export default function App() {
@@ -11,6 +12,7 @@ export default function App() {
       <main>
         <Stage />
         <About />
+        <StackStage />
         <Contact />
       </main>
     </>

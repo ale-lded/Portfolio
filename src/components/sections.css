@@ -35,40 +35,6 @@
   margin-top: 18px;
 }
 
-.skills {
-  margin-top: 48px;
-  border-top: 1px solid var(--line);
-}
-
-.skills__item {
-  display: grid;
-  grid-template-columns: 48px 1fr auto;
-  align-items: baseline;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--line);
-  transition: padding 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-
-.skills__item:hover {
-  padding-left: 8px;
-}
-
-.skills__n {
-  font-size: 12px;
-  color: var(--amber);
-}
-
-.skills__name {
-  font-size: 20px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-}
-
-.skills__note {
-  font-size: 12px;
-  color: var(--muted);
-}
-
 /* ---------- Contact ---------- */
 .contact {
   overflow: hidden;

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { hero } from '../../content'
 import { Decoder } from '../../lib/decoder'
 import { clamp, sstep } from '../../lib/math'
 import { Spotlight } from '../../lib/spotlight'
@@ -192,8 +193,8 @@ export function Stage() {
   }, [reduced])
 
   return (
-    <section className={`stage${reduced ? ' stage--static' : ''}`} ref={stageRef} aria-label="Introduzione e progetti">
-      <span id="progetti" className="stage__anchor" aria-hidden="true" />
+    <section className={`stage${reduced ? ' stage--static' : ''}`} ref={stageRef} aria-label={hero.stageLabel}>
+      <span id="work" className="stage__anchor" aria-hidden="true" />
       <div className="stage__sticky" ref={stickyRef}>
         <PodiumLight />
         <Hero ref={heroRef} titleRef={titleRef} />

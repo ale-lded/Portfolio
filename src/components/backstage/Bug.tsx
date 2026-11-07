@@ -1,3 +1,4 @@
+import { backstage } from '../../content'
 import { enterBackstage } from '../../lib/backstage'
 import './Bug.css'
 
@@ -8,7 +9,7 @@ import './Bug.css'
  */
 export function Bug() {
   return (
-    <button type="button" className="bug" tabIndex={-1} aria-label="Un pixel fuori posto" onClick={enterBackstage}>
+    <button type="button" className="bug" tabIndex={-1} aria-label={backstage.bug} onClick={enterBackstage}>
       <span className="bug__px" />
     </button>
   )

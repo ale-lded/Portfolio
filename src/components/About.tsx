@@ -4,8 +4,8 @@ import './sections.css'
 /** The skills list lives in the stack sequence right below (StackStage). */
 export function About() {
   return (
-    <section id="chi-sono" className="section about">
-      <p className="section__label mono">02 — Chi sono</p>
+    <section id="about" className="section about">
+      <p className="section__label mono">{about.label}</p>
       <div className="about__grid">
         <h2 className="about__heading">{about.heading}</h2>
         <div>

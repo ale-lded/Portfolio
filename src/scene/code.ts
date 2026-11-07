@@ -1,17 +1,33 @@
-/** The HTML the name crumbles into. It describes the hero itself. */
+import { nav, person } from '../content'
+
+/** Wraps text into lines of at most `width` characters, breaking between words. */
+function wrap(text: string, width: number) {
+  const lines: string[] = []
+  for (const word of text.split(' ')) {
+    const last = lines.length - 1
+    if (last >= 0 && lines[last].length + 1 + word.length <= width) lines[last] += ` ${word}`
+    else lines.push(word)
+  }
+  return lines
+}
+
+/** The intro line without its quotation marks */
+const lead = person.lead.replace(/^[“"]|[”"]$/g, '')
+/** Work and About, in the order the hero mentions them */
+const links = [nav.links[1], nav.links[0]]
+
+/** The HTML the name crumbles into. It describes the hero itself, built from the site's copy. */
 export const CODE_LINES = [
   '<section id="hero" class="intro">',
-  '  <h1 class="name">Alessio Mura</h1>',
+  `  <h1 class="name">${person.name}</h1>`,
   '  <p class="role">',
-  '    Designer e sviluppatore full stack',
+  `    ${person.role}`,
   '  </p>',
-  '  <p class="lead" data-tone="calmo">',
-  '    Progetto interfacce chiare e le',
-  '    costruisco, dal pixel al database.',
+  '  <p class="lead" data-tone="calm">',
+  ...wrap(lead, 36).map((line) => `    ${line}`),
   '  </p>',
-  '  <nav aria-label="principale">',
-  '    <a href="#progetti">Progetti</a>',
-  '    <a href="#chi-sono">Chi sono</a>',
+  `  <nav aria-label="${nav.label.toLowerCase()}">`,
+  ...links.map((link) => `    <a href="${link.href}">${link.label}</a>`),
   '  </nav>',
   '</section>',
 ]

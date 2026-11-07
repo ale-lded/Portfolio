@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { person } from '../../content'
+import { backstage, person } from '../../content'
 import { isBackstageUrl, leaveBackstage } from '../../lib/backstage'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 import './Backstage.css'
@@ -139,7 +139,7 @@ export function Backstage() {
 
   return (
     <div className="backstage" ref={rootRef} data-state="closed" hidden>
-      <div className="backstage__scene" ref={sceneRef} role="dialog" aria-modal="true" aria-label="Dietro le quinte">
+      <div className="backstage__scene" ref={sceneRef} role="dialog" aria-modal="true" aria-label={backstage.label}>
         {/* The back of the set: the hero title, seen from behind */}
         <p className="backstage__set" aria-hidden="true">
           {person.tagline}
@@ -154,12 +154,12 @@ export function Backstage() {
 
         <div className="backstage__note">
           <span className="backstage__bug" aria-hidden="true" />
-          <p className="backstage__label mono">// dietro le quinte</p>
-          <p className="backstage__title">In allestimento.</p>
+          <p className="backstage__label mono">{backstage.note}</p>
+          <p className="backstage__title">{backstage.title}</p>
         </div>
 
         <button type="button" className="backstage__back mono" ref={backRef} onClick={leaveBackstage}>
-          <span aria-hidden="true">←</span> Torna sul palco <kbd>esc</kbd>
+          <span aria-hidden="true">←</span> {backstage.back} <kbd>esc</kbd>
         </button>
       </div>
       <div className="backstage__wash" ref={washRef} aria-hidden="true" />

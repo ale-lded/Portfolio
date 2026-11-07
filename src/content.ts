@@ -1,23 +1,36 @@
 /**
- * Tutti i testi del sito in un unico posto.
- * I campi marcati TODO sono provvisori: sostituiscili con i tuoi contenuti reali.
+ * Every piece of copy on the site, in one place: components never hard-code text.
+ * When the site becomes multilingual, this file is the one to split per language.
+ * Fields marked TODO are placeholders: replace them with your real content.
  */
 
 export const person = {
   name: 'Alessio Mura',
   initials: 'AM',
-  /** Frase di servizio: è il titolo della hero e il testo che si trasforma allo scroll */
-  tagline: 'Creatore di prodotti digitali',
-  role: 'Designer e sviluppatore full stack',
-  // TODO: riga di presentazione provvisoria
-  lead: '“Progetto interfacce chiare e le costruisco, dal pixel al database.”',
+  /** Service line: the hero title, and the text that transforms on scroll */
+  tagline: 'Digital product creator',
+  role: 'Full-stack designer and developer',
+  // TODO: placeholder intro line
+  lead: '“I design clear interfaces and build them, from pixel to database.”',
 }
 
-export const nav = [
-  { label: 'Chi sono', href: '#chi-sono' },
-  { label: 'Progetti', href: '#progetti' },
-  { label: 'Contatti', href: '#contatti' },
-]
+export const nav = {
+  label: 'Main',
+  home: `${person.name}, back to top`,
+  links: [
+    { label: 'About', href: '#about' },
+    { label: 'Work', href: '#work' },
+    { label: 'Contact', href: '#contact' },
+  ],
+}
+
+export const hero = {
+  stageLabel: 'Introduction and work',
+  meta: 'Portfolio — 2026',
+  hint: 'scroll',
+  /** The four steps of the hero sequence, shown bottom left while it plays */
+  phases: ['01 — Crumbling', '02 — Code → binary', '03 — Recomposing', '04 — Work'],
+}
 
 export type Project = {
   title: string
@@ -25,30 +38,35 @@ export type Project = {
   tags: string[]
 }
 
-/** Progetti di esempio. */
+export const work = {
+  heading: 'Selected work',
+}
+
+/** Sample projects. */
 export const projects: Project[] = [
   {
     title: 'Atlas',
-    description: 'App per la gestione del budget personale, dal prototipo al rilascio.',
+    description: 'A personal budgeting app, from prototype to release.',
     tags: ['Figma', 'React Native'],
   },
   {
     title: 'Nerina',
-    description: 'Identità visiva e sito per una piccola cantina.',
+    description: 'Visual identity and website for a small winery.',
     tags: ['Branding', 'HTML, CSS'],
   },
   {
     title: 'Orbita',
-    description: 'Dashboard per la logistica urbana con dati in tempo reale.',
+    description: 'A real-time dashboard for urban logistics.',
     tags: ['Design system', 'TypeScript'],
   },
 ]
 
 export const about = {
-  // TODO: titolo e bio provvisori, da riscrivere con la tua voce
-  heading: 'Disegno prodotti digitali e li porto fino in produzione.',
+  label: '02 — About',
+  // TODO: placeholder heading and bio, to be rewritten in your own voice
+  heading: 'I design digital products and take them all the way to production.',
   bio: [
-    'TODO — Bio provvisoria. Sono Alessio, designer e sviluppatore full stack: lavoro dove prodotto e codice si incontrano, dai prototipi alle interfacce fino ai dati che le alimentano.',
+    'TODO — Placeholder bio. I’m Alessio, a full-stack designer and developer: I work where product meets code, from prototypes and interfaces to the data behind them.',
   ],
 }
 
@@ -60,51 +78,80 @@ export type Skill = {
 }
 
 /**
- * The stack sequence between "Chi sono" and "Contatti": the skills become four
+ * The stack sequence between "About" and "Contact": the skills become four
  * stacked layers, from the interface on top down to the data.
- * TODO: intro, dettagli e chiusura sono provvisori, da riscrivere con la tua voce.
+ * TODO: intro, details and outro are placeholders, to be rewritten in your own voice.
  */
 export const stack = {
-  label: 'Lo stack',
+  label: 'The stack',
   intro: {
-    heading: 'Quattro livelli, un solo prodotto.',
-    text: 'Ogni progetto attraversa gli stessi strati. Li seguo tutti, dal primo schizzo ai dati.',
+    heading: 'Four layers, one product.',
+    text: 'Every project goes through the same layers. I handle all of them, from the first sketch to the data.',
   },
   skills: [
     {
-      name: 'Design di prodotto',
-      note: 'Ricerca, prototipi',
-      detail: 'Flussi, wireframe e prototipi: capire cosa costruire, e perché.',
+      name: 'Product design',
+      note: 'Research, prototypes',
+      detail: 'Flows, wireframes and prototypes: working out what to build, and why.',
     },
     {
       name: 'Design system',
-      note: 'Token, componenti',
-      detail: 'Regole e componenti condivisi che tengono coerente ogni schermata.',
+      note: 'Tokens, components',
+      detail: 'Shared rules and components that keep every screen consistent.',
     },
     {
-      name: 'Front-end',
+      name: 'Front end',
       note: 'React, TypeScript',
-      detail: 'Interfacce veloci e accessibili, curate fino all’ultimo pixel.',
+      detail: 'Fast, accessible interfaces, polished down to the last pixel.',
     },
     {
-      name: 'Back-end e database',
-      note: 'API, SQL',
-      detail: 'API e dati solidi, che reggono il prodotto quando cresce.',
+      name: 'Back end & database',
+      note: 'APIs, SQL',
+      detail: 'Solid APIs and data that hold the product up as it grows.',
     },
   ] satisfies Skill[],
   outro: {
-    heading: 'Dal pixel al database.',
-    text: 'Un unico interlocutore per tutto lo stack.',
+    heading: 'From pixel to database.',
+    text: 'One person for the whole stack.',
+  },
+  /** The four steps of the stack sequence, shown bottom left while it plays */
+  phases: ['01 — Assembly', '02 — Exploded view', '03 — Compression', '04 — The stack'],
+  /** Words drawn inside the layer illustrations (LayerArt) */
+  art: {
+    flow: ['Research', 'Flows', 'Prototype'],
+    /** Sample switch label and input value in the design-system plate */
+    toggle: 'on',
+    email: 'name@studio.com',
+    table: 'projects',
+    columns: ['ID', 'PROJECT', 'STATUS'],
+    /** Status of each sample project: true is live */
+    status: [
+      { live: true, label: 'live' },
+      { live: false, label: 'in progress' },
+      { live: true, label: 'live' },
+    ],
   },
 }
 
 export const contact = {
-  heading: 'Hai un progetto in mente?',
-  // TODO: inserisci la tua email reale
-  email: 'ciao@example.com',
-  // TODO: inserisci i tuoi profili reali (lascia l'array vuoto per nasconderli)
+  label: '03 — Contact',
+  heading: 'Have a project in mind?',
+  cta: 'Get in touch',
+  // TODO: put your real email here
+  email: 'hello@example.com',
+  // TODO: put your real profiles here (leave the array empty to hide them)
   links: [
     { label: 'LinkedIn', href: '#' },
     { label: 'GitHub', href: '#' },
   ],
+  backToTop: 'Back to top',
+}
+
+export const backstage = {
+  /** Accessible name of the bug hidden in the hero */
+  bug: 'A pixel out of place',
+  label: 'Backstage',
+  note: '// backstage',
+  title: 'Still setting the stage.',
+  back: 'Back to the stage',
 }

@@ -3,7 +3,7 @@
  * the hero. It lives on its own hash, so Back returns to the stage and a reload keeps
  * you where you are. Backstage.tsx listens for popstate and plays the transitions.
  */
-export const BACKSTAGE_HASH = '#dietro-le-quinte'
+export const BACKSTAGE_HASH = '#backstage'
 
 export const isBackstageUrl = () => window.location.hash === BACKSTAGE_HASH
 

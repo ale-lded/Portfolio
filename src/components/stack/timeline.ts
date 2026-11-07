@@ -1,3 +1,4 @@
+import { stack } from '../../content'
 import { clamp, sstep } from '../../lib/math'
 
 /**
@@ -133,8 +134,8 @@ export const exitOf = (t: number) => sstep(0.72, 1, t)
 export const focusOf = (t: number) => enterOf(t) * (1 - exitOf(t))
 
 export const STACK_PHASES: [end: number, label: string][] = [
-  [0.35, '01 — Assemblaggio'],
-  [0.935, '02 — Vista esplosa'],
-  [0.985, '03 — Compressione'],
-  [1.01, '04 — Lo stack'],
+  [0.35, stack.phases[0]],
+  [0.935, stack.phases[1]],
+  [0.985, stack.phases[2]],
+  [1.01, stack.phases[3]],
 ]

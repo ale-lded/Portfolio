@@ -1,4 +1,4 @@
-import { projects } from '../../content'
+import { contact, projects, stack } from '../../content'
 
 /**
  * The drawing on top of each layer, one per skill, at a fixed 520×240 design size
@@ -60,7 +60,7 @@ function Wireframe() {
       </text>
       <path d="M284 92 v22 l6 -6 l4 9 l4 -2 l-4 -9 h8 z" fill={C.text} stroke={C.bg} strokeLinejoin="round" />
       {/* User flow */}
-      {['Ricerca', 'Flussi', 'Prototipo'].map((label, i) => {
+      {stack.art.flow.map((label, i) => {
         const last = i === 2
         return (
           <g key={label}>
@@ -121,16 +121,16 @@ function DesignSystem() {
       </text>
       <rect x="316" y="20" width="150" height="38" rx="19" fill={C.amber} />
       <text className="sans" x="391" y="43.5" textAnchor="middle" fontSize="13" fontWeight="600" fill={C.ink}>
-        Scrivimi →
+        {contact.cta} →
       </text>
       <rect x="316" y="76" width="46" height="26" rx="13" fill={C.soft} stroke={C.amber} />
       <circle cx="349" cy="89" r="9" fill={C.amber} />
       <text className="mono" x="374" y="93" fontSize="11" fill={C.muted}>
-        attivo
+        {stack.art.toggle}
       </text>
       <rect x="316" y="120" width="184" height="36" rx="8" fill="none" stroke={C.line} />
       <text className="mono" x="330" y="142" fontSize="11" fill={C.muted}>
-        nome@studio.it
+        {stack.art.email}
       </text>
       <line x1="428" y1="130" x2="428" y2="146" stroke={C.amber} strokeWidth="1.5" />
       {spacing.map((s, i) => {
@@ -227,20 +227,20 @@ function FrontEnd() {
 }
 
 function Database() {
-  const status = ['online', 'in corso', 'online']
+  const { table, columns, status } = stack.art
   return (
     <>
       <text className="mono" x="20" y="30" fontSize="12" xmlSpace="preserve">
         <tspan fill={C.amber}>SELECT</tspan>
         <tspan fill={C.text}> * </tspan>
         <tspan fill={C.amber}>FROM</tspan>
-        <tspan fill={C.text}> progetti;</tspan>
+        <tspan fill={C.text}> {table};</tspan>
       </text>
       <rect x="20" y="46" width="320" height="140" rx="8" fill="none" stroke={C.line} />
       {[
-        ['ID', 34],
-        ['PROGETTO', 74],
-        ['STATO', 250],
+        [columns[0], 34],
+        [columns[1], 74],
+        [columns[2], 250],
       ].map(([label, x]) => (
         <text key={label} className="mono" x={x} y="66" fontSize="9.5" fill={C.muted}>
           {label}
@@ -259,15 +259,15 @@ function Database() {
             <text className="sans" x="74" y={y} fontSize="13" fontWeight="500" fill={C.text}>
               {project.title}
             </text>
-            <circle cx="254" cy={y - 4} r="3" fill={status[i] === 'online' ? C.amber : C.muted} />
+            <circle cx="254" cy={y - 4} r="3" fill={status[i].live ? C.amber : C.muted} />
             <text className="mono" x="264" y={y} fontSize="10.5" fill={C.muted}>
-              {status[i]}
+              {status[i].label}
             </text>
           </g>
         )
       })}
       <text className="mono" x="20" y="214" fontSize="10.5" xmlSpace="preserve">
-        <tspan fill={C.muted}>GET /api/progetti</tspan>
+        <tspan fill={C.muted}>GET /api/{table}</tspan>
         <tspan fill={C.amber}> 200 OK</tspan>
         <tspan fill={C.muted}> · 38 ms</tspan>
       </text>

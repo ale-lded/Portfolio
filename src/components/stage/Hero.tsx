@@ -1,5 +1,5 @@
 import { forwardRef, type Ref } from 'react'
-import { person } from '../../content'
+import { hero, person } from '../../content'
 
 type HeroProps = {
   /** The service line: the particle engine samples its pixels and transmutes it. */
@@ -18,9 +18,9 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ titleRef 
         <p className="hero__lead">{person.lead}</p>
       </div>
       <div className="hero__meta hero__fade mono">
-        <span>Portfolio — 2026</span>
+        <span>{hero.meta}</span>
         <span className="hero__hint" aria-hidden="true">
-          scorri <span className="hero__arrow">↓</span>
+          {hero.hint} <span className="hero__arrow">↓</span>
         </span>
         <span>{person.initials}</span>
       </div>

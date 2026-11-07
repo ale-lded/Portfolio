@@ -1,3 +1,4 @@
+import { hero } from '../content'
 import { CODE_LINES } from './code'
 
 /**
@@ -38,8 +39,8 @@ export const lineStart = (line: number) => T.firstLine + (line / LAST_LINE) * T.
 export const lineBinary = (line: number) => T.binaryStart + (line / LAST_LINE) * T.binarySpread
 
 export const PHASES: [end: number, label: string][] = [
-  [0.35, '01 — Sgretolamento'],
-  [0.6, '02 — Codice → binario'],
-  [0.85, '03 — Ricomposizione'],
-  [1.01, '04 — Progetti'],
+  [0.35, hero.phases[0]],
+  [0.6, hero.phases[1]],
+  [0.85, hero.phases[2]],
+  [1.01, hero.phases[3]],
 ]

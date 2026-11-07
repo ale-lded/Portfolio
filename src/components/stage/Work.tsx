@@ -1,11 +1,11 @@
-import { projects } from '../../content'
+import { projects, work } from '../../content'
 
 /** The three project cards the binary recomposes into. */
 export function Work() {
   return (
     <div className="work">
       <div className="work__head mono">
-        <span>Progetti selezionati</span>
+        <span>{work.heading}</span>
         <span>({String(projects.length).padStart(2, '0')})</span>
       </div>
       <ul className="work__cards">

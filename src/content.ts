@@ -7,10 +7,10 @@ export const person = {
   name: 'Alessio Mura',
   initials: 'AM',
   /** Frase di servizio: è il titolo della hero e il testo che si trasforma allo scroll */
-  tagline: 'Disegno prodotti digitali e li costruisco davvero.',
+  tagline: 'Creatore di prodotti digitali',
   role: 'Designer e sviluppatore full stack',
   // TODO: riga di presentazione provvisoria
-  lead: 'Progetto interfacce chiare e le costruisco, dal pixel al database.',
+  lead: '“Progetto interfacce chiare e le costruisco, dal pixel al database.”',
 }
 
 export const nav = [

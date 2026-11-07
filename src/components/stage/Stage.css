@@ -76,11 +76,21 @@
   left: var(--pad);
   right: var(--pad);
   bottom: 32px;
-  display: flex;
-  justify-content: space-between;
+  /* Three columns, the outer two equal: the hint sits on the true centre line
+     even though the side labels have different widths */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   font-size: 12px;
   color: var(--muted);
+}
+
+.hero__meta > :first-child {
+  justify-self: start;
+}
+
+.hero__meta > :last-child {
+  justify-self: end;
 }
 
 .hero__hint {

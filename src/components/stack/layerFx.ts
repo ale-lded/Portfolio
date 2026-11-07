@@ -13,19 +13,33 @@ import { readWarp } from './timeline'
  * - stand: the plate leaves the stack and stands up in front of it, facing the
  *          viewer; the title flies out of it to the panel, then back in before the
  *          plate lies down and returns to its place.
- * - drawer: like fly, but the plate is pulled out of the stack toward the viewer,
- *          down toward the keyboard, like a drawer: lower layers stay fully visible.
+ *
+ * Every plate moves relative to its own place in the stack; the rest of the stack
+ * never moves for a single layer.
  */
-export type LayerStyle = 'fly' | 'stand' | 'drawer'
+export type LayerStyle = 'fly' | 'stand'
 
-/** Which choreography each layer plays, top to bottom. Swap freely. */
-export const LAYER_STYLES: LayerStyle[] = ['fly', 'stand', 'drawer', 'drawer']
+export type LayerFx = {
+  style: LayerStyle
+  /** fly only: how far the plate slides along its own x axis, as a fraction of its width (negative = left) */
+  slide?: number
+}
+
+/** Which choreography each layer plays, top to bottom: 3 mirrors 1, 4 mirrors 2. */
+export const LAYER_FX: LayerFx[] = [
+  { style: 'fly', slide: 0.16 },
+  { style: 'stand' },
+  // Half the card out on its left, so the layers above don't hide it
+  { style: 'fly', slide: -0.5 },
+  { style: 'stand' },
+]
+
+export const LAYER_STYLES: LayerStyle[] = LAYER_FX.map((fx) => fx.style)
 
 /** The span of choreography time in which the card is readable (text fully in the panel). */
 const READABLE: Record<LayerStyle, [number, number]> = {
   fly: [0.42, 0.72],
   stand: [0.46, 0.6],
-  drawer: [0.42, 0.72],
 }
 
 /** Choreography time for a layer at scroll-local progress u: short way in, long read, short way out. */
@@ -42,50 +56,28 @@ export type PlateMove = {
   detach: number
   /** 0 → 1: how far the plate has travelled to its spot in front of the camera */
   stand: number
-  /** 0 → 1: how far a drawer plate has been pulled out to DRAWER_SPOT */
-  pull: number
 }
 
 /**
- * Where a drawer plate is pulled to, in camera space: in front of the stack and below
- * it, as fractions of the plate size (x, y of W, H; depth of W). The rest of the stack
- * stays as it is, so the drawer must sit clear of its bottom plate.
+ * Where the first standing plate ends up, in camera space, as fractions of the plate
+ * width. Lower standing plates stand up the same way, shifted by their own place in
+ * the stack (see StackStage).
  */
-export const DRAWER_SPOT = { x: 0, y: 0.95, depth: 0 } as const
-
-/**
- * While a drawer is out, the whole stack makes room for it: it rises by `raise`
- * (fraction of the viewport height) and shrinks to `zoom`.
- */
-export const DRAWER_ROOM = { raise: 0.15, zoom: 0.8 } as const
-
-/**
- * 0 → 1: how much a drawer layer needs the room above. Wider than the pull itself, so
- * between two drawers in a row the stack does not drop back and rise again.
- */
-export function drawerPresence(style: LayerStyle, t: number) {
-  return style === 'drawer' ? sstep(0, 0.14, t) * (1 - sstep(0.86, 1, t)) : 0
-}
-
-/** Where a standing plate ends up, in camera space, as fractions of the plate width */
 export const STAND_SPOT = { x: -0.12, y: 0, depth: 0.8 } as const
 
 /** Extra motion of a plate on top of its place in the stack. */
-export function plateMove(style: LayerStyle, t: number, W: number, H: number): PlateMove {
-  if (style === 'stand') {
+export function plateMove(fx: LayerFx, t: number, W: number, H: number): PlateMove {
+  if (fx.style === 'stand') {
     // Out of the pile first, then up; on the way back the same in reverse
     const out = sstep(0, 0.12, t) * (1 - sstep(0.86, 1, t))
     const up = sstep(0.08, 0.24, t) * (1 - sstep(0.74, 0.9, t))
-    return { slide: -out * W * 0.55, lift: out * H * 0.1, face: up, detach: out, stand: up, pull: 0 }
+    return { slide: -out * W * 0.55, lift: out * H * 0.1, face: up, detach: out, stand: up }
   }
   const inOut = sstep(0, 0.28, t) * (1 - sstep(0.72, 1, t))
-  if (style === 'drawer') {
-    // Drawers share one spot: come out a beat late and go back early, so the previous
-    // drawer is home before the next one leaves and the two never cross
-    const pull = sstep(0.14, 0.36, t) * (1 - sstep(0.72, 0.86, t))
-    return { slide: 0, lift: 0, face: 0, detach: pull, stand: 0, pull }
-  }
-  return { slide: inOut * W * 0.16, lift: inOut * H * 0.16, face: 0, detach: 0, stand: 0, pull: 0 }
+  const slide = fx.slide ?? 0.16
+  // A plate that slides far out of the pile lets go of its pillars, like a standing one
+  const detach = Math.abs(slide) >= 0.3 ? inOut : 0
+  return { slide: inOut * W * slide, lift: inOut * H * 0.16, face: 0, detach, stand: 0 }
 }
 
 /** When the title leaves its plate and comes back, per style (fractions of t). */
@@ -93,7 +85,6 @@ const TIMING = {
   // Takes off a beat after the window opens: the previous plate is settling back meanwhile
   fly: { flyIn: [0.06, 0.34], restIn: [0.3, 0.42], restOut: null, flyBack: null, dissolveFrom: 0.72 },
   stand: { flyIn: [0.2, 0.44], restIn: [0.38, 0.47], restOut: [0.6, 0.66], flyBack: [0.62, 0.76], dissolveFrom: null },
-  drawer: { flyIn: [0.06, 0.34], restIn: [0.3, 0.42], restOut: null, flyBack: null, dissolveFrom: 0.72 },
 } as const
 
 /** Quintic ease in-out: starts gently and settles very slowly into place. */

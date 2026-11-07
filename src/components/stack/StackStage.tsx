@@ -7,9 +7,7 @@ import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { LayerArt } from './LayerArt'
 import {
-  DRAWER_ROOM,
-  DRAWER_SPOT,
-  drawerPresence,
+  LAYER_FX,
   LAYER_STYLES,
   layerTime,
   LayerPanel,
@@ -29,6 +27,8 @@ const PILLAR = 100
 /** Space between the rows while they are still a flat list */
 const ROW_GAP = 8
 const DEG = Math.PI / 180
+/** The standing plate whose spot the others are measured from */
+const FIRST_STAND = LAYER_STYLES.indexOf('stand')
 
 /**
  * The second scroll stage, between "Chi sono" and "Contatti". The skills start as
@@ -141,14 +141,8 @@ export function StackStage() {
       const rx = CAMERA.rx * fold + tilt.x * fold
       const rz = lerp(0, CAMERA.rzStart, fold) + (CAMERA.rzEnd - CAMERA.rzStart) * sweep + tilt.z * fold
 
-      // Where each layer is in its choreography; drawers need room before the camera is set
-      const ts = plates.map((_, i) => layerTime(LAYER_STYLES[i], layerT(i, p)))
-      const room = Math.max(0, ...ts.map((t, i) => drawerPresence(LAYER_STYLES[i], t))) * (1 - compress)
-      const zoom = lerp(1, DRAWER_ROOM.zoom, room)
-      const raise = DRAWER_ROOM.raise * sticky.clientHeight * room
-      const z = zoom.toFixed(4)
-      group.style.transform = `translateY(${(-raise).toFixed(2)}px) scale3d(${z}, ${z}, ${z}) rotateX(${rx.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg)`
-      const view: View = { rx, rz, perspective: CAMERA.perspective, ox: origin.x, oy: origin.y, zoom, raise }
+      group.style.transform = `rotateX(${rx.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg)`
+      const view: View = { rx, rz, perspective: CAMERA.perspective, ox: origin.x, oy: origin.y }
 
       // Pile → exploded → compressed: the plates end up touching
       const gap = lerp(lerp(THICKNESS * 1.6, maxGap, explode), THICKNESS, compress)
@@ -158,7 +152,8 @@ export function StackStage() {
       const free = 1 - compress
 
       // Where every plate is this frame
-      const moves = ts.map((t, i) => plateMove(LAYER_STYLES[i], t, W, H))
+      const ts = plates.map((_, i) => layerTime(LAYER_STYLES[i], layerT(i, p)))
+      const moves = ts.map((t, i) => plateMove(LAYER_FX[i], t, W, H))
       // A standing plate goes to a fixed spot in front of the camera, whatever the stack's angle
       // Same depth everywhere (any closer and the plate above cuts through it); centred on phones
       const standSpot = fromCamera(view, {
@@ -166,25 +161,20 @@ export function StackStage() {
         y: STAND_SPOT.y * H,
         z: STAND_SPOT.depth * W,
       })
-      const drawerSpot = fromCamera(view, { x: DRAWER_SPOT.x * W, y: DRAWER_SPOT.y * H, z: DRAWER_SPOT.depth * W })
       const pos = moves.map((move, i) => {
         // Keep the visible part of each plate centred while it opens downward
         let ty = lerp((i - (LAYERS - 1) / 2) * (rowH + ROW_GAP), 0, fold) + (H - visibleH) / 2
         // Phones have less room on the sides
         let tx = move.slide * free * (compact ? 0.6 : 1)
         let tz = ((LAYERS - 1) / 2 - i) * gap * fold + move.lift * free
-        // Drawers come out toward the viewer, to the same spot whatever the stack's angle
-        const pull = move.pull * free
-        if (pull > 0) {
-          tx = lerp(tx, drawerSpot.x, pull)
-          ty = lerp(ty, drawerSpot.y, pull)
-          tz = lerp(tz, drawerSpot.z, pull)
-        }
         const stand = move.stand * free
         if (stand > 0) {
+          // Lower standing plates stand up at their own height: the spot shifts down the
+          // stack's axis by the distance between this plate and the first standing one
+          const own = (FIRST_STAND - i) * gap * fold
           tx = lerp(tx, standSpot.x, stand)
           ty = lerp(ty, standSpot.y, stand)
-          tz = lerp(tz, standSpot.z, stand)
+          tz = lerp(tz, standSpot.z + own, stand)
         }
         return { tx, ty, tz, face: move.face * free }
       })

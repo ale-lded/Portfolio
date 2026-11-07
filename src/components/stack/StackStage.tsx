@@ -226,8 +226,10 @@ export function StackStage() {
         panel.style.visibility = o > 0.001 ? 'visible' : 'hidden'
       })
 
-      // Light comes up as the stack assembles and flares when it is complete
-      const light = 0.5 + 0.5 * sstep(0.04, 0.3, p) + 0.2 * compress
+      // Light comes up as the stack assembles and flares when it is complete.
+      // While the stage is still sliding in from below it stays dim, so its top edge never shows.
+      const entering = sstep(0.3, 1, 1 - stage.getBoundingClientRect().top / window.innerHeight)
+      const light = (0.5 + 0.5 * sstep(0.04, 0.3, p) + 0.2 * compress) * entering
       sticky.style.setProperty('--light', light.toFixed(3))
 
       phase.style.opacity = String(sstep(0.03, 0.08, p))
@@ -241,13 +243,44 @@ export function StackStage() {
       return total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0
     }
 
+    /**
+     * One-way latch. Scrubbing back and forth works while the sequence is in progress, but
+     * once it is complete and the visitor has moved on to the next section, the stage locks
+     * on its final frame and collapses to a single screen, so scrolling back up passes the
+     * finished stack instead of replaying it in reverse. It re-arms once the stage is out of
+     * view below the viewport: scrolling down into it again plays it from the start.
+     */
+    let latched = false
+
+    const updateLatch = () => {
+      const r = stage.getBoundingClientRect()
+      if (!latched && progress() >= 1 && r.bottom < window.innerHeight - 1) {
+        // The sticky is already resting at the bottom of the stage, exactly where it sits in
+        // the collapsed stage, so keeping the next section in place makes the swap invisible.
+        const next = stage.nextElementSibling as HTMLElement | null
+        const before = next?.getBoundingClientRect().top ?? 0
+        latched = true
+        current = 1
+        stage.classList.add('stack--done')
+        const after = next?.getBoundingClientRect().top ?? 0
+        if (after !== before) window.scrollBy({ top: after - before, behavior: 'instant' })
+        apply(1)
+      } else if (latched && r.top >= window.innerHeight) {
+        // Height changes below the viewport do not move anything on screen
+        latched = false
+        stage.classList.remove('stack--done')
+        current = 0
+        apply(0)
+      }
+    }
+
     let current = progress()
     let raf = 0
     let inView = false
 
     const tick = () => {
       raf = 0
-      const target = progress()
+      const target = latched ? 1 : progress()
       current += (target - current) * 0.12
       if (Math.abs(target - current) < 0.0003) current = target
       tilt.x += (tilt.tx - tilt.x) * 0.06
@@ -262,6 +295,10 @@ export function StackStage() {
     }
     const request = () => {
       if (inView && !raf) raf = requestAnimationFrame(tick)
+    }
+    const onScroll = () => {
+      updateLatch()
+      request()
     }
 
     const onPointer = (e: PointerEvent) => {
@@ -287,6 +324,7 @@ export function StackStage() {
     })
 
     build()
+    updateLatch()
     apply(current)
     group.style.visibility = 'visible'
 
@@ -298,7 +336,7 @@ export function StackStage() {
       apply(current)
     })
 
-    window.addEventListener('scroll', request, { passive: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
     if (finePointer) window.addEventListener('pointermove', onPointer, { passive: true })
     io.observe(stage)
     resizeObserver.observe(sticky)
@@ -307,7 +345,8 @@ export function StackStage() {
       alive = false
       cancelAnimationFrame(raf)
       window.clearTimeout(resizeTimer)
-      window.removeEventListener('scroll', request)
+      window.removeEventListener('scroll', onScroll)
+      stage.classList.remove('stack--done')
       window.removeEventListener('pointermove', onPointer)
       spotlight?.dispose()
       io.disconnect()

@@ -12,6 +12,18 @@
   overflow: hidden;
 }
 
+/* Once played and left behind, the stage collapses to one screen: going back up shows the
+   finished stack without replaying it (see the latch in StackStage.tsx) */
+.stack.stack--done {
+  height: 100vh;
+}
+
+/* While the stage slides in, its top edge is in the middle of the screen: fade the light in
+   from that edge instead of cutting it on a straight line */
+.stack__sticky .podium {
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 14%, #000 34%);
+}
+
 /* ---------- Copy on the left: intro, one panel per layer, outro ---------- */
 .stack__info {
   position: absolute;

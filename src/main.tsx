@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '@fontsource-variable/inter'
 import '@fontsource/jetbrains-mono/400.css'
 import '@fontsource/jetbrains-mono/500.css'
-import '@fontsource/pixelify-sans/500.css'
+import '@fontsource-variable/space-grotesk'
 import './index.css'
 import App from './App.tsx'
 

@@ -256,8 +256,8 @@
   font-family: var(--sans);
 }
 
-.art .pixel {
-  font-family: var(--pixel);
+.art .display {
+  font-family: var(--display);
   font-weight: 500;
 }
 

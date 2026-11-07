@@ -33,13 +33,13 @@
 
 .hero__title {
   max-width: 1120px;
-  font-family: var(--pixel);
+  font-family: var(--display);
   font-weight: 500;
   /* Sized so the line always breaks in two ("Creatore di / prodotti digitali"):
      the longer half fits from 320px phones up to the 1120px max-width */
   font-size: clamp(32px, 8.5vw, 120px);
-  letter-spacing: -0.01em;
-  line-height: 1.12;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
   text-wrap: balance;
   /* Lit from above: warm white on top, falling into shadow below */
   background: linear-gradient(180deg, #fff7ec 0%, #f0e8dc 42%, #9a9186 100%);

@@ -155,7 +155,7 @@ export function Stage() {
 
     // Sampling needs the real fonts, otherwise the pixels would come from a fallback face
     Promise.all([
-      document.fonts.load('500 80px "Pixelify Sans"'),
+      document.fonts.load('500 80px "Space Grotesk Variable"'),
       document.fonts.load('700 100px "Inter Variable"'),
       document.fonts.load('400 16px "JetBrains Mono"'),
     ])

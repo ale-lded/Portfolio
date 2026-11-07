@@ -113,11 +113,11 @@ function DesignSystem() {
       <text className="sans" x="20" y="178" fontSize="72" fontWeight="650" letterSpacing="-3" fill={C.text}>
         Aa
       </text>
-      <text className="pixel" x="128" y="178" fontSize="72" fill={C.amber}>
+      <text className="display" x="128" y="178" fontSize="72" fill={C.amber}>
         Aa
       </text>
       <text className="mono" x="20" y="206" fontSize="10" fill={C.muted}>
-        Inter · Pixelify Sans
+        Inter · Space Grotesk
       </text>
       <rect x="316" y="20" width="150" height="38" rx="19" fill={C.amber} />
       <text className="sans" x="391" y="43.5" textAnchor="middle" fontSize="13" fontWeight="600" fill={C.ink}>

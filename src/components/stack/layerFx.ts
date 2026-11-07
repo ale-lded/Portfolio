@@ -42,12 +42,16 @@ export type PlateMove = {
   detach: number
   /** 0 → 1: how far the plate has travelled to its spot in front of the camera */
   stand: number
-  /** px pulled out toward the viewer, along PULL_DIRECTION (camera space) */
+  /** 0 → 1: how far a drawer plate has been pulled out to DRAWER_SPOT */
   pull: number
 }
 
-/** Direction a drawer plate is pulled, in camera space: toward the viewer and down the screen */
-export const PULL_DIRECTION = { x: 0, y: 0.3, z: 0.95 } as const
+/**
+ * Where a drawer plate is pulled to, in camera space: in front of the stack and low on
+ * the screen, as fractions of the plate size (x, y of W, H; depth of W). Same spot for
+ * every drawer, so pulling out layer 3 leaves the top of layer 4 visible behind it.
+ */
+export const DRAWER_SPOT = { x: 0, y: 0.8, depth: 0.05 } as const
 
 /** Where a standing plate ends up, in camera space, as fractions of the plate width */
 export const STAND_SPOT = { x: -0.12, y: 0, depth: 0.8 } as const
@@ -62,7 +66,10 @@ export function plateMove(style: LayerStyle, t: number, W: number, H: number): P
   }
   const inOut = sstep(0, 0.28, t) * (1 - sstep(0.72, 1, t))
   if (style === 'drawer') {
-    return { slide: 0, lift: inOut * H * 0.06, face: 0, detach: inOut, stand: 0, pull: inOut * H * 0.8 }
+    // Drawers share one spot: come out a beat late and go back early, so the previous
+    // drawer is home before the next one leaves and the two never cross
+    const pull = sstep(0.14, 0.36, t) * (1 - sstep(0.72, 0.86, t))
+    return { slide: 0, lift: 0, face: 0, detach: pull, stand: 0, pull }
   }
   return { slide: inOut * W * 0.16, lift: inOut * H * 0.16, face: 0, detach: 0, stand: 0, pull: 0 }
 }

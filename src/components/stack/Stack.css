@@ -1,7 +1,7 @@
 /* Four layers, four choreographies: each one needs room to be read */
 .stack {
   /* Long enough that every card gets most of a screen of scroll to be read */
-  --stack-h: 640vh;
+  --stack-h: 560vh;
   position: relative;
   height: var(--stack-h);
 }

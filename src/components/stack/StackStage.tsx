@@ -6,7 +6,7 @@ import { useReducedMotion } from '../../lib/useReducedMotion'
 import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { LayerArt } from './LayerArt'
-import { LAYER_STYLES, layerTime, LayerPanel, plateMove, plateNameOpacity, PULL_DIRECTION, STAND_SPOT } from './layerFx'
+import { LAYER_STYLES, layerTime, LayerPanel, plateMove, plateNameOpacity, DRAWER_SPOT, STAND_SPOT } from './layerFx'
 import { fromCamera, projectOnPlate, type View } from './project'
 import { CAMERA, focusOf, layerT, S, SNAP_POINTS, STACK_PHASES } from './timeline'
 import './Stack.css'
@@ -148,19 +148,19 @@ export function StackStage() {
         y: STAND_SPOT.y * H,
         z: STAND_SPOT.depth * W,
       })
+      const drawerSpot = fromCamera(view, { x: DRAWER_SPOT.x * W, y: DRAWER_SPOT.y * H, z: DRAWER_SPOT.depth * W })
       const pos = moves.map((move, i) => {
         // Keep the visible part of each plate centred while it opens downward
         let ty = lerp((i - (LAYERS - 1) / 2) * (rowH + ROW_GAP), 0, fold) + (H - visibleH) / 2
         // Phones have less room on the sides
         let tx = move.slide * free * (compact ? 0.6 : 1)
         let tz = ((LAYERS - 1) / 2 - i) * gap * fold + move.lift * free
-        // Drawers come straight out toward the viewer, whatever the stack's angle
-        if (move.pull > 0) {
-          const d = fromCamera(view, PULL_DIRECTION)
-          const pull = move.pull * free
-          tx += d.x * pull
-          ty += d.y * pull
-          tz += d.z * pull
+        // Drawers come out toward the viewer, to the same spot whatever the stack's angle
+        const pull = move.pull * free
+        if (pull > 0) {
+          tx = lerp(tx, drawerSpot.x, pull)
+          ty = lerp(ty, drawerSpot.y, pull)
+          tz = lerp(tz, drawerSpot.z, pull)
         }
         const stand = move.stand * free
         if (stand > 0) {

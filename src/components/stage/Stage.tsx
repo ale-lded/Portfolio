@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { Decoder } from '../../lib/decoder'
 import { clamp, sstep } from '../../lib/math'
+import { Spotlight } from '../../lib/spotlight'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 import { ParticleScene, type CardSpec } from '../../scene/ParticleScene'
-import { textSpecFromElement } from '../../scene/sample'
+import { textLinesFromElement, textSpecFromElement } from '../../scene/sample'
 import { PHASES, T } from '../../scene/timeline'
 import { PodiumLight } from '../PodiumLight'
 import { Hero } from './Hero'
@@ -20,7 +21,7 @@ export function Stage() {
   const stageRef = useRef<HTMLElement>(null)
   const stickyRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLElement>(null)
-  const nameRef = useRef<HTMLHeadingElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const codeWinRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef<HTMLDivElement>(null)
@@ -30,7 +31,7 @@ export function Stage() {
     const stage = stageRef.current!
     const sticky = stickyRef.current!
     const hero = heroRef.current!
-    const name = nameRef.current!
+    const title = titleRef.current!
     const codeWin = codeWinRef.current!
     const phase = phaseRef.current!
     const phaseLabel = phase.querySelector<HTMLElement>('.phase__label')!
@@ -68,8 +69,8 @@ export function Stage() {
         width: sticky.clientWidth,
         height: sticky.clientHeight,
         dpr: Math.min(2, window.devicePixelRatio || 1),
-        hero: textSpecFromElement(name, origin),
-        heroFontSize: parseFloat(getComputedStyle(name).fontSize),
+        hero: textLinesFromElement(title, origin),
+        heroFontSize: parseFloat(getComputedStyle(title).fontSize),
         cards: cardSpecs,
       })
       const code = scene.code!
@@ -90,7 +91,7 @@ export function Stage() {
         el.style.transform = copyOut ? `translateY(${-copyOut * 16}px)` : ''
       }
       hint.style.opacity = String(1 - sstep(T.hintOut[0], T.hintOut[1], p))
-      name.style.opacity = String(1 - sstep(T.swap[0], T.swap[1], p))
+      title.style.opacity = String(1 - sstep(T.swap[0], T.swap[1], p))
 
       const winA = sstep(T.codeWindowIn[0], T.codeWindowIn[1], p) * (1 - sstep(T.codeWindowOut[0], T.codeWindowOut[1], p))
       codeWin.style.opacity = String(winA)
@@ -128,9 +129,16 @@ export function Stage() {
       if (ready && !raf) raf = requestAnimationFrame(tick)
     }
 
-    const onPointer = (e: PointerEvent) => {
-      sticky.style.setProperty('--sway', ((e.clientX / window.innerWidth - 0.5) * 2).toFixed(3))
-    }
+    // Follow-spot only with a real mouse: on touch screens the light stays put
+    const spotlight = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      ? new Spotlight({
+          root: sticky,
+          cardList: sticky.querySelector<HTMLElement>('.work__cards')!,
+          cards,
+          progress: () => current,
+          cardsReady: T.cardsIn[1],
+        })
+      : null
 
     let resizeTimer = 0
     const resizeObserver = new ResizeObserver(() => {
@@ -144,6 +152,7 @@ export function Stage() {
 
     // Sampling needs the real fonts, otherwise the pixels would come from a fallback face
     Promise.all([
+      document.fonts.load('500 80px "Pixelify Sans"'),
       document.fonts.load('700 100px "Inter Variable"'),
       document.fonts.load('400 16px "JetBrains Mono"'),
     ])
@@ -158,7 +167,6 @@ export function Stage() {
       })
 
     window.addEventListener('scroll', request, { passive: true })
-    window.addEventListener('pointermove', onPointer, { passive: true })
     resizeObserver.observe(sticky)
 
     return () => {
@@ -166,7 +174,7 @@ export function Stage() {
       cancelAnimationFrame(raf)
       window.clearTimeout(resizeTimer)
       window.removeEventListener('scroll', request)
-      window.removeEventListener('pointermove', onPointer)
+      spotlight?.dispose()
       resizeObserver.disconnect()
     }
   }, [reduced])
@@ -176,7 +184,7 @@ export function Stage() {
       <span id="progetti" className="stage__anchor" aria-hidden="true" />
       <div className="stage__sticky" ref={stickyRef}>
         <PodiumLight />
-        <Hero ref={heroRef} nameRef={nameRef} />
+        <Hero ref={heroRef} titleRef={titleRef} />
         <div className="code-win" ref={codeWinRef} aria-hidden="true">
           <div className="code-win__bar mono">
             <i />

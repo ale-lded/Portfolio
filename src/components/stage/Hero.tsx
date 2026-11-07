@@ -2,17 +2,18 @@ import { forwardRef, type Ref } from 'react'
 import { person } from '../../content'
 
 type HeroProps = {
-  /** Called with the h1 element: the particle engine samples its pixels. */
-  nameRef: Ref<HTMLHeadingElement>
+  /** The service line: the particle engine samples its pixels and transmutes it. */
+  titleRef: Ref<HTMLHeadingElement>
 }
 
-export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ nameRef }, ref) {
+export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ titleRef }, ref) {
   return (
     <header className="hero" ref={ref}>
-      <h1 className="hero__name" ref={nameRef}>
-        {person.name}
+      <h1 className="hero__title" ref={titleRef}>
+        {person.tagline}
       </h1>
       <div className="hero__fade">
+        <p className="hero__name">{person.name}</p>
         <p className="hero__role">{person.role}</p>
         <p className="hero__lead">{person.lead}</p>
       </div>

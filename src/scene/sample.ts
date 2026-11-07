@@ -53,6 +53,55 @@ export function textSpecFromElement(el: HTMLElement, origin: DOMRect): TextSpec 
 }
 
 /**
+ * Like textSpecFromElement, but for text that wraps: returns one spec per
+ * visual line, read character by character from the browser's own layout.
+ */
+export function textLinesFromElement(el: HTMLElement, origin: DOMRect): TextSpec[] {
+  const node = el.firstChild
+  if (!(node instanceof Text)) return [textSpecFromElement(el, origin)]
+  const cs = getComputedStyle(el)
+  const font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+  const letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing
+  const ctx = scratchCtx()
+  ctx.font = font
+  const m = ctx.measureText(node.data)
+  const ascent = m.fontBoundingBoxAscent
+  const descent = m.fontBoundingBoxDescent
+
+  type Line = { start: number; end: number; left: number; right: number; top: number; height: number }
+  const lines: Line[] = []
+  const range = document.createRange()
+  for (let i = 0; i < node.data.length; i++) {
+    if (/\s/.test(node.data[i])) continue
+    range.setStart(node, i)
+    range.setEnd(node, i + 1)
+    const r = range.getClientRects()[0]
+    if (!r) continue
+    const line = lines[lines.length - 1]
+    if (line && Math.abs(r.top - line.top) < r.height / 2) {
+      line.end = i
+      line.right = r.right
+    } else {
+      lines.push({ start: i, end: i, left: r.left, right: r.right, top: r.top, height: r.height })
+    }
+  }
+
+  return lines.map((line) => {
+    const top = line.top + (line.height - (ascent + descent)) / 2
+    return {
+      text: node.data.slice(line.start, line.end + 1),
+      font,
+      letterSpacing,
+      x: line.left - origin.left,
+      baseline: top - origin.top + ascent,
+      width: line.right - line.left,
+      ascent,
+      descent,
+    }
+  })
+}
+
+/**
  * Renders text off-screen and returns the centre of every inked cell on a
  * grid of `step` px: the "pixels" the text is made of. Flat [x, y, x, y, …].
  */

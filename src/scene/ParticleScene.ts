@@ -34,7 +34,8 @@ export type SceneInput = {
   width: number
   height: number
   dpr: number
-  hero: TextSpec
+  /** The service line, one spec per wrapped line */
+  hero: TextSpec[]
   heroFontSize: number
   cards: CardSpec[]
 }
@@ -52,7 +53,7 @@ type Run = { text: string; col: number; color: string }
 
 /**
  * The pixel sequence. Every particle is one "pixel" with four homes:
- * A on the hero name, B inside a code glyph, C inside a binary glyph, D on a
+ * A on the hero service line, B inside a code glyph, C inside a binary glyph, D on a
  * project card. `render(p)` is a pure function of scroll progress, so the
  * sequence plays identically backwards.
  */
@@ -186,13 +187,27 @@ export class ParticleScene {
     })
     const nB = bX.length
 
-    // ---- A: pixels of the hero name, ordered left → right ----
-    const heroStep = clamp(input.heroFontSize / 55, 2, 4)
+    // ---- A: pixels of the service line, in reading order (line by line, left → right) ----
+    const heroStep = clamp(input.heroFontSize / 28, 1.5, 3)
     this.sA = heroStep
-    const hp = sampleText(input.hero, heroStep)
+    const hp: number[] = []
+    const aOrder: number[] = []
+    for (const spec of input.hero) {
+      const pts = sampleText(spec, heroStep)
+      const base = hp.length / 2
+      const idx = Array.from({ length: pts.length / 2 }, (_, i) => i).sort(
+        (i, j) => pts[i * 2] - pts[j * 2] || pts[i * 2 + 1] - pts[j * 2 + 1],
+      )
+      for (const i of idx) aOrder.push(base + i)
+      hp.push(...pts)
+    }
     const nA = hp.length / 2
-    const aOrder = Array.from({ length: nA }, (_, i) => i).sort((i, j) => hp[i * 2] - hp[j * 2] || hp[i * 2 + 1] - hp[j * 2 + 1])
-    const capTop = input.hero.baseline - input.hero.ascent * 0.74
+    let minY = Infinity
+    let maxY = -Infinity
+    for (let k = 1; k < hp.length; k += 2) {
+      minY = Math.min(minY, hp[k])
+      maxY = Math.max(maxY, hp[k])
+    }
 
     // ---- D: card titles and outlines, ordered left → right ----
     const dX: number[] = []
@@ -231,7 +246,8 @@ export class ParticleScene {
 
       this.ax[i] = hp[ai * 2]
       this.ay[i] = hp[ai * 2 + 1]
-      const shade = clamp((this.ay[i] - capTop) / (input.hero.baseline - capTop))
+      // Same top-lit gradient as the CSS title, across all its lines
+      const shade = clamp((this.ay[i] - minY) / Math.max(1, maxY - minY))
       this.colA[i] = shade < 0.4 ? 0 : shade < 0.8 ? 1 : 2
 
       this.bx[i] = bX[bi]
@@ -245,7 +261,7 @@ export class ParticleScene {
       this.cy[i] = code.originY + ch.line * code.lineH + g[k * 2 + 1]
       this.colC[i] = AMBER[(rnd() * AMBER.length) | 0]
 
-      // Left letters crumble first and become the first lines of code
+      // The first words crumble first and become the first lines of code
       const u = Math.floor((i * nA) / N) / Math.max(1, nA)
       this.td[i] = T.crumbleStart + u * T.crumbleSpread + rnd() * 0.015
       this.ta[i] = Math.max(lineStart(ch.line) + (ch.col / maxCols) * 0.02 + rnd() * 0.01, this.td[i] + 0.03)

@@ -17,8 +17,8 @@ const MOTES = (() => {
 
 /**
  * A spotlight hanging above the stage: a soft amber cone, a hot spot on the
- * "podium" floor and dust floating in the light. Intensity and sway are driven
- * from outside through the CSS variables --light and --sway on an ancestor.
+ * "podium" floor and dust floating in the light. Intensity and aim are driven
+ * from outside through --light, --beam-angle and --floor-x on an ancestor.
  */
 export function PodiumLight() {
   return (

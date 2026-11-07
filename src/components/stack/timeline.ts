@@ -2,8 +2,8 @@ import { clamp, sstep } from '../../lib/math'
 
 /**
  * Every moment of the stack sequence, as a fraction of a reference stage of
- * REFERENCE_VH (0 → 1). The real stage is shorter: the reading holds are compressed
- * (see HOLD_KEEP and timelineAt), everything else keeps its scroll length.
+ * REFERENCE_VH (0 → 1). The real stage stretches or compresses parts of it on the
+ * scroll (see ENTRANCE_SCALE, HOLD_SCALE and timelineAt).
  * Phases: 0–0.04 list · 0.04–0.35 the list folds into a pile and the layers open
  * · 0.35–0.89 exploded view, one layer at a time, each with its own choreography
  * (see layerFx.ts) · 0.89–0.95 the layers compress into one block · 0.95–1 still.
@@ -59,53 +59,69 @@ export function readWarp(u: number, r0: number, r1: number) {
 const REFERENCE_VH = 640
 
 /**
- * Share of each reading hold that is kept on the scroll. Entrances, title flights and
- * exits keep their full reference length; only the time a card sits still is shortened.
+ * How much scroll each part of a layer window gets, relative to the reference:
+ * the entrance (plate out, title flying to the panel) is stretched so it reads as a
+ * slow, fluid arrival; the reading hold is shortened; the exit keeps its length.
  */
-export const HOLD_KEEP = 2 / 3
+export const ENTRANCE_SCALE = 3
+export const HOLD_SCALE = 2 / 3
 
-/** The reading holds, as [from, to] on the reference timeline. Nothing else moves in them. */
-const HOLDS = Array.from({ length: 4 }, (_, i) => {
+/** Stretched or compressed spans of the reference timeline, in order and not overlapping. */
+const SPANS = Array.from({ length: 4 }, (_, i) => {
   const s = S.layers.start + i * S.layers.step
-  return [s + S.layers.length * READ_WINDOW[0], s + S.layers.length * READ_WINDOW[1]] as const
-})
+  const readFrom = s + S.layers.length * READ_WINDOW[0]
+  const readTo = s + S.layers.length * READ_WINDOW[1]
+  return [
+    { from: s, to: readFrom, scale: ENTRANCE_SCALE },
+    { from: readFrom, to: readTo, scale: HOLD_SCALE, hold: true },
+  ]
+}).flat()
 
-/** Fraction of the reference scroll that the compressed holds remove. */
-const REMOVED = HOLDS.reduce((sum, [a, b]) => sum + (b - a) * (1 - HOLD_KEEP), 0)
+/** Real stage length relative to the reference (scroll part only, without the last screen). */
+const LENGTH = 1 + SPANS.reduce((sum, span) => sum + (span.to - span.from) * (span.scale - 1), 0)
 
-/** Real stage height, vh: the reference minus what the compressed holds remove. */
-export const STACK_VH = 100 + (REFERENCE_VH - 100) * (1 - REMOVED)
+/** Real stage height, vh. */
+export const STACK_VH = 100 + (REFERENCE_VH - 100) * LENGTH
+
+/** Time on the reference timeline → scroll progress of the real stage. */
+export function scrollAt(time: number) {
+  let distance = time
+  for (const span of SPANS) {
+    if (time <= span.from) break
+    distance += (Math.min(time, span.to) - span.from) * (span.scale - 1)
+  }
+  return distance / LENGTH
+}
 
 /** Scroll progress of the real stage → time on the reference timeline. */
 export function timelineAt(scroll: number) {
-  let left = clamp(scroll) * (1 - REMOVED)
+  let left = clamp(scroll) * LENGTH
   let at = 0
-  for (const [a, b] of HOLDS) {
-    if (left <= a - at) return at + left
-    left -= a - at
-    const kept = (b - a) * HOLD_KEEP
-    if (left <= kept) return a + left / HOLD_KEEP
-    left -= kept
-    at = b
+  for (const span of SPANS) {
+    if (left <= span.from - at) return at + left
+    left -= span.from - at
+    const length = (span.to - span.from) * span.scale
+    if (left <= length) return span.from + left / span.scale
+    left -= length
+    at = span.to
   }
   return Math.min(1, at + left)
 }
 
-/** Time on the reference timeline → scroll progress of the real stage. */
-export function scrollAt(time: number) {
-  let removed = 0
-  for (const [a, b] of HOLDS) {
-    if (time <= a) break
-    removed += (Math.min(time, b) - a) * (1 - HOLD_KEEP)
-  }
-  return (time - removed) / (1 - REMOVED)
+/** True while scroll progress is inside a layer's entrance (plate moving, title flying). */
+export function inEntrance(scroll: number) {
+  const time = timelineAt(scroll)
+  return SPANS.some((span) => !span.hold && time >= span.from && time < span.to)
 }
 
 /**
  * Scroll positions (fractions of the real stage) the page snaps to: the middle of each
  * layer's reading hold, and the finished stack. See .stack__snap in Stack.css.
  */
-export const SNAP_POINTS = [...HOLDS.map(([a, b]) => scrollAt((a + b) / 2)), scrollAt(0.985)]
+export const SNAP_POINTS = [
+  ...SPANS.filter((span) => span.hold).map((span) => scrollAt((span.from + span.to) / 2)),
+  scrollAt(0.985),
+]
 
 /** Within a layer window: how far the entrance and the exit have gone. */
 export const enterOf = (t: number) => sstep(0, 0.28, t)

@@ -92,14 +92,20 @@ export function plateMove(style: LayerStyle, t: number, W: number, H: number): P
 const TIMING = {
   // Takes off a beat after the window opens: the previous plate is settling back meanwhile
   fly: { flyIn: [0.06, 0.34], restIn: [0.3, 0.42], restOut: null, flyBack: null, dissolveFrom: 0.72 },
-  stand: { flyIn: [0.22, 0.4], restIn: [0.36, 0.46], restOut: [0.6, 0.66], flyBack: [0.62, 0.76], dissolveFrom: null },
+  stand: { flyIn: [0.2, 0.44], restIn: [0.38, 0.47], restOut: [0.6, 0.66], flyBack: [0.62, 0.76], dissolveFrom: null },
   drawer: { flyIn: [0.06, 0.34], restIn: [0.3, 0.42], restOut: null, flyBack: null, dissolveFrom: 0.72 },
 } as const
+
+/** Quintic ease in-out: starts gently and settles very slowly into place. */
+const smootherstep = (a: number, b: number, v: number) => {
+  const t = clamp((v - a) / (b - a))
+  return t * t * t * (t * (t * 6 - 15) + 10)
+}
 
 /** How far the title is out of its plate: 0 on the plate → 1 in the panel. */
 function flightOf(style: LayerStyle, t: number) {
   const timing = TIMING[style]
-  const out = sstep(timing.flyIn[0], timing.flyIn[1], t)
+  const out = smootherstep(timing.flyIn[0], timing.flyIn[1], t)
   return timing.flyBack ? Math.min(out, 1 - sstep(timing.flyBack[0], timing.flyBack[1], t)) : out
 }
 

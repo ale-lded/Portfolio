@@ -1,7 +1,7 @@
 import { Car, NO_CONTROLS, STEP, type Controls, type SetupId, type TyreId } from './car'
 import { locate, type Track } from './track'
 
-export const LAPS = 3
+export const LAPS = 1
 /** Seconds of countdown before the lights go out */
 export const COUNTDOWN = 3
 /** The car starts this many samples behind the line, so the clock starts as it crosses */
@@ -67,8 +67,9 @@ export class Race {
 
   step(controls: Controls) {
     if (this.phase === 'finished') {
-      // The clock has stopped; the car rolls to a stop past the line
-      this.car.step({ ...NO_CONTROLS, brake: 0.35 })
+      // The clock has stopped; the car rolls to a stop past the line (and no further:
+      // braking at a standstill would put it in reverse)
+      this.car.step({ ...NO_CONTROLS, brake: this.car.forward > 5 ? 0.35 : 0 })
       return
     }
     this.clock += STEP

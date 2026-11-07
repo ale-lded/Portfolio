@@ -33,15 +33,16 @@ export type SetupSpec = {
 }
 
 /*
- * Balanced with a robot driver over the full race (3 laps): every combination finishes
- * within about a second of the others, each in its own way. Softs are quickest on lap 2
- * and slowest on lap 3, worn out; hards are steady; the speed setup gains on the
- * straights what it loses in the corners, the corner setup the other way round.
+ * Balanced with a robot driver over the race (1 lap): all nine combinations finish
+ * within about 0.2 s of each other, each strong somewhere else. Softs are quickest
+ * through the middle of the lap and fade by the end (worn ~90%); hards are steady;
+ * the speed setup wins the long straight, the corner setup the twisty section.
+ * Drivers who slide a lot wear their tyres faster than the robot does.
  */
 export const TYRES: Record<TyreId, TyreSpec> = {
-  soft: { grip: 9.2, wear: 0.24 },
-  medium: { grip: 8, wear: 0.07 },
-  hard: { grip: 7.2, wear: 0.015 },
+  soft: { grip: 9.8, wear: 0.7 },
+  medium: { grip: 8.1, wear: 0.2 },
+  hard: { grip: 7.4, wear: 0.03 },
 }
 
 export const SETUPS: Record<SetupId, SetupSpec> = {

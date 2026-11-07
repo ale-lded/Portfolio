@@ -3,6 +3,7 @@ import { race as copy } from '../../content'
 import { leaveBackstage } from '../../lib/backstage'
 import { SETUPS, TYRES, type SetupId, type TyreId } from '../../game/car'
 import { Game, type GamePhase, type Hud, type Result } from '../../game/game'
+import { LAPS } from '../../game/race'
 import { formatTime } from '../../game/format'
 import { add, cleanName, load, qualifies, type Entry } from '../../game/leaderboard'
 import './Race.css'
@@ -44,18 +45,19 @@ export function Race({ active }: { active: boolean }) {
 
   useEffect(() => {
     const hud = hudRef.current!
-    const el = (k: string) => hud.querySelector<HTMLElement>(`[data-hud="${k}"]`)!
+    const el = (k: string) => hud.querySelector<HTMLElement>(`[data-hud="${k}"]`)
     const fields = {
       lap: el('lap'),
-      time: el('time'),
+      time: el('time')!,
       lapTime: el('lapTime'),
       best: el('best'),
-      wear: el('wear'),
-      speed: el('speed'),
-      lights: el('lights'),
+      wear: el('wear')!,
+      speed: el('speed')!,
+      lights: el('lights')!,
     }
-    const set = (node: HTMLElement, text: string) => {
-      if (node.textContent !== text) node.textContent = text
+    // Lap fields only exist in races of more than one lap
+    const set = (node: HTMLElement | null, text: string) => {
+      if (node && node.textContent !== text) node.textContent = text
     }
     let lastPhase: GamePhase = 'select'
     const game = new Game(canvasRef.current!, {
@@ -129,19 +131,28 @@ export function Race({ active }: { active: boolean }) {
       {/* HUD: always in the DOM, so the game can write into it every frame */}
       <div className="race__hud mono" ref={hudRef} hidden={!showHud} aria-hidden="true">
         <div className="race__hud-main">
-          <div className="race__stat race__stat--lap">
-            <span>{copy.lap}</span>
-            <strong data-hud="lap">1/3</strong>
-          </div>
-          <div className="race__stat">
+          {LAPS > 1 && (
+            <div className="race__stat race__stat--lap">
+              <span>{copy.lap}</span>
+              <strong data-hud="lap">1/{LAPS}</strong>
+            </div>
+          )}
+          <div className={`race__stat${LAPS > 1 ? '' : ' race__stat--lap'}`}>
             <span>{copy.time}</span>
             <strong data-hud="time">0:00.000</strong>
           </div>
           <div className="race__stat race__stat--small">
-            <span>{copy.lap}</span>
-            <b data-hud="lapTime">0:00.000</b>
-            <span>{copy.best}</span>
-            <b data-hud="best">–:––.–––</b>
+            {LAPS > 1 && (
+              <>
+                <span>{copy.lap}</span>
+                <b data-hud="lapTime">0:00.000</b>
+                <span>{copy.best}</span>
+                <b data-hud="best">–:––.–––</b>
+              </>
+            )}
+            {/* The time to beat */}
+            <span>{copy.record}</span>
+            <b>{board[0] ? formatTime(board[0].time) : '–:––.–––'}</b>
           </div>
         </div>
         <div className="race__hud-car">
@@ -224,16 +235,18 @@ export function Race({ active }: { active: boolean }) {
           <div className="race__panel race__panel--result">
             <p className="race__kicker mono">{copy.finish}</p>
             <p className="race__total">{formatTime(result.time)}</p>
-            <ol className="race__laps mono">
-              {result.laps.map((t, i) => (
-                <li key={i} data-best={t === result.best}>
-                  <span>
-                    {copy.lap} {i + 1}
-                  </span>
-                  <span>{formatTime(t)}</span>
-                </li>
-              ))}
-            </ol>
+            {result.laps.length > 1 && (
+              <ol className="race__laps mono">
+                {result.laps.map((t, i) => (
+                  <li key={i} data-best={t === result.best}>
+                    <span>
+                      {copy.lap} {i + 1}
+                    </span>
+                    <span>{formatTime(t)}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
             <p className="race__combo mono">
               {copy.tyres[result.choice.tyre].name} · {copy.setups[result.choice.setup].name}
             </p>
@@ -247,7 +260,7 @@ export function Race({ active }: { active: boolean }) {
                 }}
               >
                 <label>
-                  <span className="race__record mono">{copy.record}</span>
+                  <span className="race__record mono">{copy.newRecord}</span>
                   <span className="race__initials-label">{copy.initials}</span>
                   <input
                     className="race__initials mono"

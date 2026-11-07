@@ -157,11 +157,11 @@ export const backstage = {
 /** The minigame behind the stage: a 3-lap time trial. */
 export const race = {
   title: 'Backstage GP',
-  subtitle: '// 3 laps · time trial',
+  subtitle: '// 1 lap · time trial',
   tyresLabel: 'Tyres',
   setupLabel: 'Setup',
   tyres: {
-    soft: { name: 'Soft', text: 'Most grip. Gone by lap 3.' },
+    soft: { name: 'Soft', text: 'Most grip. Fades before the line.' },
     medium: { name: 'Medium', text: 'A bit of everything.' },
     hard: { name: 'Hard', text: 'Less grip, lasts the race.' },
   },
@@ -184,6 +184,7 @@ export const race = {
   lap: 'Lap',
   time: 'Time',
   best: 'Best',
+  record: 'Record',
   wear: 'Tyres',
   speedUnit: 'km/h',
   go: 'Go',
@@ -193,7 +194,7 @@ export const race = {
   change: 'Change car',
   quit: 'Back to the stage',
   finish: 'Finish',
-  record: 'New top 3 time',
+  newRecord: 'New top 3 time',
   initials: 'Your initials',
   save: 'Save',
   again: 'Race again',

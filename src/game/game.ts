@@ -165,7 +165,7 @@ export class Game {
         this.acc -= STEP
         race.step(this.phase === 'finished' ? NO_CONTROLS : this.controls())
       }
-      if (this.phase === 'countdown' && race.phase === 'racing') this.setPhase('racing')
+      if (this.phase === 'countdown' && race.phase !== 'countdown') this.setPhase('racing')
       if (this.phase === 'racing' && race.phase === 'finished') {
         this.setPhase('finished')
         this.finishedFor = 0

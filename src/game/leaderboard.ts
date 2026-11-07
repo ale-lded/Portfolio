@@ -16,11 +16,14 @@ export type Entry = {
   at: number
 }
 
-const KEY = 'backstage-gp:top3'
+/** One lap since v2: the 3-lap times under the old key are not comparable */
+const KEY = 'backstage-gp:1-lap:top3'
+const OLD_KEY = 'backstage-gp:top3'
 export const SIZE = 3
 
 export function load(): Entry[] {
   try {
+    localStorage.removeItem(OLD_KEY)
     const raw = localStorage.getItem(KEY)
     const list = raw ? (JSON.parse(raw) as Entry[]) : []
     return Array.isArray(list) ? list.filter(valid).sort(order).slice(0, SIZE) : []

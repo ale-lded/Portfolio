@@ -439,26 +439,6 @@ kbd {
   text-shadow: 0 0 12px rgba(57, 255, 106, 0.5);
 }
 
-.race__target-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 12px;
-  align-items: baseline;
-  margin-bottom: 18px;
-  padding: 12px 14px;
-  border: 1px solid rgba(255, 181, 71, 0.35);
-  border-radius: 10px;
-  background: var(--amber-soft);
-}
-
-.race__target-row .race__kicker {
-  color: var(--amber);
-}
-
-.race__target-row .race__time {
-  color: var(--amber);
-}
-
 .race__stat--small .race__target {
   color: var(--amber);
 }
@@ -469,16 +449,15 @@ kbd {
   color: var(--amber);
 }
 
+.race__saved {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
 .race__gap[data-ahead='true'] {
   color: var(--green);
   text-shadow: 0 0 12px rgba(57, 255, 106, 0.5);
-}
-
-.race__empty {
-  margin-top: 14px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--muted);
 }
 
 .race__local {

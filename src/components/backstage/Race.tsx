@@ -5,7 +5,7 @@ import { SETUPS, TYRES, type SetupId, type TyreId } from '../../game/car'
 import { Game, type GamePhase, type Hud, type Result } from '../../game/game'
 import { LAPS } from '../../game/race'
 import { formatTime } from '../../game/format'
-import { add, cleanName, load, qualifies, TRACK_RECORD, type Entry } from '../../game/leaderboard'
+import { add, cleanName, HOUSE, load, loadName, qualifies, saveName, type Entry } from '../../game/leaderboard'
 import './Race.css'
 
 const TYRE_IDS: TyreId[] = ['soft', 'medium', 'hard']
@@ -38,8 +38,11 @@ export function Race({ active }: { active: boolean }) {
   const [tyre, setTyre] = useState<TyreId>('medium')
   const [setup, setSetup] = useState<SetupId>('balanced')
   const [board, setBoard] = useState<Entry[]>(load)
-  const [result, setResult] = useState<Result | null>(null)
+  /** The finished race, with the record as it stood before it */
+  const [result, setResult] = useState<(Result & { record: number }) | null>(null)
   const [saved, setSaved] = useState<number | null>(null)
+  /** The player's initials, once given; until then, what they are typing */
+  const [player, setPlayer] = useState(loadName)
   const [name, setName] = useState('')
   const [go, setGo] = useState(0)
 
@@ -78,9 +81,17 @@ export function Race({ active }: { active: boolean }) {
         fields.lights.dataset.lit = String(h.lights)
       },
       finish: (r) => {
-        setResult(r)
+        // Read from storage, not state: this callback outlives the renders
+        const podium = load()
+        setResult({ ...r, record: podium[0].time })
         setSaved(null)
-        setName('')
+        // Initials already given: a podium time is saved straight away
+        const initials = loadName()
+        if (initials && qualifies(r.time, podium)) {
+          const at = Date.now()
+          setBoard(add({ name: initials, time: r.time, best: r.best, ...r.choice, at }))
+          setSaved(at)
+        }
       },
     })
     gameRef.current = game
@@ -114,13 +125,19 @@ export function Race({ active }: { active: boolean }) {
     gameRef.current?.restart()
   }
 
-  const canSave = !!result && saved === null && qualifies(result.time, board)
+  /** Only the first podium time asks for initials */
+  const askName = !!result && saved === null && !player && qualifies(result.time, board)
   const save = () => {
-    if (!result) return
+    const initials = cleanName(name)
+    if (!result || !initials) return
+    saveName(initials)
+    setPlayer(initials)
     const at = Date.now()
-    setBoard(add({ name: cleanName(name) || '???', time: result.time, best: result.best, ...result.choice, at }))
+    setBoard(add({ name: initials, time: result.time, best: result.best, ...result.choice, at }))
     setSaved(at)
   }
+  /** The player's own best on the podium, if any */
+  const mine = board.find((e) => e.at !== HOUSE.at)
 
   const showHud = phase === 'countdown' || phase === 'racing' || phase === 'paused' || phase === 'finished'
 
@@ -150,11 +167,13 @@ export function Race({ active }: { active: boolean }) {
                 <b data-hud="best">–:––.–––</b>
               </>
             )}
-            {/* The time to beat */}
-            <span>{copy.trackRecord}</span>
-            <b className="race__target">{formatTime(TRACK_RECORD)}</b>
+            {/* The time to beat, and the player's own */}
+            <span>{copy.record}</span>
+            <b className="race__target">
+              {board[0].name} {formatTime(board[0].time)}
+            </b>
             <span>{copy.yourBest}</span>
-            <b>{board[0] ? formatTime(board[0].time) : '–:––.–––'}</b>
+            <b>{mine ? formatTime(mine.time) : '–:––.–––'}</b>
           </div>
         </div>
         <div className="race__hud-car">
@@ -252,9 +271,14 @@ export function Race({ active }: { active: boolean }) {
             <p className="race__combo mono">
               {copy.tyres[result.choice.tyre].name} · {copy.setups[result.choice.setup].name}
             </p>
-            <Gap time={result.time} />
+            <Gap time={result.time} record={result.record} />
+            {saved !== null && player && (
+              <p className="race__saved mono">
+                {copy.savedAs} {player}
+              </p>
+            )}
 
-            {canSave && (
+            {askName && (
               <form
                 className="race__save"
                 onSubmit={(e) => {
@@ -263,7 +287,7 @@ export function Race({ active }: { active: boolean }) {
                 }}
               >
                 <label>
-                  <span className="race__record mono">{copy.newRecord}</span>
+                  <span className="race__record mono">{copy.podium}</span>
                   <span className="race__initials-label">{copy.initials}</span>
                   <input
                     className="race__initials mono"
@@ -282,7 +306,7 @@ export function Race({ active }: { active: boolean }) {
               </form>
             )}
 
-            {!canSave && (
+            {!askName && (
               <div className="race__actions">
                 <MenuButton autoFocus onClick={restart} kbd="r">
                   {copy.again}
@@ -333,9 +357,9 @@ function Choices<T extends string>({ label, ids, value, onChange, item, bars }: 
   )
 }
 
-/** How far this time is from the track record: ahead in green, behind in amber. */
-function Gap({ time }: { time: number }) {
-  const gap = Math.round((time - TRACK_RECORD) * 1000) / 1000
+/** How far this time is from the record as it stood: ahead in green, behind in amber. */
+function Gap({ time, record }: { time: number; record: number }) {
+  const gap = Math.round((time - record) * 1000) / 1000
   const ahead = gap < 0
   return (
     <p className="race__gap mono" data-ahead={ahead}>
@@ -355,29 +379,19 @@ function Gap({ time }: { time: number }) {
 function Board({ board, highlight }: { board: Entry[]; highlight: number | null }) {
   return (
     <div className="race__panel race__panel--board">
-      {/* The house time, pinned above the visitors' top 3 */}
-      <div className="race__target-row">
-        <span className="race__kicker mono">{copy.trackRecord}</span>
-        <span className="race__name mono">{copy.trackRecordBy}</span>
-        <span className="race__time mono">{formatTime(TRACK_RECORD)}</span>
-      </div>
       <p className="race__kicker mono">{copy.board}</p>
-      {board.length ? (
-        <ol className="race__board">
-          {board.map((e, i) => (
-            <li key={e.at} data-new={e.at === highlight}>
-              <span className="race__rank mono">{i + 1}</span>
-              <span className="race__name mono">{e.name}</span>
-              <span className="race__time mono">{formatTime(e.time)}</span>
-              <span className="race__car mono">
-                {copy.tyres[e.tyre]?.name} · {copy.setups[e.setup]?.name}
-              </span>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p className="race__empty">{copy.empty}</p>
-      )}
+      <ol className="race__board">
+        {board.map((e, i) => (
+          <li key={e.at} data-new={e.at === highlight}>
+            <span className="race__rank mono">{i + 1}</span>
+            <span className="race__name mono">{e.name}</span>
+            <span className="race__time mono">{formatTime(e.time)}</span>
+            <span className="race__car mono">
+              {copy.tyres[e.tyre]?.name} · {copy.setups[e.setup]?.name}
+            </span>
+          </li>
+        ))}
+      </ol>
       <p className="race__local mono">{copy.local}</p>
     </div>
   )

@@ -13,16 +13,19 @@ import { readWarp } from './timeline'
  * - stand: the plate leaves the stack and stands up in front of it, facing the
  *          viewer; the title flies out of it to the panel, then back in before the
  *          plate lies down and returns to its place.
+ * - drawer: like fly, but the plate is pulled out of the stack toward the viewer,
+ *          down toward the keyboard, like a drawer: lower layers stay fully visible.
  */
-export type LayerStyle = 'fly' | 'stand'
+export type LayerStyle = 'fly' | 'stand' | 'drawer'
 
 /** Which choreography each layer plays, top to bottom. Swap freely. */
-export const LAYER_STYLES: LayerStyle[] = ['fly', 'stand', 'fly', 'fly']
+export const LAYER_STYLES: LayerStyle[] = ['fly', 'stand', 'drawer', 'drawer']
 
 /** The span of choreography time in which the card is readable (text fully in the panel). */
 const READABLE: Record<LayerStyle, [number, number]> = {
   fly: [0.42, 0.72],
   stand: [0.46, 0.6],
+  drawer: [0.42, 0.72],
 }
 
 /** Choreography time for a layer at scroll-local progress u: short way in, long read, short way out. */
@@ -39,7 +42,12 @@ export type PlateMove = {
   detach: number
   /** 0 → 1: how far the plate has travelled to its spot in front of the camera */
   stand: number
+  /** px pulled out toward the viewer, along PULL_DIRECTION (camera space) */
+  pull: number
 }
+
+/** Direction a drawer plate is pulled, in camera space: toward the viewer and down the screen */
+export const PULL_DIRECTION = { x: 0, y: 0.3, z: 0.95 } as const
 
 /** Where a standing plate ends up, in camera space, as fractions of the plate width */
 export const STAND_SPOT = { x: -0.12, y: 0, depth: 0.8 } as const
@@ -50,10 +58,13 @@ export function plateMove(style: LayerStyle, t: number, W: number, H: number): P
     // Out of the pile first, then up; on the way back the same in reverse
     const out = sstep(0, 0.12, t) * (1 - sstep(0.86, 1, t))
     const up = sstep(0.08, 0.24, t) * (1 - sstep(0.74, 0.9, t))
-    return { slide: -out * W * 0.55, lift: out * H * 0.1, face: up, detach: out, stand: up }
+    return { slide: -out * W * 0.55, lift: out * H * 0.1, face: up, detach: out, stand: up, pull: 0 }
   }
   const inOut = sstep(0, 0.28, t) * (1 - sstep(0.72, 1, t))
-  return { slide: inOut * W * 0.16, lift: inOut * H * 0.16, face: 0, detach: 0, stand: 0 }
+  if (style === 'drawer') {
+    return { slide: 0, lift: inOut * H * 0.06, face: 0, detach: inOut, stand: 0, pull: inOut * H * 0.8 }
+  }
+  return { slide: inOut * W * 0.16, lift: inOut * H * 0.16, face: 0, detach: 0, stand: 0, pull: 0 }
 }
 
 /** When the title leaves its plate and comes back, per style (fractions of t). */
@@ -61,6 +72,7 @@ const TIMING = {
   // Takes off a beat after the window opens: the previous plate is settling back meanwhile
   fly: { flyIn: [0.06, 0.34], restIn: [0.3, 0.42], restOut: null, flyBack: null, dissolveFrom: 0.72 },
   stand: { flyIn: [0.22, 0.4], restIn: [0.36, 0.46], restOut: [0.6, 0.66], flyBack: [0.62, 0.76], dissolveFrom: null },
+  drawer: { flyIn: [0.06, 0.34], restIn: [0.3, 0.42], restOut: null, flyBack: null, dissolveFrom: 0.72 },
 } as const
 
 /** How far the title is out of its plate: 0 on the plate → 1 in the panel. */

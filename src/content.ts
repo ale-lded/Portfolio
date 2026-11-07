@@ -184,7 +184,12 @@ export const race = {
   lap: 'Lap',
   time: 'Time',
   best: 'Best',
-  record: 'Record',
+  /** The house time to beat, and who set it */
+  trackRecord: 'Track record',
+  trackRecordBy: 'AM',
+  yourBest: 'Your best',
+  beaten: 'Track record beaten',
+  toRecord: 'to the track record',
   wear: 'Tyres',
   speedUnit: 'km/h',
   go: 'Go',

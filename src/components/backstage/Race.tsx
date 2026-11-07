@@ -5,7 +5,7 @@ import { SETUPS, TYRES, type SetupId, type TyreId } from '../../game/car'
 import { Game, type GamePhase, type Hud, type Result } from '../../game/game'
 import { LAPS } from '../../game/race'
 import { formatTime } from '../../game/format'
-import { add, cleanName, load, qualifies, type Entry } from '../../game/leaderboard'
+import { add, cleanName, load, qualifies, TRACK_RECORD, type Entry } from '../../game/leaderboard'
 import './Race.css'
 
 const TYRE_IDS: TyreId[] = ['soft', 'medium', 'hard']
@@ -151,7 +151,9 @@ export function Race({ active }: { active: boolean }) {
               </>
             )}
             {/* The time to beat */}
-            <span>{copy.record}</span>
+            <span>{copy.trackRecord}</span>
+            <b className="race__target">{formatTime(TRACK_RECORD)}</b>
+            <span>{copy.yourBest}</span>
             <b>{board[0] ? formatTime(board[0].time) : '–:––.–––'}</b>
           </div>
         </div>
@@ -250,6 +252,7 @@ export function Race({ active }: { active: boolean }) {
             <p className="race__combo mono">
               {copy.tyres[result.choice.tyre].name} · {copy.setups[result.choice.setup].name}
             </p>
+            <Gap time={result.time} />
 
             {canSave && (
               <form
@@ -330,9 +333,34 @@ function Choices<T extends string>({ label, ids, value, onChange, item, bars }: 
   )
 }
 
+/** How far this time is from the track record: ahead in green, behind in amber. */
+function Gap({ time }: { time: number }) {
+  const gap = Math.round((time - TRACK_RECORD) * 1000) / 1000
+  const ahead = gap < 0
+  return (
+    <p className="race__gap mono" data-ahead={ahead}>
+      {ahead ? (
+        <>
+          {copy.beaten} · −{Math.abs(gap).toFixed(3)}
+        </>
+      ) : (
+        <>
+          +{gap.toFixed(3)} {copy.toRecord}
+        </>
+      )}
+    </p>
+  )
+}
+
 function Board({ board, highlight }: { board: Entry[]; highlight: number | null }) {
   return (
     <div className="race__panel race__panel--board">
+      {/* The house time, pinned above the visitors' top 3 */}
+      <div className="race__target-row">
+        <span className="race__kicker mono">{copy.trackRecord}</span>
+        <span className="race__name mono">{copy.trackRecordBy}</span>
+        <span className="race__time mono">{formatTime(TRACK_RECORD)}</span>
+      </div>
       <p className="race__kicker mono">{copy.board}</p>
       {board.length ? (
         <ol className="race__board">

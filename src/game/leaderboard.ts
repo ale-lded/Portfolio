@@ -21,6 +21,13 @@ const KEY = 'backstage-gp:1-lap:top3'
 const OLD_KEY = 'backstage-gp:top3'
 export const SIZE = 3
 
+/**
+ * The track record, set by the house: the time to beat. Measured with a robot driver
+ * on the ideal racing line, the limit of the car is about 20.3 s (speed setup); this
+ * leaves about a second for a person on a keyboard. Hard, not impossible.
+ */
+export const TRACK_RECORD = 21.184
+
 export function load(): Entry[] {
   try {
     localStorage.removeItem(OLD_KEY)

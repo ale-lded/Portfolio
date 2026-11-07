@@ -285,36 +285,6 @@
   color: transparent;
 }
 
-/* ---------- Phase indicator ---------- */
-.phase {
-  position: absolute;
-  z-index: 6;
-  left: var(--pad);
-  bottom: 32px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 12px;
-  color: var(--muted);
-  opacity: 0;
-}
-
-.phase__bar {
-  position: relative;
-  width: 120px;
-  height: 1px;
-  overflow: hidden;
-  background: var(--line-strong);
-}
-
-.phase__fill {
-  position: absolute;
-  inset: 0;
-  background: var(--amber);
-  transform: scaleX(0);
-  transform-origin: left;
-}
-
 /* ---------- Static layout for reduced motion ---------- */
 .stage--static {
   height: auto;

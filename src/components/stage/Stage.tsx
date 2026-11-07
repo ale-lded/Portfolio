@@ -6,6 +6,7 @@ import { useReducedMotion } from '../../lib/useReducedMotion'
 import { ParticleScene, type CardSpec } from '../../scene/ParticleScene'
 import { textLinesFromElement, textSpecFromElement } from '../../scene/sample'
 import { PHASES, T } from '../../scene/timeline'
+import { PhaseIndicator } from '../PhaseIndicator'
 import { PodiumLight } from '../PodiumLight'
 import { Hero } from './Hero'
 import { Work } from './Work'
@@ -133,10 +134,12 @@ export function Stage() {
     const spotlight = window.matchMedia('(hover: hover) and (pointer: fine)').matches
       ? new Spotlight({
           root: sticky,
-          cardList: sticky.querySelector<HTMLElement>('.work__cards')!,
-          cards,
-          progress: () => current,
-          cardsReady: T.cardsIn[1],
+          cards: {
+            list: sticky.querySelector<HTMLElement>('.work__cards')!,
+            items: cards,
+            progress: () => current,
+            ready: T.cardsIn[1],
+          },
         })
       : null
 
@@ -196,12 +199,7 @@ export function Stage() {
         </div>
         <Work />
         <canvas className="stage__canvas" ref={canvasRef} aria-hidden="true" />
-        <div className="phase mono" ref={phaseRef} aria-hidden="true">
-          <span className="phase__label">{PHASES[0][1]}</span>
-          <span className="phase__bar">
-            <span className="phase__fill" />
-          </span>
-        </div>
+        <PhaseIndicator ref={phaseRef} label={PHASES[0][1]} />
       </div>
     </section>
   )

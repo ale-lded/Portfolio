@@ -9,15 +9,20 @@ import { clamp, lerp, sstep } from './math'
 const HERO = { stiffness: 0.0007, damping: 0.963, maxSpeed: 14 }
 const CARDS = { stiffness: 0.012, damping: 0.85, maxSpeed: 12 }
 
-type Options = {
-  /** Element that receives --beam-angle and --floor-x */
-  root: HTMLElement
-  cardList: HTMLElement
-  cards: HTMLElement[]
+type CardOptions = {
+  list: HTMLElement
+  items: HTMLElement[]
   /** Current scroll progress of the stage, 0 → 1 */
   progress: () => number
   /** Progress at which the cards are fully visible and can be lit */
-  cardsReady: number
+  ready: number
+}
+
+type Options = {
+  /** Element that receives --beam-angle and --floor-x */
+  root: HTMLElement
+  /** Cards the beam can land on. Without them the light keeps the slow hero spring throughout. */
+  cards?: CardOptions
 }
 
 /** A follow-spot that chases the pointer with inertia and lights the card it lands on. */
@@ -85,7 +90,8 @@ export class Spotlight {
     const dt = Math.min(3, (now - this.last) / 16.667)
     this.last = now
 
-    const mix = sstep(this.o.cardsReady - 0.08, this.o.cardsReady, this.o.progress())
+    const cards = this.o.cards
+    const mix = cards ? sstep(cards.ready - 0.08, cards.ready, cards.progress()) : 0
     const k = lerp(HERO.stiffness, CARDS.stiffness, mix)
     const damping = lerp(HERO.damping, CARDS.damping, mix)
     const maxSpeed = lerp(HERO.maxSpeed, CARDS.maxSpeed, mix)
@@ -119,8 +125,9 @@ export class Spotlight {
     this.o.root.style.setProperty('--floor-x', `${floorX.toFixed(1)}px`)
 
     let lit: HTMLElement | null = null
-    if (this.o.progress() >= this.o.cardsReady) {
-      for (const card of this.o.cards) {
+    const cards = this.o.cards
+    if (cards && cards.progress() >= cards.ready) {
+      for (const card of cards.items) {
         const r = card.getBoundingClientRect()
         if (this.x >= r.left && this.x <= r.right && this.y >= r.top && this.y <= r.bottom) {
           lit = card
@@ -136,7 +143,7 @@ export class Spotlight {
     if (card === this.litCard) return
     this.litCard?.classList.remove('is-lit')
     card?.classList.add('is-lit')
-    this.o.cardList.classList.toggle('has-lit', card !== null)
+    this.o.cards?.list.classList.toggle('has-lit', card !== null)
     this.litCard = card
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
-import { backstage, hero } from '../../content'
+import { backstage, hero, terminal } from '../../content'
 import { enterBackstage } from '../../lib/backstage'
+import { openTerminal } from '../../lib/terminal'
 import { Decoder } from '../../lib/decoder'
 import { clamp, sstep } from '../../lib/math'
 import { Spotlight } from '../../lib/spotlight'
@@ -42,7 +43,7 @@ export function Stage() {
     const phaseFill = phase.querySelector<HTMLElement>('.phase__fill')!
     const heroFades = [...hero.querySelectorAll<HTMLElement>('.hero__fade')]
     const hint = hero.querySelector<HTMLElement>('.hero__hint')!
-    const bug = sticky.querySelector<HTMLElement>('.bug')!
+    const bugs = [...sticky.querySelectorAll<HTMLElement>('.bug')]
     const workHead = sticky.querySelector<HTMLElement>('.work__head')!
     const cards = [...sticky.querySelectorAll<HTMLElement>('.card')]
     const cardDecoders = cards.map((card, i) =>
@@ -100,9 +101,11 @@ export function Stage() {
         el.style.transform = copyOut ? `translateY(${-copyOut * 16}px)` : ''
       }
       hint.style.opacity = String(1 - sstep(T.hintOut[0], T.hintOut[1], p))
-      // The bug belongs to the hero: it leaves with its copy and can't be clicked once gone
-      bug.style.opacity = String(1 - copyOut)
-      bug.style.visibility = copyOut > 0.99 ? 'hidden' : ''
+      // The bugs belong to the hero: they leave with its copy and can't be clicked once gone
+      for (const bug of bugs) {
+        bug.style.opacity = String(1 - copyOut)
+        bug.style.visibility = copyOut > 0.99 ? 'hidden' : ''
+      }
       title.style.opacity = String(1 - sstep(T.swap[0], T.swap[1], p))
 
       const winA = sstep(T.codeWindowIn[0], T.codeWindowIn[1], p) * (1 - sstep(T.codeWindowOut[0], T.codeWindowOut[1], p))
@@ -210,7 +213,10 @@ export function Stage() {
         </div>
         <Work />
         <canvas className="stage__canvas" ref={canvasRef} aria-hidden="true" />
+        {/* The two hero easter eggs sit above every layer of the stage, so nothing covers them:
+            the race on the podium floor, the cipher terminal up in the dark top left */}
         {!reduced && <Bug className="bug--stage" label={backstage.bug} onClick={enterBackstage} />}
+        {!reduced && <Bug className="bug--hero" label={terminal.trigger} onClick={openTerminal} />}
         <PhaseIndicator ref={phaseRef} label={PHASES[0][1]} />
       </div>
     </section>

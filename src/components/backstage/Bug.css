@@ -19,9 +19,18 @@
   margin: -14px 0 0 -14px;
 }
 
-/* Stray cursors in grey text, both opening the cipher terminal:
-   in the hero's bottom line after the initials, and in the footer after the copyright */
-.bug--hero,
+/* Up in the dark, top left of the hero, away from the title and the podium light.
+   Grey-blue like a dead pixel on a screen, not the amber dust of the beam. */
+.bug--hero {
+  --bug-idle: rgba(150, 160, 170, 0.55);
+  position: absolute;
+  z-index: 6;
+  left: calc(50% - 31vw);
+  top: 23%;
+  margin: -14px 0 0 -14px;
+}
+
+/* In the footer, right after the copyright: a stray cursor, grey like the text around it */
 .bug--footer {
   --bug-idle: rgba(142, 138, 132, 0.75);
   position: relative;

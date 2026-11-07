@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
+import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { decrypt, encrypt, looksEncrypted } from '../../cipher/cipher'
 import { terminal } from '../../content'
 import { useReducedMotion } from '../../lib/useReducedMotion'
@@ -16,8 +16,8 @@ type CopyState = 'idle' | 'copied' | 'failed'
 
 /** An old CRT switching on: a bright line opens into the picture. Played backwards to close. */
 const POWER_ON: Keyframe[] = [
-  { transform: 'scale(0.04, 0.004)', filter: 'brightness(5)', opacity: 0 },
-  { transform: 'scale(1, 0.004)', filter: 'brightness(5)', opacity: 1, offset: 0.4 },
+  { transform: 'scale(0.04, 0.004)', filter: 'brightness(2)', opacity: 0 },
+  { transform: 'scale(1, 0.004)', filter: 'brightness(2)', opacity: 1, offset: 0.4 },
   { transform: 'none', filter: 'none', opacity: 1 },
 ]
 
@@ -119,11 +119,20 @@ export function Terminal({ open, onClose }: TerminalProps) {
     }
   }
 
-  /** Feeds the result back in, the other way round: handy to check a code before sending it. */
+  /** Puts a fresh code back in, in decrypt mode: a quick check that it opens before sending it. */
   const feedBack = () => {
     if (output.kind !== 'ok') return
     setInput(output.text)
-    switchMode(mode === 'encrypt' ? 'decrypt' : 'encrypt')
+    switchMode('decrypt')
+    inputRef.current?.focus()
+  }
+
+  /** Empties the message and the result; the key stays, since it is usually reused. */
+  const clear = () => {
+    setInput('')
+    setOutput({ kind: 'idle' })
+    setStatus('')
+    setCopy('idle')
     inputRef.current?.focus()
   }
 
@@ -149,25 +158,15 @@ export function Terminal({ open, onClose }: TerminalProps) {
     >
       <div className="term__screen mono" ref={screenRef} onKeyDown={onKeyDown}>
         <header className="term__bar">
-          <span className="term__lights" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span className="term__title">{terminal.title} — tty1</span>
+          <span className="term__dot" aria-hidden="true" />
+          <span className="term__title">{terminal.title}</span>
           <button type="button" className="term__close" onClick={onClose}>
-            [{terminal.close.toLowerCase()}]
+            {terminal.close} <span aria-hidden="true">✕</span>
           </button>
         </header>
 
         <div className="term__body">
-          <ol className="term__boot" aria-hidden="true">
-            {terminal.boot.map((line, i) => (
-              <li key={line} style={{ '--i': i } as CSSProperties}>
-                {line}
-              </li>
-            ))}
-          </ol>
+          <p className="term__intro">{terminal.intro}</p>
 
           <div className="term__modes" role="group" aria-label={terminal.modeLabel}>
             {(['encrypt', 'decrypt'] as const).map((m) => (
@@ -184,9 +183,9 @@ export function Terminal({ open, onClose }: TerminalProps) {
           </div>
 
           <label className="term__field">
-            <span className="term__prompt">{terminal.keyLabel} &gt;</span>
+            <span className="term__label">{terminal.keyLabel}</span>
             <input
-              className="term__key"
+              className="term__input"
               value={key}
               onChange={(e) => setKey(e.target.value)}
               placeholder={terminal.keyPlaceholder}
@@ -194,13 +193,14 @@ export function Terminal({ open, onClose }: TerminalProps) {
               autoCapitalize="off"
               spellCheck={false}
             />
+            <span className="term__hint">{terminal.keyHint}</span>
           </label>
 
-          <label className="term__field term__field--area">
-            <span className="term__prompt">{terminal.inputLabel[mode]} &gt;</span>
+          <label className="term__field">
+            <span className="term__label">{terminal.inputLabel[mode]}</span>
             <textarea
               ref={inputRef}
-              className="term__input"
+              className="term__input term__input--area"
               value={input}
               onChange={(e) => onInput(e.target.value)}
               placeholder={terminal.inputPlaceholder[mode]}
@@ -209,9 +209,17 @@ export function Terminal({ open, onClose }: TerminalProps) {
             />
           </label>
 
-          <div className="term__run-row">
-            <button type="button" className="term__run" onClick={run}>
-              [ {terminal.run[mode]} <kbd>{terminal.runHint}</kbd> ]
+          <div className="term__actions">
+            <button type="button" className="term__btn term__btn--primary" onClick={run}>
+              {terminal.run[mode]} <kbd>{terminal.runHint}</kbd>
+            </button>
+            <button
+              type="button"
+              className="term__btn"
+              onClick={clear}
+              disabled={!input && output.kind === 'idle'}
+            >
+              {terminal.clear}
             </button>
             <span className="term__status" role="status">
               {status}
@@ -220,13 +228,21 @@ export function Terminal({ open, onClose }: TerminalProps) {
 
           <section className="term__out" data-kind={output.kind} aria-label={terminal.output}>
             <header className="term__out-bar">
-              <span>{terminal.output}</span>
+              <span className="term__label">{terminal.output}</span>
               <span className="term__out-actions">
-                <button type="button" onClick={feedBack} disabled={output.kind !== 'ok'}>
-                  {terminal.swap}
-                </button>
-                <button type="button" onClick={copyOutput} disabled={output.kind !== 'ok'} data-copy={copy}>
-                  {copy === 'copied' ? `${terminal.copied} ✓` : copy === 'failed' ? terminal.copyFailed : terminal.copy}
+                {mode === 'encrypt' && (
+                  <button type="button" className="term__btn term__btn--small" onClick={feedBack} disabled={output.kind !== 'ok'}>
+                    {terminal.check}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="term__btn term__btn--small"
+                  onClick={copyOutput}
+                  disabled={output.kind !== 'ok'}
+                  data-copy={copy}
+                >
+                  {copy === 'copied' ? terminal.copied : copy === 'failed' ? terminal.copyFailed : terminal.copy}
                 </button>
               </span>
             </header>
@@ -241,7 +257,6 @@ export function Terminal({ open, onClose }: TerminalProps) {
 
           <p className="term__note">{terminal.disclaimer}</p>
         </div>
-        <div className="term__scanlines" aria-hidden="true" />
       </div>
     </dialog>
   )

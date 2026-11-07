@@ -203,39 +203,41 @@ export const race = {
   again: 'Race again',
 }
 
-/** The cipher terminal, opened by a stray cursor: after the initials in the hero, and after the copyright in the footer. */
+/** The cipher terminal, opened by a stray cursor: somewhere in the hero, and after the copyright in the footer. */
 export const terminal = {
   /** Accessible name of the hidden trigger */
   trigger: 'A stray cursor',
   title: 'cipher.sys',
   label: 'Cipher terminal',
-  /** Printed one line at a time when the terminal powers on */
-  boot: ['booting cipher.sys v1.0 …', 'loading backstage keyring … ok', 'link secure*  (*not really)'],
+  intro: 'Write a secret message, send the code to a friend, they open it here.',
   modeLabel: 'Mode',
   modes: { encrypt: 'Encrypt', decrypt: 'Decrypt' },
-  keyLabel: 'Key',
-  keyPlaceholder: 'optional: share it with whoever reads the message',
-  inputLabel: { encrypt: 'Plain text', decrypt: 'Encrypted code' },
+  keyLabel: 'Key (optional)',
+  keyPlaceholder: 'a word you both know',
+  keyHint: 'Leave it empty and anyone with this site can open the message.',
+  inputLabel: { encrypt: 'Your message', decrypt: 'Code to decrypt' },
   inputPlaceholder: {
     encrypt: 'Type a secret message…',
     decrypt: 'Paste a code that starts with AM:',
   },
-  run: { encrypt: 'Encrypt', decrypt: 'Decrypt' },
+  run: { encrypt: 'Encrypt message', decrypt: 'Decrypt code' },
   runHint: '⌘ ↵',
-  output: 'Output',
-  idle: 'awaiting input_',
+  clear: 'Clear',
+  output: 'Result',
+  idle: 'The result will appear here.',
   copy: 'Copy',
-  copied: 'Copied',
-  copyFailed: 'Select it and copy by hand',
-  swap: 'Use as input',
-  /** Shown in place of the output when decryption fails */
+  copied: 'Copied ✓',
+  copyFailed: 'Selected: press ⌘C',
+  /** Encrypt mode only: puts the code back in, in decrypt mode, to check it opens */
+  check: 'Test it',
+  /** Shown in place of the result when something goes wrong */
   errors: {
-    empty: 'nothing to process',
-    format: 'unknown format: codes start with AM:',
-    key: 'ACCESS DENIED — wrong key',
+    empty: 'Nothing to process yet.',
+    format: 'Not a valid code: codes start with AM:',
+    key: 'Access denied: wrong key.',
   },
   /** Status line when a pasted code switches the mode by itself */
-  detected: 'code detected → decrypt mode',
-  disclaimer: 'Toy cipher for notes between friends. Not for passwords.',
+  detected: 'Code detected: switched to Decrypt.',
+  disclaimer: 'A toy cipher for notes between friends. Not for passwords.',
   close: 'Close',
 }

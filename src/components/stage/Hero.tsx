@@ -1,7 +1,5 @@
 import { forwardRef, type Ref } from 'react'
-import { hero, person, terminal } from '../../content'
-import { openTerminal } from '../../lib/terminal'
-import { Bug } from '../backstage/Bug'
+import { hero, person } from '../../content'
 
 type HeroProps = {
   /** The service line: the particle engine samples its pixels and transmutes it. */
@@ -24,10 +22,7 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ titleRef 
         <span className="hero__hint" aria-hidden="true">
           {hero.hint} <span className="hero__arrow">↓</span>
         </span>
-        <span>
-          {person.initials}
-          <Bug className="bug--hero" label={terminal.trigger} onClick={openTerminal} />
-        </span>
+        <span>{person.initials}</span>
       </div>
     </header>
   )

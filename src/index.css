@@ -33,8 +33,15 @@ html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
-  /* Only the stack section defines snap points; elsewhere the page scrolls freely */
-  scroll-snap-type: y proximity;
+}
+
+/* Touch only: only the stack section defines snap points; elsewhere the page scrolls freely.
+   With a wheel or trackpad the stack's own stops (StackStage) take over for fast gestures,
+   and a slow scroll is never pulled toward a card. */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-snap-type: y proximity;
+  }
 }
 
 body {

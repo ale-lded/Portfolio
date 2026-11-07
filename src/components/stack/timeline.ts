@@ -63,19 +63,25 @@ const REFERENCE_VH = 640
 /**
  * How much scroll each part of a layer window gets, relative to the reference:
  * the entrance (plate out, title flying to the panel) is stretched so it reads as a
- * slow, fluid arrival; the reading hold is shortened; the exit keeps its length.
+ * slow, fluid arrival; the reading hold is shortened; the exit (title back on the
+ * plate, plate down and back in) is stretched too, so it plays at about the same pace
+ * as the entrance instead of snapping shut in a fraction of a wheel step.
  */
 export const ENTRANCE_SCALE = 3
-export const HOLD_SCALE = 2 / 3
+export const HOLD_SCALE = 1 / 2
+export const EXIT_SCALE = 4
 
 /** Stretched or compressed spans of the reference timeline, in order and not overlapping. */
 const SPANS = Array.from({ length: 4 }, (_, i) => {
   const s = S.layers.start + i * S.layers.step
   const readFrom = s + S.layers.length * READ_WINDOW[0]
   const readTo = s + S.layers.length * READ_WINDOW[1]
+  // The tail of an exit overlaps the next entrance: that part takes the entrance's scale
+  const exitTo = i < 3 ? s + S.layers.step : s + S.layers.length
   return [
     { from: s, to: readFrom, scale: ENTRANCE_SCALE },
     { from: readFrom, to: readTo, scale: HOLD_SCALE, hold: true },
+    { from: readTo, to: exitTo, scale: EXIT_SCALE },
   ]
 }).flat()
 

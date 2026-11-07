@@ -54,7 +54,7 @@ export function plateMove(t: number, H: number): PlateMove {
 }
 
 /** When the title leaves its plate and comes back (fractions of t). */
-const TIMING = { flyIn: [0.2, 0.44], restIn: [0.38, 0.47], restOut: [0.6, 0.66], flyBack: [0.62, 0.76] } as const
+const TIMING = { flyIn: [0.2, 0.44], restIn: [0.38, 0.47], restOut: [0.6, 0.66], flyBack: [0.61, 0.78] } as const
 
 /** Quintic ease in-out: starts gently and settles very slowly into place. */
 const smootherstep = (a: number, b: number, v: number) => {

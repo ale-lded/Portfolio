@@ -262,6 +262,7 @@ export function StackStage() {
         // Finished and moving on: freeze on the final frame
         latched = true
         current = 1
+        velocity = 0
         apply(1)
       } else if (latched && r.top >= window.innerHeight) {
         // Out of view below: re-arm. Height changes below the viewport move nothing on screen.
@@ -269,6 +270,7 @@ export function StackStage() {
         collapsed = false
         stage.classList.remove('stack--done')
         current = 0
+        velocity = 0
         apply(0)
       }
       window.clearTimeout(collapseTimer)
@@ -276,33 +278,57 @@ export function StackStage() {
     }
 
     let current = progress()
+    /** Speed of `current`, progress per second */
+    let velocity = 0
     let raf = 0
+    let lastFrame = 0
     let inView = false
 
-    // The scene follows the scroll directly, with only a light smoothing of the wheel steps
-    const tick = () => {
+    /**
+     * Stiffness of the spring that chases the scroll, rad/s. Critically damped, so it never
+     * overshoots on its own; unlike a plain per-frame lerp it keeps its speed between two
+     * wheel steps, so a run of steps blends into one continuous motion instead of a staircase.
+     */
+    const SPRING = 9
+    /** Time constant of the pointer tilt, s */
+    const TILT_TAU = 0.27
+
+    // The scene follows the scroll through a soft spring; time-based, so the same at any refresh rate
+    const tick = (now: number) => {
       raf = 0
+      // A long gap (first frame, background tab) counts as one ordinary frame
+      const dt = lastFrame ? Math.min(now - lastFrame, 50) / 1000 : 1 / 60
+      lastFrame = now
       const target = latched ? 1 : progress()
-      current += (target - current) * 0.12
-      if (Math.abs(target - current) < 0.0003) current = target
-      tilt.x += (tilt.tx - tilt.x) * 0.06
-      tilt.z += (tilt.tz - tilt.z) * 0.06
+      velocity += (SPRING * SPRING * (target - current) - 2 * SPRING * velocity) * dt
+      current += velocity * dt
+      const settled = Math.abs(target - current) < 0.0002 && Math.abs(velocity) < 0.002
+      if (settled) {
+        current = target
+        velocity = 0
+      }
+      const k = 1 - Math.exp(-dt / TILT_TAU)
+      tilt.x += (tilt.tx - tilt.x) * k
+      tilt.z += (tilt.tz - tilt.z) * k
       const tiltSettled = Math.abs(tilt.tx - tilt.x) < 0.01 && Math.abs(tilt.tz - tilt.z) < 0.01
       if (tiltSettled) {
         tilt.x = tilt.tx
         tilt.z = tilt.tz
       }
-      apply(current)
-      if (current !== target || !tiltSettled) raf = requestAnimationFrame(tick)
+      apply(clamp(current))
+      if (!settled || !tiltSettled) raf = requestAnimationFrame(tick)
+      else lastFrame = 0
     }
     const request = () => {
       if (inView && !raf) raf = requestAnimationFrame(tick)
     }
     /**
-     * Reading stops for wheel and trackpad. CSS snapping alone lets a fast flick fly past
-     * several cards, so when a scroll crosses a card's stop the page is held there: further
-     * wheel input (including trackpad momentum) is swallowed for at least STOP_MIN ms, until
-     * the gesture goes quiet or STOP_MAX ms have passed. Reversing direction releases at once.
+     * Reading stops for wheel and trackpad, for fast gestures only. CSS snapping alone lets a
+     * fast flick fly past several cards, so when a fast scroll crosses a card's stop the page
+     * is held there: further wheel input (including trackpad momentum) is swallowed for at
+     * least STOP_MIN ms, until the gesture goes quiet or STOP_MAX ms have passed. Reversing
+     * direction releases at once. A slow scroll is never stopped or pulled: the visitor is
+     * already reading at their own pace, and holding them there only makes the motion stutter.
      * Touch scrolling has no wheel events and keeps the CSS snap points only.
      */
     const STOP_MIN = 400
@@ -312,6 +338,16 @@ export function StackStage() {
     let stopDir = 0
     let lastWheel = 0
     let lastY = window.scrollY
+    /**
+     * Recent wheel distance, px, decaying with a WHEEL_DECAY ms time constant: a rough
+     * measure of how hard the visitor is scrolling. Past FAST (a share of the viewport)
+     * the gesture counts as a flick.
+     */
+    let wheelEnergy = 0
+    let wheelDir = 0
+    const WHEEL_DECAY = 120
+    const FAST = 0.35
+    const isFast = () => wheelEnergy > window.innerHeight * FAST
 
     const stopAt = (y: number, dir: number) => {
       window.scrollTo({ top: y, behavior: 'instant' })
@@ -338,6 +374,8 @@ export function StackStage() {
       const dir = Math.sign(dy)
       const quiet = now - lastWheel
       lastWheel = now
+      wheelEnergy = (dir === wheelDir ? wheelEnergy * Math.exp(-quiet / WHEEL_DECAY) : 0) + Math.abs(dy)
+      wheelDir = dir
       if (stopStarted) {
         const held = now - stopStarted
         const release = dir !== stopDir || (held > STOP_MIN && quiet > STOP_QUIET) || held > STOP_MAX
@@ -347,6 +385,7 @@ export function StackStage() {
         }
         stopStarted = 0
       }
+      if (!isFast()) return
       const y = window.scrollY
       const stop = stopBetween(y, y + dy)
       if (stop !== null) {
@@ -357,8 +396,9 @@ export function StackStage() {
 
     const onScroll = () => {
       // Smooth wheel scrolling can land past a stop between two wheel events: pull it back
+      // (fast gestures only, like the stops themselves)
       const y = window.scrollY
-      if (!stopStarted && performance.now() - lastWheel < 120) {
+      if (!stopStarted && performance.now() - lastWheel < 120 && isFast()) {
         const stop = stopBetween(lastY, y)
         if (stop !== null) stopAt(stop, Math.sign(y - lastY))
       }

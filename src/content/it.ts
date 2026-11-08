@@ -93,7 +93,7 @@ export const it: Content = {
     heading: 'Ho gestito un’attività. Ora creo siti web per chi ne ha una.',
     bio: [
       'Sono italiano. Ho studiato informatica in Italia, poi a vent’anni ho accettato un lavoro di tre mesi in una pizzeria in Francia. Non me ne sono più andato. Ho aperto il mio ristorante, e gestirlo mi ha insegnato quello che ogni imprenditore sa: anche i dettagli più piccoli contano.',
-      'Ma in fondo la passione per la programmazione non se n’era mai andata. Così ho venduto il ristorante e mi sono preso una pausa per rifletterci, non a casa ma in sella: con la mia compagna siamo partiti su due bici, quindici mesi, trenta paesi, quindicimila chilometri. Da qualche parte lungo la strada ho deciso di diventare sviluppatore web, e da allora mi sono aggiornato sulle migliori tecnologie per stare al passo con il mercato di oggi.',
+      'Ma in fondo la passione per la programmazione non se n’era mai andata. Così ho venduto il ristorante e mi sono preso una lunga pausa per rifletterci: io e la mia compagna abbiamo comprato due bici e siamo partiti. Quindici mesi, trenta paesi, quindicimila chilometri, dalla Francia al Giappone. Da qualche parte lungo la strada ho deciso di diventare sviluppatore web, e da allora mi sono aggiornato sulle migliori tecnologie per stare al passo con il mercato di oggi.',
       'Oggi vivo vicino a Lione, con tante idee e la pazienza di chi è stato dall’altra parte del bancone. Amo due cose: il quadro generale e i piccoli dettagli. Il tuo sito merita entrambi.',
     ],
     photo: {

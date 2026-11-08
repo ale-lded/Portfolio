@@ -124,7 +124,7 @@ export const about = {
   heading: 'I’ve run a business. Now I build websites for them.',
   bio: [
     'I’m Italian. I studied computer science back home, then at twenty I took a three-month job in a pizzeria in France. I never left. I went on to open my own restaurant, and running it taught me what every business owner knows: even the smallest details matter.',
-    'But deep down, my passion for programming had never gone away. So I sold the restaurant and took a break to think it over, not at home but in the saddle: my partner and I set off on two bikes, fifteen months, thirty countries, fifteen thousand kilometres. Somewhere along the road I decided to become a web developer, and since then I’ve been catching up on the best technologies, to keep pace with today’s market.',
+    'But deep down, my passion for programming had never gone away. So I sold the restaurant and took a long break to think it over: my partner and I bought two bikes and set off. Fifteen months, thirty countries, fifteen thousand kilometres, from France to Japan. Somewhere along the road I decided to become a web developer, and since then I’ve been catching up on the best technologies, to keep pace with today’s market.',
     'Today I’m based near Lyon, with plenty of ideas and the patience of someone who’s been on the other side of the counter. I love two things: the big picture and the small details. Your website deserves both.',
   ],
   /** The film photo beside the bio: opens larger on click */

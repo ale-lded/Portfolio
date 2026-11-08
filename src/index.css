@@ -79,6 +79,16 @@ ul {
   border-radius: 4px;
 }
 
+/* While a modal is open (the photo, a project, the terminal) the page under it stays put,
+   like the backstage does (Backstage.css); the dialog keeps its own scroll to itself */
+html:has(dialog:modal) {
+  overflow: hidden;
+}
+
+dialog {
+  overscroll-behavior: contain;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

@@ -367,7 +367,8 @@ export function StackStage() {
     }
 
     const onWheel = (e: WheelEvent) => {
-      if (latched || !inView || e.ctrlKey) return
+      // A modal is open over the page: the wheel belongs to it, not to the stops
+      if (latched || !inView || e.ctrlKey || document.querySelector('dialog:modal')) return
       const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY
       if (!dy) return
       const now = performance.now()

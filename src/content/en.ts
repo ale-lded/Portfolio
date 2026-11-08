@@ -58,6 +58,8 @@ export type Project = {
     heading: string
     items: { name: string; text: string }[]
     close: string
+    /** A note in brackets after the secrets, e.g. where they can be found */
+    note: string
   }
 }
 
@@ -85,8 +87,7 @@ export const projects: Project[] = [
       ],
       progress: 'Work in progress: Merge works today, Split is on its way, Compress and Sign are previews.',
       cta: 'Edit your PDF',
-      // TODO: the address of the live app
-      href: '',
+      href: 'https://folio.alessyomura.workers.dev',
       soon: 'Online soon',
       close: 'Close',
     },
@@ -101,13 +102,14 @@ export const projects: Project[] = [
       items: [
         {
           name: 'A pixel out of place',
-          text: 'Click it, up at the top of the page, for a one-lap race backstage. Beat the record.',
+          text: 'Click it, at the top of the page, for a one-lap race backstage. Beat the record.',
         },
         {
           name: 'A stray cursor',
-          text: 'It hides at the top and the bottom of the page, and opens a terminal for secret messages.',
+          text: 'It hides at the top and bottom of the page, and opens a terminal for secret notes.',
         },
       ],
+      note: '(desktop only)',
       close: 'Flip back',
     },
   },

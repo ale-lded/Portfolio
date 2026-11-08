@@ -27,12 +27,27 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   const backHeading = useRef<HTMLParagraphElement>(null)
   const { details, back } = project
 
+  /**
+   * The back lies over the front, so it has only the front's height. Where it holds more
+   * (a narrow phone, a longer language), the card grows to fit it while it is turned over.
+   */
+  const fitBack = (toBack: boolean) => {
+    const el = card.current
+    const backFace = el?.querySelector<HTMLElement>('.card__back')
+    if (!el || !backFace) return
+    el.style.minHeight = ''
+    // min-height counts the border too, clientHeight does not
+    const border = el.offsetHeight - el.clientHeight
+    if (toBack && backFace.scrollHeight > el.clientHeight) el.style.minHeight = `${backFace.scrollHeight + border}px`
+  }
+
   /** Turns the card edge-on, swaps the faces out of sight, and turns it back */
   const flip = async (to: boolean) => {
     const el = card.current
     // Keep the focus on the face that is now showing
     const focus = () => (to ? backHeading.current : flipButton.current)?.focus()
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      fitBack(to)
       flushSync(() => setFlipped(to))
       focus()
       return
@@ -43,6 +58,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       duration: 280,
       easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)',
     }).finished
+    fitBack(to)
     flushSync(() => setFlipped(to))
     focus()
     el.animate([{ transform: edge(-90 * sign) }, { transform: edge(0) }], {
@@ -121,9 +137,12 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               </li>
             ))}
           </ol>
-          <button type="button" className="card__action mono" onClick={() => void flip(false)}>
-            <span aria-hidden="true">↺</span> <span className="card__action-text">{back.close}</span>
-          </button>
+          <div className="card__back-foot">
+            <button type="button" className="card__action mono" onClick={() => void flip(false)}>
+              <span aria-hidden="true">↺</span> <span className="card__action-text">{back.close}</span>
+            </button>
+            <span className="card__back-note mono">{back.note}</span>
+          </div>
         </div>
       )}
 

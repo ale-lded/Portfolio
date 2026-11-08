@@ -350,8 +350,23 @@
   outline-offset: 3px;
 }
 
-.card__back .card__action {
+/* The way back, and beside it the note on where the secrets live */
+.card__back-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: auto;
+}
+
+.card__back-foot .card__action {
+  margin-top: 0;
+}
+
+.card__back-note {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
 }
 
 @media (max-width: 960px) {

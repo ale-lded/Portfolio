@@ -36,9 +36,33 @@ function languageLinks(): Plugin {
   }
 }
 
+/**
+ * A preview build for friends, before the launch: HIDDEN=1 npm run build asks search
+ * engines to stay away, with a noindex tag on every page and an X-Robots-Tag header
+ * (a _headers file, read by Netlify and Cloudflare Pages). robots.txt still lets crawlers
+ * in: a page they may not fetch is a page whose noindex they never see.
+ * Anyone with the link still sees the site. Leave HIDDEN out for the real launch.
+ */
+function hiddenPreview(): Plugin {
+  const hidden = !!process.env.HIDDEN
+  return {
+    name: 'hidden-preview',
+    transformIndexHtml(html) {
+      if (!hidden) return html
+      return html.replace('</head>', '    <meta name="robots" content="noindex, nofollow" />\n  </head>')
+    },
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: 'User-agent: *\nAllow: /\n' })
+      if (hidden) {
+        this.emitFile({ type: 'asset', fileName: '_headers', source: '/*\n  X-Robots-Tag: noindex, nofollow\n' })
+      }
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), languageLinks()],
+  plugins: [react(), languageLinks(), hiddenPreview()],
   build: {
     rollupOptions: {
       input: Object.fromEntries(Object.entries(pages).map(([lang, p]) => [lang, resolve(__dirname, p.html)])),

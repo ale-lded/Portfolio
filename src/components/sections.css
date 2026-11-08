@@ -35,6 +35,197 @@
   margin-top: 18px;
 }
 
+
+/* The film print under the heading: a small frame that opens larger */
+.photo {
+  margin-top: 56px;
+  max-width: 520px;
+}
+
+.photo__open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: zoom-in;
+  overflow: hidden;
+  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.9);
+}
+
+.photo__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: saturate(0.85) brightness(0.88);
+  transition:
+    filter 0.5s ease,
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.photo__open:hover .photo__img,
+.photo__open:focus-visible .photo__img {
+  filter: none;
+  transform: scale(1.02);
+}
+
+.photo__open:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
+}
+
+.photo__caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.lightbox {
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100%;
+  padding: 24px var(--pad);
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  display: none;
+  place-items: center;
+}
+
+.lightbox[open] {
+  display: grid;
+  animation: lightbox-in 0.35s ease both;
+}
+
+.lightbox::backdrop {
+  background: rgba(6, 6, 7, 0.88);
+  backdrop-filter: blur(6px);
+}
+
+.lightbox__print {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: min(1200px, 100%);
+}
+
+.lightbox__print img {
+  display: block;
+  max-width: 100%;
+  max-height: calc(100vh - 200px);
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 40px 120px -40px rgba(0, 0, 0, 0.9);
+}
+
+.lightbox__caption {
+  max-width: 560px;
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #bdb7af;
+}
+
+.lightbox__caption .mono {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.lightbox__close {
+  position: fixed;
+  top: 20px;
+  right: var(--pad);
+  padding: 8px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(10, 10, 11, 0.6);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.lightbox__close:hover,
+.lightbox__close:focus-visible {
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+/* ---------- Services ---------- */
+.services__heading {
+  max-width: 22ch;
+  text-wrap: balance;
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.services__list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1280px;
+  margin-top: 64px;
+  list-style: none;
+}
+
+.service {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--surface), var(--bg));
+  transition: border-color 0.3s;
+}
+
+.service:hover {
+  border-color: rgba(255, 181, 71, 0.45);
+}
+
+.service__index {
+  font-size: 12px;
+  color: var(--amber);
+}
+
+.service__name {
+  margin-top: 40px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.service__text {
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #bdb7af;
+}
+
+.service__note {
+  margin-top: auto;
+  padding-top: 20px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
 /* ---------- Contact ---------- */
 .contact {
   overflow: hidden;
@@ -100,6 +291,13 @@
   color: var(--text);
 }
 
+.contact__reply {
+  position: relative;
+  margin-top: 20px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
@@ -116,5 +314,27 @@
   .about__grid {
     grid-template-columns: 1fr;
     gap: 40px;
+  }
+
+  .photo {
+    margin-top: 40px;
+  }
+
+  .services__list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .service {
+    padding: 22px;
+  }
+
+  .service__name {
+    margin-top: 24px;
+  }
+
+  .lightbox__close {
+    top: 14px;
   }
 }

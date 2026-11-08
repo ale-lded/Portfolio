@@ -13,12 +13,15 @@ export function Contact() {
           <a className="contact__cta" href={`mailto:${contact.email}`}>
             {contact.cta} <span aria-hidden="true">→</span>
           </a>
-          {contact.links.map((link) => (
-            <a key={link.label} className="contact__link mono" href={link.href}>
-              {link.label} ↗
-            </a>
-          ))}
+          {contact.links
+            .filter((link) => link.href)
+            .map((link) => (
+              <a key={link.label} className="contact__link mono" href={link.href} target="_blank" rel="noreferrer">
+                {link.label} ↗
+              </a>
+            ))}
         </div>
+        <p className="contact__reply">{contact.reply}</p>
       </section>
       <footer className="footer mono">
         <span>

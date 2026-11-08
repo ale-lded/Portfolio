@@ -1,17 +1,16 @@
 /**
  * Every piece of copy on the site, in one place: components never hard-code text.
  * When the site becomes multilingual, this file is the one to split per language.
- * Fields marked TODO are placeholders: replace them with your real content.
+ * Fields marked TODO are still waiting for real content.
  */
 
 export const person = {
   name: 'Alessio Mura',
   initials: 'AM',
   /** Service line: the hero title, and the text that transforms on scroll */
-  tagline: 'Digital product creator',
-  role: 'Full-stack designer and developer',
-  // TODO: placeholder intro line
-  lead: '“I design clear interfaces and build them, from pixel to database.”',
+  tagline: 'Websites, made to measure.',
+  role: 'Web designer & developer',
+  lead: '“I listen first, then design and build a website that fits your business, down to the smallest detail.”',
 }
 
 export const nav = {
@@ -20,13 +19,14 @@ export const nav = {
   links: [
     { label: 'About', href: '#about' },
     { label: 'Work', href: '#work' },
+    { label: 'Services', href: '#services' },
     { label: 'Contact', href: '#contact' },
   ],
 }
 
 export const hero = {
   stageLabel: 'Introduction and work',
-  meta: 'Portfolio — 2026',
+  meta: 'Lyon, France — 2026',
   hint: 'scroll',
   /** The four steps of the hero sequence, shown bottom left while it plays */
   phases: ['01 — Crumbling', '02 — Code → binary', '03 — Recomposing', '04 — Work'],
@@ -36,41 +36,87 @@ export type Project = {
   title: string
   description: string
   tags: string[]
+  /** Shown on the card in place of the arrow, e.g. "In progress" */
+  status?: string
+  /** Where the card leads: leave it out and the card is not a link */
+  href?: string
 }
 
 export const work = {
   heading: 'Selected work',
 }
 
-/** Sample projects. */
 export const projects: Project[] = [
   {
-    title: 'Atlas',
-    description: 'A personal budgeting app, from prototype to release.',
-    tags: ['Figma', 'React Native'],
+    title: 'Folio',
+    description: 'PDF tools that run in your browser. Your files never leave your device.',
+    tags: ['React', 'pdf-lib', 'Open source'],
+    status: 'In progress',
+    // TODO: link to the live app or the repository once it is public
   },
   {
-    title: 'Nerina',
-    description: 'Visual identity and website for a small winery.',
-    tags: ['Branding', 'HTML, CSS'],
+    title: 'This site',
+    description: 'My portfolio, built as a playground: particles, scroll stories and a few secrets.',
+    tags: ['React', 'TypeScript', 'Canvas'],
   },
   {
-    title: 'Orbita',
-    description: 'A real-time dashboard for urban logistics.',
-    tags: ['Design system', 'TypeScript'],
+    // TODO: once the client agrees, use their name and link the page
+    title: 'Case study',
+    description: 'A new case-study page for a software consultancy, designed to fit their existing site.',
+    tags: ['Web design', 'Front end'],
   },
 ]
 
 export const about = {
   label: '02 — About',
-  // TODO: placeholder heading and bio, to be rewritten in your own voice
-  heading: 'I design digital products and take them all the way to production.',
+  heading: 'I’ve run a business. Now I build websites for them.',
   bio: [
-    'TODO — Placeholder bio. I’m Alessio, a full-stack designer and developer: I work where product meets code, from prototypes and interfaces to the data behind them.',
+    'I studied computer science, then at twenty I took a three-month job in a pizzeria in France. I never left. I went on to open my own restaurant, and running it taught me what every business owner knows: people remember the details.',
+    'Then the itch for tech came back. I sold the restaurant, and my partner and I set off on two bikes: fifteen months, thirty countries, fifteen thousand kilometres. Somewhere along the road I decided to become a web developer, and I’ve been learning the best tools of the trade ever since.',
+    'Today I’m based near Lyon, with plenty of ideas and the patience of someone who’s been on the other side of the counter. I love two things: the big picture and the small details. Your website deserves both.',
   ],
+  /** The film photo beside the bio: opens larger on click */
+  photo: {
+    src: '/photos/fuji.webp',
+    width: 2000,
+    height: 1360,
+    alt: 'Alessio standing with his loaded touring bike by a lake, Mount Fuji rising above the clouds behind him.',
+    caption: 'Mount Fuji, a stop on our ride.',
+    film: 'Pentax MX (1976) · Fujifilm 35 mm',
+    open: 'Open the photo',
+    close: 'Close',
+    story: 'I still shoot film: every frame counts, so you take your time with it. I try to build websites the same way.',
+  },
 }
 
-export type Skill = {
+export type Service = {
+  name: string
+  text: string
+  /** A smaller line under the text */
+  note?: string
+}
+
+export const services = {
+  label: '03 — Services',
+  heading: 'What I can build for you.',
+  items: [
+    {
+      name: 'Redesign',
+      text: 'Your current site, rebuilt to be modern, fast and easy to find. Same business, a much better first impression.',
+    },
+    {
+      name: 'Showcase websites',
+      text: 'A clear, beautiful home for your business online: who you are, what you do, and how to reach you.',
+    },
+    {
+      name: 'Web apps',
+      text: 'Custom tools for the way you work: bookings, client areas, dashboards.',
+      note: 'For larger projects I team up with a trusted full-stack developer, so timelines stay short and realistic.',
+    },
+  ] satisfies Service[],
+}
+
+export type Step = {
   name: string
   note?: string
   /** One line shown when the layer is lit in the exploded view */
@@ -78,71 +124,74 @@ export type Skill = {
 }
 
 /**
- * The stack sequence between "About" and "Contact": the skills become four
- * stacked layers, from the interface on top down to the data.
- * TODO: intro, details and outro are placeholders, to be rewritten in your own voice.
+ * The scroll sequence between "Services" and "Contact": the way of working,
+ * as four stacked layers, from the first call down to launch day.
  */
 export const stack = {
-  label: 'The stack',
+  label: 'How I work',
   intro: {
-    heading: 'Four layers, one product.',
-    text: 'Every project goes through the same layers. I handle all of them, from the first sketch to the data.',
+    heading: 'Four steps, no surprises.',
+    text: 'From our first call to launch day, you always know where we are and what comes next.',
   },
   skills: [
     {
-      name: 'Product design',
-      note: 'Research, prototypes',
-      detail: 'Flows, wireframes and prototypes: working out what to build, and why.',
+      name: 'Listen',
+      note: 'Call, needs, goals',
+      detail: 'We talk about your business, your customers and what your site needs to do. No jargon, no commitment.',
     },
     {
-      name: 'Design system',
-      note: 'Tokens, components',
-      detail: 'Shared rules and components that keep every screen consistent.',
+      name: 'Plan',
+      note: 'Options, structure, concept',
+      detail: 'We weigh the options together and agree on the structure and the key ideas before a single pixel is drawn.',
     },
     {
-      name: 'Front end',
-      note: 'React, TypeScript',
-      detail: 'Fast, accessible interfaces, polished down to the last pixel.',
+      name: 'Design',
+      note: 'Mockups, revisions included',
+      detail: 'You see your site before it’s built, and we refine it until it feels like yours.',
     },
     {
-      name: 'Back end & database',
-      note: 'APIs, SQL',
-      detail: 'Solid APIs and data that hold the product up as it grows.',
+      name: 'Build & launch',
+      note: 'Development, launch, care',
+      detail: 'I build it fast, accessible and easy to find on Google, put it online, and can keep it up to date afterwards.',
     },
-  ] satisfies Skill[],
+  ] satisfies Step[],
   outro: {
-    heading: 'From pixel to database.',
-    text: 'One person for the whole stack.',
+    heading: 'From first call to launch day.',
+    text: 'One person you can talk to, all the way through.',
   },
   /** The four steps of the stack sequence, shown bottom left while it plays */
-  phases: ['01 — Assembly', '02 — Exploded view', '03 — Compression', '04 — The stack'],
+  phases: ['01 — Assembly', '02 — Exploded view', '03 — Compression', '04 — The method'],
   /** Words drawn inside the layer illustrations (LayerArt) */
   art: {
-    flow: ['Research', 'Flows', 'Prototype'],
-    /** Sample switch label and input value in the design-system plate */
+    /** The notes taken during the first call */
+    brief: {
+      title: 'First call',
+      questions: ['Who are your customers?', 'What should the site do?', 'What do you love, what not?'],
+      answer: 'More bookings, less phone',
+    },
+    /** The site map drawn while planning */
+    flow: ['Home', 'Services', 'Contact'],
+    /** Sample switch label and input value in the design plate */
     toggle: 'on',
     email: 'name@studio.com',
-    table: 'projects',
-    columns: ['ID', 'PROJECT', 'STATUS'],
-    /** Status of each sample project: true is live */
-    status: [
-      { live: true, label: 'live' },
-      { live: false, label: 'in progress' },
-      { live: true, label: 'live' },
-    ],
+    /** The launch badge on the last plate */
+    live: 'Live',
   },
 }
 
 export const contact = {
-  label: '03 — Contact',
-  heading: 'Have a project in mind?',
-  cta: 'Get in touch',
-  // TODO: put your real email here
-  email: 'hello@example.com',
-  // TODO: put your real profiles here (leave the array empty to hide them)
+  label: '04 — Contact',
+  heading: 'Let’s talk about your website.',
+  cta: 'Write to me',
+  reply: 'I’ll get back to you quickly.',
+  // TODO: switch to an address on your own domain when you have one
+  email: 'commerciale.alessiomura@gmail.com',
+  /** Profiles: a link with an empty href stays hidden */
   links: [
-    { label: 'LinkedIn', href: '#' },
-    { label: 'GitHub', href: '#' },
+    { label: 'GitHub', href: 'https://github.com/ale-lded' },
+    // TODO: add your Malt and LinkedIn profiles
+    { label: 'Malt', href: '' },
+    { label: 'LinkedIn', href: '' },
   ],
   backToTop: 'Back to top',
 }

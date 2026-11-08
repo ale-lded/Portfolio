@@ -257,6 +257,31 @@
   color: var(--amber);
 }
 
+.card__status {
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 181, 71, 0.4);
+  border-radius: 999px;
+  font-size: 10.5px;
+  color: var(--amber);
+}
+
+/* The title link covers the whole card */
+.card__link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card__link:focus-visible {
+  outline: none;
+}
+
+.card:has(.card__link:focus-visible) {
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
+}
+
 .card__title {
   margin-top: auto;
   font-size: 44px;

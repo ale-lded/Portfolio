@@ -13,11 +13,25 @@ export function Work() {
           <li key={project.title} className="card">
             <div className="card__top mono">
               <span className="card__index">{String(i + 1).padStart(2, '0')}</span>
-              <span className="card__arrow" aria-hidden="true">
-                ↗
-              </span>
+              {project.status ? (
+                <span className="card__status">{project.status}</span>
+              ) : (
+                project.href && (
+                  <span className="card__arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                )
+              )}
             </div>
-            <h3 className="card__title">{project.title}</h3>
+            <h3 className="card__title">
+              {project.href ? (
+                <a className="card__link" href={project.href} target="_blank" rel="noreferrer">
+                  {project.title}
+                </a>
+              ) : (
+                project.title
+              )}
+            </h3>
             <p className="card__desc" data-decode={project.description}>
               {project.description}
             </p>

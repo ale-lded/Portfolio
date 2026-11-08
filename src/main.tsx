@@ -6,12 +6,14 @@ import '@fontsource/jetbrains-mono/500.css'
 import '@fontsource-variable/space-grotesk'
 import './index.css'
 import App from './App.tsx'
-import { LangProvider } from './lib/lang'
+import { restoreScroll, settleLang } from './lib/lang'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <LangProvider>
+// A first visit may belong on another language's page: go there before drawing anything
+if (settleLang()) {
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
       <App />
-    </LangProvider>
-  </StrictMode>,
-)
+    </StrictMode>,
+  )
+  restoreScroll()
+}

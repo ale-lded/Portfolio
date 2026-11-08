@@ -1,5 +1,6 @@
 import { useEffect, useState, type KeyboardEvent } from 'react'
-import { LANGS, useLang } from '../lib/lang'
+import { dial } from '../content'
+import { goToLang, LANGS, pageLang } from '../lib/lang'
 import './LangDial.css'
 
 /** Degrees between two engravings on the drum: nine of them go all the way round */
@@ -7,29 +8,41 @@ const STEP = 40
 const SLOTS = 360 / STEP
 /** Knurled ridges round the drum, top and bottom edge */
 const RIDGES = 30
+/** How long the drum turns before the page changes: the notch lands first */
+const TURN_MS = 420
 
 const mod = (n: number, m: number) => ((n % m) + m) % m
 
 /**
  * The language switch: a knurled drum like the ISO dial on an old film camera,
- * with EN · IT · FR engraved round it. A click turns it one notch; the arrow keys
- * turn it either way. The drum only ever counts notches, so it never spins back
- * the long way round.
+ * with EN · IT · FR engraved round it. A click turns it one notch, then opens the page
+ * in that language; the arrow keys turn it either way.
  */
 export function LangDial({ className = '' }: { className?: string }) {
-  const { lang, setLang } = useLang()
-  const index = LANGS.findIndex((l) => l.code === lang)
+  const index = LANGS.findIndex((l) => l.code === pageLang)
   const [turn, setTurn] = useState(index)
+  const [leaving, setLeaving] = useState(false)
 
-  // Another dial on the page changed the language: catch up, forwards
+  // Back from the other language with the browser's back button: the page comes out of
+  // the cache as it was left, mid-turn, so set the dial back on this page's language
   useEffect(() => {
-    setTurn((t) => t + mod(index - mod(t, LANGS.length), LANGS.length))
+    const onShow = (e: PageTransitionEvent) => {
+      if (!e.persisted) return
+      setLeaving(false)
+      setTurn((t) => t - mod(t - index, LANGS.length))
+    }
+    window.addEventListener('pageshow', onShow)
+    return () => window.removeEventListener('pageshow', onShow)
   }, [index])
 
   const go = (delta: number) => {
+    if (leaving) return
     const next = turn + delta
     setTurn(next)
-    setLang(LANGS[mod(next, LANGS.length)].code)
+    setLeaving(true)
+    const lang = LANGS[mod(next, LANGS.length)].code
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    window.setTimeout(() => goToLang(lang), reduced ? 0 : TURN_MS)
   }
 
   const onKeyDown = (e: KeyboardEvent) => {
@@ -39,8 +52,8 @@ export function LangDial({ className = '' }: { className?: string }) {
     e.preventDefault()
   }
 
-  const current = LANGS[index]
-  const next = LANGS[mod(index + 1, LANGS.length)]
+  const current = LANGS[mod(turn, LANGS.length)]
+  const next = LANGS[mod(turn + 1, LANGS.length)]
 
   return (
     <button
@@ -48,7 +61,7 @@ export function LangDial({ className = '' }: { className?: string }) {
       className={`dial ${className}`}
       onClick={() => go(1)}
       onKeyDown={onKeyDown}
-      aria-label={`Language: ${current.name}. Switch to ${next.name}`}
+      aria-label={`${dial.label}: ${current.name}. ${dial.switchTo} ${next.name}`}
     >
       <span className="dial__window" aria-hidden="true">
         <span className="dial__drum" style={{ transform: `rotateY(${-turn * STEP}deg)` }}>

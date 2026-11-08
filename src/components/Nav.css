@@ -59,3 +59,15 @@
     --r: 29px;
   }
 }
+
+/* The narrowest phones, in the longer languages ("À propos", "Chi sono"): smaller still */
+@media (max-width: 360px) {
+  .nav__links {
+    gap: 10px;
+    font-size: 12px;
+  }
+
+  .nav .dial {
+    --r: 25px;
+  }
+}

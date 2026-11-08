@@ -221,6 +221,8 @@ function FrontEnd() {
   ]
   const tagW = featuredTags.map((tag) => tag.length * 5.4 + 14)
   const tagX = rowX(350, tagW, 6)
+  /** The launch badge grows with its word ("Live", "En ligne"), right edge fixed */
+  const liveW = stack.art.live.length * 6.4 + 34
   return (
     <>
       <rect x="20" y="14" width="280" height="212" rx="8" fill={C.panel} stroke={C.faint} />
@@ -243,9 +245,9 @@ function FrontEnd() {
         {'// React + TypeScript'}
       </text>
       {/* Launch: the site is online */}
-      <rect x="226" y="26" width="62" height="20" rx="10" fill={C.soft} stroke={C.amber} strokeOpacity="0.7" />
-      <circle cx="240" cy="36" r="3.5" fill={C.amber} />
-      <text className="mono" x="250" y="40" fontSize="10.5" fill={C.amber}>
+      <rect x={288 - liveW} y="26" width={liveW} height="20" rx="10" fill={C.soft} stroke={C.amber} strokeOpacity="0.7" />
+      <circle cx={302 - liveW} cy="36" r="3.5" fill={C.amber} />
+      <text className="mono" x={312 - liveW} y="40" fontSize="10.5" fill={C.amber}>
         {stack.art.live}
       </text>
       <path d="M306 120 h20 M321 115 l5 5 l-5 5" fill="none" stroke={C.amber} strokeDasharray="3 3" />

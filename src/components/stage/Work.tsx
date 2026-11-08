@@ -122,7 +122,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             ))}
           </ol>
           <button type="button" className="card__action mono" onClick={() => void flip(false)}>
-            <span aria-hidden="true">↺</span> {back.close}
+            <span aria-hidden="true">↺</span> <span className="card__action-text">{back.close}</span>
           </button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { contact, person, terminal } from '../content'
+import { scrollToTop } from '../lib/scroll'
 import { openTerminal } from '../lib/terminal'
 import { Bug } from './backstage/Bug'
 import './sections.css'
@@ -28,7 +29,15 @@ export function Contact() {
           © 2026 {person.name}
           <Bug className="bug--footer" label={terminal.trigger} onClick={openTerminal} />
         </span>
-        <a href="#top">{contact.backToTop} ↑</a>
+        <a
+          href="#top"
+          onClick={(e) => {
+            e.preventDefault()
+            scrollToTop()
+          }}
+        >
+          {contact.backToTop} ↑
+        </a>
       </footer>
     </>
   )

@@ -22,7 +22,7 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ titleRef 
         <span className="hero__hint" aria-hidden="true">
           {hero.hint} <span className="hero__arrow">↓</span>
         </span>
-        <span>{person.initials}</span>
+        <span className="hero__end">{person.initials}</span>
       </div>
     </header>
   )

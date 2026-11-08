@@ -1,0 +1,128 @@
+/* The language dial: a small knurled drum seen from the front, with an amber index above it */
+.dial {
+  --r: 34px;
+  position: relative;
+  display: inline-block;
+  padding: 7px 0 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The index mark, like the one engraved on the camera top plate */
+.dial::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border: 4px solid transparent;
+  border-top: 5px solid var(--amber);
+  transform: translateX(-50%);
+}
+
+.dial__window {
+  display: block;
+  width: calc(var(--r) * 2);
+  height: 24px;
+  border-radius: 5px;
+  perspective: 260px;
+  /* The drum curves away at both ends */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 28%, #000 72%, transparent);
+  background: linear-gradient(180deg, #1c1b1a, #0e0d0d 55%, #171615);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 236, 214, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.dial__drum {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  /* One notch, with a little overshoot as it clicks into place */
+  transition: transform 0.55s cubic-bezier(0.3, 1.45, 0.5, 1);
+}
+
+.dial__ridge {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  /* Ridges only along the two edges: the engravings sit on a smooth band between them */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 236, 214, 0.42) 0 5px,
+    transparent 5px calc(100% - 5px),
+    rgba(255, 236, 214, 0.42) calc(100% - 5px)
+  );
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.dial__mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  margin: -7px 0 0 -11px;
+  font-size: 10.5px;
+  line-height: 14px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: #6e6860;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: color 0.4s;
+}
+
+.dial__mark.is-on {
+  color: var(--amber);
+}
+
+.dial:hover .dial__mark:not(.is-on),
+.dial:focus-visible .dial__mark:not(.is-on) {
+  color: var(--text);
+}
+
+/* The full name, shown under the dial while it is hovered or focused */
+.dial__name {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  font-size: 10px;
+  white-space: nowrap;
+  color: var(--muted);
+  opacity: 0;
+  transform: translate(-50%, -3px);
+  transition:
+    opacity 0.25s,
+    transform 0.25s;
+  pointer-events: none;
+}
+
+.dial:hover .dial__name,
+.dial:focus-visible .dial__name {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.dial:focus-visible {
+  outline: none;
+}
+
+.dial:focus-visible .dial__window {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dial__drum {
+    transition: none;
+  }
+}

@@ -15,7 +15,6 @@ export const person = {
 
 export const nav = {
   label: 'Main',
-  home: `${person.name}, back to top`,
   links: [
     { label: 'About', href: '#about' },
     { label: 'Work', href: '#work' },
@@ -28,8 +27,9 @@ export const hero = {
   stageLabel: 'Introduction and work',
   meta: 'Lyon, France — 2026',
   hint: 'scroll',
-  /** The four steps of the hero sequence, shown bottom left while it plays */
-  phases: ['01 — Crumbling', '02 — Code → binary', '03 — Recomposing', '04 — Work'],
+  /** The four steps of the hero sequence, shown bottom left while it plays.
+   *  Counted as 1/4…4/4, so they never read like the section numbers (01 — …) */
+  phases: ['1/4 · Crumbling', '2/4 · Code → binary', '3/4 · Recomposing', '4/4 · Work'],
 }
 
 export type Project = {
@@ -40,10 +40,29 @@ export type Project = {
   status?: string
   /** Where the card leads: leave it out and the card is not a link */
   href?: string
+  /** A button on the card that opens a larger look at the project */
+  details?: {
+    open: string
+    image: { src: string; width: number; height: number; alt: string }
+    story: string[]
+    progress: string
+    cta: string
+    /** The live app: while empty, the button waits with the "soon" line */
+    href: string
+    soon: string
+    close: string
+  }
+  /** A button on the card that flips it over, with something written on the back */
+  back?: {
+    open: string
+    heading: string
+    items: { name: string; text: string }[]
+    close: string
+  }
 }
 
 export const work = {
-  heading: 'Selected work',
+  heading: '01 — Selected work',
 }
 
 export const projects: Project[] = [
@@ -52,12 +71,45 @@ export const projects: Project[] = [
     description: 'PDF tools that run in your browser. Your files never leave your device.',
     tags: ['React', 'pdf-lib', 'Open source'],
     status: 'In progress',
-    // TODO: link to the live app or the repository once it is public
+    details: {
+      open: 'Open',
+      image: {
+        src: '/projects/folio.webp',
+        width: 2000,
+        height: 1050,
+        alt: 'The Folio home page: a bookshelf of PDF tools, with the Split tool pulled out and open.',
+      },
+      story: [
+        'I work with PDFs all the time, and every online tool wanted me to upload my files, sit through ads or pay to lift a limit. So I built my own.',
+        'Folio is simple, free and ad-free. Everything happens in your browser: your files are never uploaded, never stored in a database, never seen by anyone but you.',
+      ],
+      progress: 'Work in progress: Merge works today, Split is on its way, Compress and Sign are previews.',
+      cta: 'Edit your PDF',
+      // TODO: the address of the live app
+      href: '',
+      soon: 'Online soon',
+      close: 'Close',
+    },
   },
   {
     title: 'This site',
-    description: 'My portfolio, built as a playground: particles, scroll stories and a few secrets.',
+    description: 'A creative example: whatever you imagine for your site can become real, and actually work.',
     tags: ['React', 'TypeScript', 'Canvas'],
+    back: {
+      open: 'Found the two easter eggs?',
+      heading: 'Two secrets, in plain sight.',
+      items: [
+        {
+          name: 'A pixel out of place',
+          text: 'One pixel in the hero isn’t where it should be. Click it for a one-lap race backstage, and try to beat the record.',
+        },
+        {
+          name: 'A stray cursor',
+          text: 'A blinking cursor hides in the hero and in the footer. It opens a terminal for secret messages.',
+        },
+      ],
+      close: 'Flip back',
+    },
   },
   {
     // TODO: once the client agrees, use their name and link the page
@@ -128,7 +180,7 @@ export type Step = {
  * as four stacked layers, from the first call down to launch day.
  */
 export const stack = {
-  label: 'How I work',
+  label: '04 — How I work',
   intro: {
     heading: 'Four steps, no surprises.',
     text: 'From our first call to launch day, you always know where we are and what comes next.',
@@ -160,7 +212,7 @@ export const stack = {
     text: 'One person you can talk to, all the way through.',
   },
   /** The four steps of the stack sequence, shown bottom left while it plays */
-  phases: ['01 — Assembly', '02 — Exploded view', '03 — Compression', '04 — The method'],
+  phases: ['1/4 · Assembly', '2/4 · Exploded view', '3/4 · Compression', '4/4 · The method'],
   /** Words drawn inside the layer illustrations (LayerArt) */
   art: {
     /** The notes taken during the first call */
@@ -180,7 +232,7 @@ export const stack = {
 }
 
 export const contact = {
-  label: '04 — Contact',
+  label: '05 — Contact',
   heading: 'Let’s talk about your website.',
   cta: 'Write to me',
   reply: 'I’ll get back to you quickly.',

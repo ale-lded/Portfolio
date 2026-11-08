@@ -9,12 +9,6 @@
   background: linear-gradient(var(--bg) 15%, rgba(10, 10, 11, 0));
 }
 
-.nav__logo {
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.05em;
-}
-
 .nav__links {
   display: flex;
   gap: 36px;
@@ -54,10 +48,14 @@
   }
 }
 
-/* Four links on the smallest phones: tighter, so they keep clear of the logo */
+/* Four links on the smallest phones: tighter, and a slimmer dial, so the two keep clear */
 @media (max-width: 400px) {
   .nav__links {
-    gap: 14px;
+    gap: 12px;
     font-size: 13px;
+  }
+
+  .nav .dial {
+    --r: 29px;
   }
 }

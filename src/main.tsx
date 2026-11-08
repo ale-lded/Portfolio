@@ -6,9 +6,12 @@ import '@fontsource/jetbrains-mono/500.css'
 import '@fontsource-variable/space-grotesk'
 import './index.css'
 import App from './App.tsx'
+import { LangProvider } from './lib/lang'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <LangProvider>
+      <App />
+    </LangProvider>
   </StrictMode>,
 )

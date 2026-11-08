@@ -93,8 +93,8 @@ export const fr: Content = {
     label: '02 — À propos',
     heading: 'J’ai été chef d’entreprise. Aujourd’hui, je crée des sites pour la tienne.',
     bio: [
-      'Je suis italien. J’ai étudié l’informatique en Italie, puis à vingt ans j’ai accepté un travail de trois mois dans une pizzeria en France. Je ne suis jamais reparti. J’ai ouvert mon propre restaurant, et le diriger m’a appris ce que tout chef d’entreprise sait : on se souvient des détails.',
-      'Puis l’envie de la tech est revenue. J’ai vendu le restaurant, et avec ma compagne nous sommes partis à vélo : quinze mois, trente pays, quinze mille kilomètres. Quelque part sur la route, j’ai décidé de devenir développeur web, et depuis j’apprends les meilleurs outils du métier.',
+      'Je suis italien. J’ai étudié l’informatique en Italie, puis à vingt ans j’ai accepté un travail de trois mois dans une pizzeria en France. Je ne suis jamais reparti. J’ai ouvert mon propre restaurant, et le diriger m’a appris ce que tout chef d’entreprise sait : même les plus petits détails comptent.',
+      'Mais au fond, ma passion pour la programmation ne m’avait jamais quitté. Alors j’ai vendu le restaurant et j’ai fait une pause pour y réfléchir, pas chez moi mais en selle : avec ma compagne, nous sommes partis à vélo, quinze mois, trente pays, quinze mille kilomètres. Quelque part sur la route, j’ai décidé de devenir développeur web, et depuis je me forme aux meilleures technologies pour rester en phase avec le marché d’aujourd’hui.',
       'Aujourd’hui, je vis près de Lyon, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime deux choses : la vue d’ensemble et les petits détails. Ton site mérite les deux.',
     ],
     photo: {

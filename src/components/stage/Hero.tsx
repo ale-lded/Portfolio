@@ -13,8 +13,14 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ titleRef 
         {person.tagline}
       </h1>
       <div className="hero__fade">
-        <p className="hero__name">{person.name}</p>
-        <p className="hero__role">{person.role}</p>
+        <p className="hero__name">
+          {person.name}
+          <span className="hero__dash" aria-hidden="true">
+            {' — '}
+          </span>
+          <span className="sr-only">, </span>
+          <span className="hero__role">{person.role}</span>
+        </p>
         <p className="hero__lead">{person.lead}</p>
       </div>
       <div className="hero__meta hero__fade mono">

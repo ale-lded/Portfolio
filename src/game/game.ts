@@ -218,8 +218,10 @@ export class Game {
     }
     const key = KEYS[e.code]
     if (key && racing) {
-      // No scrolling, and no clicking a focused button with Space
+      // No scrolling, no clicking a focused button with Space, and no arrow
+      // quietly changing a tyre or setup choice that still has the focus
       e.preventDefault()
+      e.stopPropagation()
       this.held[key] = true
     }
   }
@@ -239,7 +241,13 @@ export class Game {
   }
 }
 
+/** Inputs that take no typing: a focused tyre or setup choice must not swallow the arrows */
+const NOT_TYPED = new Set(['radio', 'checkbox', 'button', 'submit', 'reset', 'range', 'color', 'file', 'image'])
+
+/** Only a field the visitor types into (the initials on the podium) keeps the keys for itself */
 const isTyping = (e: KeyboardEvent) => {
   const t = e.target as HTMLElement | null
-  return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)
+  if (!t) return false
+  if (t instanceof HTMLInputElement) return !NOT_TYPED.has(t.type)
+  return t.tagName === 'TEXTAREA' || t.isContentEditable
 }

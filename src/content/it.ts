@@ -213,7 +213,7 @@ export const it: Content = {
     stats: { grip: 'Grip', life: 'Durata', speed: 'Velocità', handling: 'Guida' },
     start: 'Via alla gara',
     controls: [
-      ['W A S D', 'guida'],
+      ['W A S D · ↑ ← ↓ →', 'guida'],
       ['Spazio', 'freno a mano'],
       ['Esc', 'pausa'],
       ['R', 'ricomincia'],

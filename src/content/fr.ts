@@ -214,7 +214,7 @@ export const fr: Content = {
     stats: { grip: 'Adhérence', life: 'Durée', speed: 'Vitesse', handling: 'Maniabilité' },
     start: 'Lancer la course',
     controls: [
-      ['W A S D', 'conduire'],
+      ['W A S D · ↑ ← ↓ →', 'conduire'],
       ['Espace', 'frein à main'],
       ['Esc', 'pause'],
       ['R', 'recommencer'],

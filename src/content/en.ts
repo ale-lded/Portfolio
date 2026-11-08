@@ -274,7 +274,7 @@ export const race = {
   stats: { grip: 'Grip', life: 'Life', speed: 'Speed', handling: 'Handling' },
   start: 'Start race',
   controls: [
-    ['W A S D', 'drive'],
+    ['W A S D · ↑ ← ↓ →', 'drive'],
     ['Space', 'handbrake'],
     ['Esc', 'pause'],
     ['R', 'restart'],

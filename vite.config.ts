@@ -2,11 +2,15 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 
-/** One page per language: index.html is English, it/ and fr/ the translations (src/lib/lang.ts) */
+/**
+ * For now the site is Italian only, served at / (see LANG_SWITCH in src/lib/lang.ts).
+ * To bring the languages back: index.html in English again, then
+ *   en: { html: 'index.html', path: '/' },
+ *   it: { html: 'it/index.html', path: '/it/' },
+ *   fr: { html: 'fr/index.html', path: '/fr/' },
+ */
 const pages = {
-  en: { html: 'index.html', path: '/' },
-  it: { html: 'it/index.html', path: '/it/' },
-  fr: { html: 'fr/index.html', path: '/fr/' },
+  it: { html: 'index.html', path: '/' },
 }
 
 /**

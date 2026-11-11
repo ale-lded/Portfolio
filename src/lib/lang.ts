@@ -11,6 +11,12 @@ export const LANGS = [
 
 export type Lang = (typeof LANGS)[number]['code']
 
+/**
+ * Off while the site is Italian only: no redirects by browser language, and the dial
+ * stays on show but does nothing. Turn it back on together with the pages in vite.config.ts.
+ */
+export const LANG_SWITCH = false
+
 const KEY = 'lang'
 /** Where the visitor was on the page they left, so the new language opens at the same spot */
 const SCROLL_KEY = 'lang-scroll'
@@ -32,6 +38,7 @@ function saved(): Lang | null {
 
 /** Opens the page in another language, at the same point of the scroll, and remembers the choice. */
 export function goToLang(lang: Lang) {
+  if (!LANG_SWITCH) return
   try {
     localStorage.setItem(KEY, lang)
     sessionStorage.setItem(SCROLL_KEY, String(window.scrollY))
@@ -48,6 +55,7 @@ export function goToLang(lang: Lang) {
  * someone who opens one asked for it. Returns false when the page is about to change.
  */
 export function settleLang(): boolean {
+  if (!LANG_SWITCH) return true
   const params = new URLSearchParams(window.location.search)
   const asked = params.get('lang')
   let target: Lang | null = isLang(asked) ? asked : null

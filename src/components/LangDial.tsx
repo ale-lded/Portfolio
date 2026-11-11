@@ -1,6 +1,6 @@
 import { useEffect, useState, type KeyboardEvent } from 'react'
 import { dial } from '../content'
-import { goToLang, LANGS, pageLang } from '../lib/lang'
+import { goToLang, LANG_SWITCH, LANGS, pageLang } from '../lib/lang'
 import './LangDial.css'
 
 /** Degrees between two engravings on the drum: nine of them go all the way round */
@@ -36,7 +36,8 @@ export function LangDial({ className = '' }: { className?: string }) {
   }, [index])
 
   const go = (delta: number) => {
-    if (leaving) return
+    // Italian only for now: the dial stays on show but does not turn (see LANG_SWITCH)
+    if (leaving || !LANG_SWITCH) return
     const next = turn + delta
     setTurn(next)
     setLeaving(true)

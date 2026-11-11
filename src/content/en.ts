@@ -37,6 +37,25 @@ export const hero = {
   phases: ['1/4 · Crumbling', '2/4 · Code → binary', '3/4 · Recomposing', '4/4 · Work'],
 }
 
+/**
+ * The code window the title crumbles into: the client's website, written as a TypeScript
+ * object. Keep the lines short (about 30 characters), the window is sized on the longest.
+ */
+export const code = {
+  file: 'your-site.ts',
+  lang: 'TS',
+  name: 'yourSite',
+  fields: [
+    ['business', "'yours'"],
+    ['goal', "'more clients'"],
+    ['design', "'made to measure'"],
+    ['mobile', 'true'],
+    ['fast', 'true'],
+    ['seo', "'found on Google'"],
+  ] as [string, string][],
+  comment: 'every detail counts',
+}
+
 export type Project = {
   title: string
   description: string

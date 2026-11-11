@@ -35,6 +35,21 @@ export const fr: Content = {
     phases: ['1/4 · Effritement', '2/4 · Code → binaire', '3/4 · Recomposition', '4/4 · Projets'],
   },
 
+  code: {
+    file: 'ton-site.ts',
+    lang: 'TS',
+    name: 'tonSite',
+    fields: [
+      ['activité', "'la tienne'"],
+      ['objectif', "'plus de clients'"],
+      ['design', "'sur mesure'"],
+      ['mobile', 'true'],
+      ['rapide', 'true'],
+      ['seo', "'trouvé sur Google'"],
+    ],
+    comment: 'chaque détail compte',
+  },
+
   work: {
     heading: '01 — Sélection de projets',
   },

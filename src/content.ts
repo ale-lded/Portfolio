@@ -14,7 +14,7 @@ export type Content = Omit<typeof en, 'default'>
 
 const copy: Record<Lang, Content> = { en, it, fr }
 
-export const { person, nav, hero, work, projects, about, services, stack, contact, backstage, race, terminal, dial } =
+export const { person, nav, hero, code, work, projects, about, services, stack, contact, backstage, race, terminal, dial } =
   copy[pageLang]
 
 export type { Project, Service, Step } from './content/en'

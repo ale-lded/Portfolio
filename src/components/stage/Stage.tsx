@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { backstage, hero, terminal } from '../../content'
+import { backstage, code, hero, terminal } from '../../content'
 import { enterBackstage } from '../../lib/backstage'
 import { openTerminal } from '../../lib/terminal'
 import { Decoder } from '../../lib/decoder'
@@ -232,8 +232,8 @@ export function Stage() {
             <i />
             <i />
             <i />
-            <span className="code-win__file">index.html</span>
-            <span className="code-win__lang">HTML</span>
+            <span className="code-win__file">{code.file}</span>
+            <span className="code-win__lang">{code.lang}</span>
           </div>
         </div>
         <Work />

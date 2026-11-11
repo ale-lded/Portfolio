@@ -34,6 +34,21 @@ export const it: Content = {
     phases: ['1/4 · Sgretolamento', '2/4 · Codice → binario', '3/4 · Ricomposizione', '4/4 · Lavori'],
   },
 
+  code: {
+    file: 'tuo-sito.ts',
+    lang: 'TS',
+    name: 'tuoSito',
+    fields: [
+      ['attività', "'la tua'"],
+      ['obiettivo', "'più clienti'"],
+      ['design', "'su misura'"],
+      ['mobile', 'true'],
+      ['veloce', 'true'],
+      ['seo', "'trovato su Google'"],
+    ],
+    comment: 'ogni dettaglio conta',
+  },
+
   work: {
     heading: '01 — Lavori scelti',
   },

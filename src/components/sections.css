@@ -11,34 +11,223 @@
 }
 
 /* ---------- About ---------- */
-.about__grid {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 80px;
-  max-width: 1280px;
-}
-
 .about__heading {
+  max-width: 16em;
   font-size: clamp(32px, 4vw, 56px);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.05;
 }
 
-.about__bio {
+/* The ride in numbers: four cells between hairlines, each value decodes out of binary */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 1280px;
+  margin: 72px 0 112px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.stat {
+  padding: 32px 28px;
+  border-left: 1px solid var(--line);
+}
+
+.stat:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.stat__value {
+  display: block;
+  min-height: 1em;
+  font-size: clamp(40px, 5vw, 72px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.stat__label {
+  display: block;
+  max-width: 22ch;
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.about__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 96px;
+  align-items: start;
+  max-width: 1280px;
+}
+
+/* The photo stays in view while the route scrolls past it */
+.about__aside {
+  position: sticky;
+  top: 120px;
+}
+
+/* ---------- The route: the bio as three stops on a line drawn by the scroll ---------- */
+.route {
+  --stop: 14px;
+  position: relative;
+}
+
+.route__line {
+  position: absolute;
+  left: calc(var(--stop) / 2 - 1px);
+  top: calc(var(--stop) / 2 + 2px);
+  width: 2px;
+  height: var(--route-length, 0px);
+  background: var(--line-strong);
+  border-radius: 2px;
+}
+
+.route__fill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(var(--amber-deep), var(--amber));
+  transform: scaleY(var(--route, 0));
+  transform-origin: top;
+}
+
+/* The pen: a small glowing point riding the tip of the line */
+.route__pen {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--route, 0) * 100%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff3df;
+  box-shadow:
+    0 0 10px 2px var(--amber),
+    0 0 28px 6px rgba(255, 181, 71, 0.35);
+  transform: translate(-50%, -50%);
+}
+
+.route__stops {
+  list-style: none;
+}
+
+.chapter {
+  position: relative;
+  padding-left: calc(var(--stop) + 40px);
+}
+
+.chapter + .chapter {
+  margin-top: 80px;
+}
+
+.chapter__stop {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 2px;
+  width: var(--stop);
+  height: var(--stop);
+  border: 2px solid var(--line-strong);
+  border-radius: 50%;
+  background: var(--bg);
+  transition:
+    background 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.6s ease;
+}
+
+.chapter__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  font-size: 12px;
+  line-height: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chapter__place {
+  color: var(--amber);
+}
+
+.chapter__title {
+  margin-top: 14px;
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.chapter__text {
+  max-width: 36em;
+  margin-top: 16px;
   font-size: 18px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: #bdb7af;
 }
 
-.about__bio + .about__bio {
-  margin-top: 18px;
+/* The highlights: brighter words with an amber marker stroke under them */
+.chapter__text strong {
+  font-weight: 600;
+  color: var(--text);
+  background: linear-gradient(rgba(255, 181, 71, 0.28), rgba(255, 181, 71, 0.28)) no-repeat 0 90% / 100% 0.38em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition: background-size 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s;
+}
+
+/* With the script running, a stop waits dimmed until the line reaches it */
+.route--live .chapter {
+  opacity: 0.35;
+  transform: translateY(12px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.route--live .chapter__text strong {
+  background-size: 0% 0.38em;
+}
+
+.route--live .chapter.is-reached {
+  opacity: 1;
+  transform: none;
+}
+
+.route--live .chapter.is-reached .chapter__text strong {
+  background-size: 100% 0.38em;
+}
+
+.route--live .chapter.is-reached .chapter__stop {
+  border-color: var(--amber);
+  background: var(--amber);
+  box-shadow:
+    0 0 0 6px var(--amber-soft),
+    0 0 24px rgba(255, 181, 71, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route--live .chapter,
+  .chapter__stop,
+  .chapter__text strong {
+    transition: none;
+  }
+
+  .route__pen {
+    display: none;
+  }
 }
 
 
-/* The film print under the heading: a small frame that opens larger */
+/* The film print beside the route: a small frame that opens larger */
 .photo {
-  margin-top: 56px;
   max-width: 520px;
 }
 
@@ -311,13 +500,43 @@
     padding: 96px var(--pad);
   }
 
-  .about__grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 48px 0 72px;
   }
 
-  .photo {
-    margin-top: 40px;
+  .stat {
+    padding: 24px 0 24px 20px;
+  }
+
+  .stat:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .stat:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+
+  .about__grid {
+    grid-template-columns: 1fr;
+    gap: 64px;
+  }
+
+  .about__aside {
+    position: static;
+  }
+
+  .chapter {
+    padding-left: calc(var(--stop) + 24px);
+  }
+
+  .chapter + .chapter {
+    margin-top: 56px;
+  }
+
+  .chapter__text {
+    font-size: 17px;
   }
 
   .services__list {

@@ -93,10 +93,31 @@ export const fr: Content = {
   about: {
     label: '02 — À propos',
     heading: 'J’ai été chef d’entreprise. Aujourd’hui, je crée des sites pour la tienne.',
-    bio: [
-      'Je suis italien. J’ai étudié l’informatique en Italie, puis à vingt ans j’ai accepté un travail de trois mois dans une pizzeria en France. Je ne suis jamais reparti. J’ai ouvert mon propre restaurant, et le diriger m’a appris ce que tout chef d’entreprise sait : même les plus petits détails comptent.',
-      'Mais au fond, ma passion pour la programmation ne m’avait jamais quitté. Alors j’ai vendu le restaurant et j’ai fait une longue pause pour y réfléchir : ma compagne et moi avons acheté deux vélos et nous sommes partis. Quinze mois, trente pays, quinze mille kilomètres, de la France au Japon. Quelque part sur la route, j’ai décidé de devenir développeur web, et depuis je me forme aux meilleures technologies pour rester en phase avec le marché d’aujourd’hui.',
-      'Aujourd’hui, je vis près de Lyon, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime deux choses : la vue d’ensemble et les petits détails. Ton site mérite les deux.',
+    stats: [
+      { value: '15', label: 'mois sur la route' },
+      { value: '30', label: 'pays traversés' },
+      { value: '15 000', label: 'km à vélo, de la France au Japon' },
+      { value: '1', label: 'restaurant, tenu puis vendu' },
+    ],
+    chapters: [
+      {
+        label: 'Avant',
+        place: 'Italie → France',
+        title: 'Derrière le comptoir',
+        text: 'Je suis italien. J’ai étudié l’**informatique** en Italie, puis à vingt ans j’ai accepté un travail de trois mois dans une pizzeria en France. Je ne suis jamais reparti. J’ai ouvert mon propre restaurant, et le diriger m’a appris ce que tout chef d’entreprise sait : **même les plus petits détails comptent**.',
+      },
+      {
+        label: 'La route',
+        place: 'France → Japon',
+        title: 'Quinze mois sur deux roues',
+        text: 'Ma passion pour la programmation ne m’avait jamais quitté. Alors j’ai vendu le restaurant, ma compagne et moi avons acheté deux vélos et nous sommes partis. Quelque part sur la route, j’ai décidé de devenir **développeur web**, et depuis je me forme aux meilleures technologies pour rester en phase avec le marché d’aujourd’hui.',
+      },
+      {
+        label: 'Aujourd’hui',
+        place: 'Lyon',
+        title: 'Des sites web sur mesure',
+        text: 'Aujourd’hui, je crée des **sites web sur mesure** **près de Lyon**, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime la vue d’ensemble et les petits détails. Ton site mérite les deux.',
+      },
     ],
     photo: {
       src: '/photos/fuji.webp',

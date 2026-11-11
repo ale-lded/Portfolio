@@ -92,10 +92,32 @@ export const it: Content = {
   about: {
     label: '02 — Chi sono',
     heading: 'Ho gestito un’attività. Ora creo siti web per chi ne ha una.',
-    bio: [
-      'Sono italiano. Ho studiato informatica in Italia, poi a vent’anni ho accettato un lavoro di tre mesi in una pizzeria in Francia. Non me ne sono più andato. Ho aperto il mio ristorante, e gestirlo mi ha insegnato quello che ogni imprenditore sa: anche i dettagli più piccoli contano.',
-      'Ma in fondo la passione per la programmazione non se n’era mai andata. Così ho venduto il ristorante e mi sono preso una lunga pausa per rifletterci: io e la mia compagna abbiamo comprato due bici e siamo partiti. Quindici mesi, trenta paesi, quindicimila chilometri, dalla Francia al Giappone. Da qualche parte lungo la strada ho deciso di diventare sviluppatore web, e da allora mi sono aggiornato sulle migliori tecnologie per stare al passo con il mercato di oggi.',
-      'Oggi vivo vicino a Lione, con tante idee e la pazienza di chi è stato dall’altra parte del bancone. Amo due cose: il quadro generale e i piccoli dettagli. Il tuo sito merita entrambi.',
+    stats: [
+      { value: '15', label: 'mesi in viaggio' },
+      { value: '30', label: 'paesi attraversati' },
+      { value: '15.000', label: 'km in bici, dalla Francia al Giappone' },
+      { value: '1', label: 'ristorante, gestito e venduto' },
+    ],
+    // Le parole tra **doppi asterischi** vengono evidenziate
+    chapters: [
+      {
+        label: 'Prima',
+        place: 'Italia → Francia',
+        title: 'Dietro il bancone',
+        text: 'Sono italiano. Ho studiato **informatica** in Italia, poi a vent’anni ho accettato un lavoro di tre mesi in una pizzeria in Francia. Non me ne sono più andato. Ho aperto il mio ristorante, e gestirlo mi ha insegnato quello che ogni imprenditore sa: **anche i dettagli più piccoli contano**.',
+      },
+      {
+        label: 'La strada',
+        place: 'Francia → Giappone',
+        title: 'Quindici mesi su due ruote',
+        text: 'La passione per la programmazione non se n’era mai andata. Così ho venduto il ristorante, io e la mia compagna abbiamo comprato due bici e siamo partiti. Da qualche parte lungo la strada ho deciso di diventare **sviluppatore web**, e da allora studio le migliori tecnologie per stare al passo con il mercato di oggi.',
+      },
+      {
+        label: 'Oggi',
+        place: 'Lione',
+        title: 'Siti web su misura',
+        text: 'Oggi creo **siti web su misura** da **vicino a Lione**, con tante idee e la pazienza di chi è stato dall’altra parte del bancone. Amo il quadro generale e i piccoli dettagli. Il tuo sito merita entrambi.',
+      },
     ],
     photo: {
       src: '/photos/fuji.webp',

@@ -28,13 +28,18 @@ export function useFlip<C extends HTMLElement = HTMLLIElement, B extends HTMLEle
 
   const flip = async (to: boolean) => {
     const el = card.current
-    const focus = () => (to ? backStart.current : openButton.current)?.focus()
+    // The card is already on screen: moving the focus must not scroll anything
+    const focus = () => (to ? backStart.current : openButton.current)?.focus({ preventScroll: true })
     if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       fitBack(to)
       flushSync(() => setFlipped(to))
       focus()
       return
     }
+    // In a snapping row (the cards on a phone) the turning card's snap point moves with
+    // its transform, and the row would chase it and come back: no snapping while it turns
+    const row = el.parentElement
+    if (row) row.style.scrollSnapType = 'none'
     const sign = to ? 1 : -1
     // Keep whatever the card already has on (the lift of a hovered card): the turn is added
     // to it, so the card doesn't drop as it starts turning and jump back up when it lands
@@ -48,10 +53,11 @@ export function useFlip<C extends HTMLElement = HTMLLIElement, B extends HTMLEle
     fitBack(to)
     flushSync(() => setFlipped(to))
     focus()
-    el.animate([{ transform: edge(-90 * sign) }, { transform: edge(0) }], {
+    await el.animate([{ transform: edge(-90 * sign) }, { transform: edge(0) }], {
       duration: 520,
       easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.15)',
-    })
+    }).finished.catch(() => undefined)
+    if (row) row.style.scrollSnapType = ''
   }
 
   return { flipped, flip, card, openButton, backStart }

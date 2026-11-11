@@ -52,7 +52,8 @@ export function Stage() {
     }
     let parts = heroParts()
     const workHead = sticky.querySelector<HTMLElement>('.work__head')!
-    const cards = [...sticky.querySelectorAll<HTMLElement>('.card')]
+    const cardList = sticky.querySelector<HTMLElement>('.work__cards')!
+    const cards = [...cardList.querySelectorAll<HTMLElement>('.card')]
     const cardDecoders = cards.map((card, i) =>
       [...card.querySelectorAll<HTMLElement>('[data-decode]')].map((el, k) => new Decoder(el, i * 10 + k)),
     )
@@ -77,8 +78,12 @@ export function Stage() {
         resizeObserver.observe(title)
       }
       const origin = sticky.getBoundingClientRect()
-      const cardSpecs: CardSpec[] = cards.map((card) => {
+      // Phones show the cards in a swipeable row: the particles only build the cards that
+      // are fully on screen when they land (all three on desktop, the first on a phone)
+      cardList.scrollLeft = 0
+      const cardSpecs: CardSpec[] = cards.flatMap((card) => {
         const r = card.getBoundingClientRect()
+        if (r.left < origin.left - 1 || r.right > origin.right + 1) return []
         return {
           rect: { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height },
           title: textSpecFromElement(card.querySelector<HTMLElement>('.card__title')!, origin),
@@ -147,6 +152,12 @@ export function Stage() {
         lines.forEach((decoder, k) => decoder.update(clamp(d * stretch - k * 0.2), p))
       })
 
+      // Before the cards land the row can't be swiped, and it is back at the first card,
+      // so the particles always gather where a card really is
+      const cardsUp = p >= T.cardsIn[1]
+      cardList.style.pointerEvents = cardsUp ? '' : 'none'
+      if (!cardsUp && cardList.scrollLeft !== 0) cardList.scrollLeft = 0
+
       phase.style.opacity = String(sstep(0.07, 0.12, p))
       phaseFill.style.transform = `scaleX(${p.toFixed(4)})`
       const label = PHASES.find(([end]) => p < end)![1]
@@ -170,7 +181,7 @@ export function Stage() {
     const spotlight = new Spotlight({
       root: sticky,
       cards: {
-        list: sticky.querySelector<HTMLElement>('.work__cards')!,
+        list: cardList,
         items: cards,
         progress: () => current,
         ready: T.cardsIn[1],

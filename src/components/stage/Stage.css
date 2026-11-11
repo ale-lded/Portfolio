@@ -889,13 +889,34 @@
 }
 
 @media (max-width: 960px) {
+  /* A swipeable row: it runs to both screen edges, the cards snap to the left margin, and
+     the next one peeks in on the right so it's clear there is more. In a flex row the
+     cards all stretch to the tallest one. */
   .work__cards {
-    grid-template-columns: 1fr;
+    display: flex;
     gap: 12px;
+    margin: -10px calc(-1 * var(--pad));
+    padding: 10px var(--pad);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--pad);
+    scrollbar-width: none;
+  }
+
+  .work__cards::-webkit-scrollbar {
+    display: none;
   }
 
   .card {
+    flex: 0 0 84%;
     min-height: 0;
+    scroll-snap-align: start;
+  }
+
+  /* No lift on tap: in a row it would only look like a stuck hover */
+  .card:hover {
+    transform: none;
   }
 
   .card__front,
@@ -903,15 +924,10 @@
     padding: 18px 20px;
   }
 
-  /* Phones: the back lies over the front instead, so the three stacked cards keep the
-     front's height and still fit one screen; a longer back grows the card while it shows */
-  .card__back {
-    position: absolute;
-    inset: 0;
-    overflow: auto;
-  }
+  /* As on desktop, the back shares the front's grid cell, so a card is already as tall as
+     its turned side and doesn't grow when it flips; in the row every card stretches to the
+     tallest, the second one turned over */
 
-  /* Three stacked cards must still fit one phone screen */
   .card__desc {
     min-height: 0;
     margin-top: 10px;
@@ -1004,19 +1020,7 @@
   }
 }
 
-/* Phones: three stacked cards and their buttons must fit under the nav, so the
-   tags (the least needed line) step aside and the block sits a little lower */
-@media (max-width: 960px) and (max-height: 900px) {
-  .stage:not(.stage--static) .card__tags {
-    display: none;
-  }
-
-  .stage:not(.stage--static) .work {
-    top: 52%;
-  }
-}
-
-/* Short phones (SE-sized and below): smaller type on the cards, so all three still fit
+/* Short phones (SE-sized and below): smaller type on the cards, so they still fit
    between the nav and the phase caption, in the longest language too */
 @media (max-width: 960px) and (max-height: 760px) {
   .stage:not(.stage--static) .card__front {

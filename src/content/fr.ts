@@ -51,59 +51,63 @@ export const fr: Content = {
   },
 
   work: {
-    heading: '01 — Sélection de projets',
+    heading: '01 — Derniers projets',
   },
 
   projects: [
     {
       title: 'Folio',
-      description: 'Des outils PDF qui fonctionnent dans ton navigateur. Tes fichiers ne quittent jamais ton appareil.',
-      tags: ['React', 'pdf-lib', 'Open source'],
-      status: 'En cours',
+      description: 'Fusionne, divise, compresse et signe tes PDF. Gratuit, sans publicité, directement dans ton navigateur.',
+      tags: ['React', 'WebAssembly', 'Open source'],
+      href: 'https://folio.alessiomura.fr',
       details: {
-        open: 'Ouvrir',
+        open: 'Découvrir',
         image: {
           src: '/projects/folio.webp',
           width: 2000,
           height: 1050,
-          alt: 'La page d’accueil de Folio : une bibliothèque d’outils PDF, avec l’outil Split sorti et ouvert.',
+          alt: 'La page d’accueil de Folio : une bibliothèque d’outils PDF, avec l’outil Split sorti et ouvert.',
         },
         story: [
-          'Je travaille sans cesse avec des PDF, et chaque outil en ligne me demandait d’envoyer mes fichiers, de supporter des publicités ou de payer pour lever une limite. Alors j’ai créé le mien.',
-          'Folio est simple, gratuit et sans publicité. Tout se passe dans ton navigateur : tes fichiers ne sont jamais envoyés, jamais stockés dans une base de données, jamais vus par personne d’autre que toi.',
+          'Un de mes derniers projets. Je l’ai pensé pour avoir toujours sous la main un outil PDF facile : gratuit, sans publicité et sans inscription.',
+          'Tout se passe dans ton navigateur : tes fichiers ne sont jamais envoyés sur un serveur, ni vus par personne d’autre que toi. Si tu en as besoin, utilise-le toi aussi.',
         ],
-        progress: 'En cours de développement : Merge fonctionne déjà, Split arrive bientôt, Compress et Sign sont des aperçus.',
-        cta: 'Modifier ton PDF',
-        href: 'https://folio.alessyomura.workers.dev',
+        progress: 'Fusionner · Diviser · Réorganiser · Compresser · Signer · Protéger par mot de passe',
+        cta: 'Utiliser Folio gratuitement',
+        href: 'https://folio.alessiomura.fr',
         soon: 'Bientôt en ligne',
         close: 'Fermer',
       },
     },
     {
       title: 'Ce site',
-      description: 'Un exemple créatif : ce que tu imagines pour ton site peut devenir réel, et fonctionner vraiment.',
+      description: 'Le site que tu regardes, conçu et développé par moi, avec deux secrets cachés à dénicher.',
       tags: ['React', 'TypeScript', 'Canvas'],
       back: {
-        open: 'Trouvé les deux easter eggs ?',
-        heading: 'Deux secrets, sous tes yeux.',
+        open: 'Découvre les 2 easter eggs cachés',
+        heading: 'Fait sur mesure, jusque dans les détails.',
+        intro: 'Construit avec des outils modernes, avec des animations dessinées à la main. Et deux surprises :',
         items: [
           {
             name: 'Un pixel déplacé',
-            text: 'Clique dessus, en haut de la page, pour un tour de piste en coulisses. Bats le record.',
+            text: 'Clique dessus, près du projecteur sur le premier écran, pour un tour de piste en coulisses. Bats le record.',
           },
           {
             name: 'Un curseur égaré',
             text: 'Il se cache en haut et en bas de la page, et ouvre un terminal pour messages secrets.',
           },
         ],
+        outro: 'Chaque idée ou envie pour ton site peut devenir réelle. Il suffit d’en parler.',
+        cta: { label: 'Parlons-en', href: '#contact' },
         note: '(uniquement sur ordinateur)',
         close: 'Retourner',
       },
     },
     {
-      title: 'Cas client',
-      description: 'Une nouvelle page d’étude de cas pour un cabinet de conseil en logiciel, conçue pour leur site.',
+      title: 'Nouveau site',
+      description: 'Un site en préparation pour un client, en cours de développement. Bientôt visible ici.',
       tags: ['Web design', 'Front end'],
+      status: 'Disponible bientôt',
     },
   ],
 
@@ -152,19 +156,32 @@ export const fr: Content = {
   services: {
     label: '03 — Services',
     heading: 'Ce que je peux créer pour toi.',
+    card: {
+      open: 'Ce qui est inclus',
+      close: 'Retourner',
+      ideal: 'Idéal pour',
+      includes: 'Inclus',
+      cta: { label: 'Parlons-en', href: '#contact' },
+    },
     items: [
       {
         name: 'Refonte',
         text: 'Ton site actuel, refait pour être moderne, rapide et facile à trouver. La même entreprise, une bien meilleure première impression.',
+        ideal: 'Ceux qui ont déjà un site, mais lent, daté ou difficile à trouver.',
+        includes: ['Analyse du site actuel', 'Nouveau design, moderne et sur mesure', 'Plus rapide et parfait sur mobile', 'SEO de base, pour être trouvé sur Google'],
       },
       {
         name: 'Sites vitrines',
-        text: 'Une vitrine en ligne claire et soignée pour ton entreprise : qui tu es, ce que tu fais et comment te joindre.',
+        text: 'Une vitrine en ligne claire et soignée pour ton entreprise : qui tu es, ce que tu fais et comment te joindre.',
+        ideal: 'Ceux qui lancent leur activité ou n’ont pas encore de site.',
+        includes: ['Design sur mesure, pas de template', 'Des pages claires : qui tu es, ce que tu fais, contact', 'Textes et photos soignés ensemble', 'En ligne avec ton domaine et l’hébergement'],
       },
       {
         name: 'Applications web',
-        text: 'Des outils sur mesure pour ta façon de travailler : réservations, espaces clients, tableaux de bord.',
+        text: 'Des outils sur mesure pour ta façon de travailler : réservations, espaces clients, tableaux de bord.',
         note: 'Pour les projets plus importants, je travaille avec un développeur full-stack de confiance, pour garder des délais courts et réalistes.',
+        ideal: 'Un processus à simplifier ou une idée à construire.',
+        includes: ['Réservations et calendriers', 'Espaces clients avec connexion', 'Tableaux de bord et gestion des données', 'Outils sur mesure, comme Folio'],
       },
     ],
   },

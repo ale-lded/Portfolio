@@ -139,7 +139,11 @@ export function Stage() {
         card.style.opacity = String(o)
         card.style.pointerEvents = o > 0.95 ? 'auto' : 'none'
         const d = sstep(T.decode[0] + i * 0.02, T.decode[1], p)
-        cardDecoders[i].forEach((decoder, k) => decoder.update(clamp(d * 1.5 - k * 0.2), p))
+        // Each line starts a little after the one before; the stretch makes sure the last
+        // one still ends fully readable, however many tags the card has
+        const lines = cardDecoders[i]
+        const stretch = 1 + Math.max(0.5, (lines.length - 1) * 0.2)
+        lines.forEach((decoder, k) => decoder.update(clamp(d * stretch - k * 0.2), p))
       })
 
       phase.style.opacity = String(sstep(0.07, 0.12, p))

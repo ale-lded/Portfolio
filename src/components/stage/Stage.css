@@ -452,8 +452,7 @@
 
 .card {
   position: relative;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   min-height: 340px;
   border: 1px solid rgba(201, 143, 78, 0.35);
   border-radius: 18px;
@@ -469,24 +468,20 @@
     filter 0.6s ease;
 }
 
-/* The two faces: the card turns edge-on, swaps them, and turns back (Work.tsx).
-   The back lies over the front, so the card keeps its size */
+/* The two faces: the card turns edge-on, swaps them, and turns back (lib/useFlip).
+   Both share the one grid cell, so the card is as tall as the taller face whichever
+   side is showing, and doesn't change size as it turns */
 .card__front,
 .card__back {
+  grid-area: 1 / 1;
   display: flex;
   flex-direction: column;
   padding: 28px;
 }
 
-.card__front {
-  flex: 1;
-}
-
 .card__back {
-  position: absolute;
-  inset: 0;
+  position: relative;
   border-radius: inherit;
-  overflow: auto;
   background:
     radial-gradient(120% 60% at 50% 110%, rgba(255, 181, 71, 0.12), transparent 60%),
     linear-gradient(180deg, #151413, #0e0d0d);
@@ -511,11 +506,40 @@
   outline: none;
 }
 
+/* Before the secrets: what the site is made of */
+.card__back-intro {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #bdb7af;
+}
+
 .card__secrets {
   display: grid;
   gap: 12px;
-  margin: 16px 0 16px;
+  margin: 14px 0;
   list-style: none;
+}
+
+/* After the secrets: any idea can be built, and the way to the contact section */
+.card__back-outro {
+  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.card__back-link {
+  color: var(--amber);
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 181, 71, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.card__back-link:hover {
+  text-decoration-color: var(--amber);
 }
 
 .card__secret-name {
@@ -533,6 +557,9 @@
 }
 
 .card__actions {
+  /* Above the title link, which stretches over the whole card */
+  position: relative;
+  z-index: 1;
   display: flex;
   min-height: 34px;
   margin-top: 22px;
@@ -875,6 +902,14 @@
     padding: 18px 20px;
   }
 
+  /* Phones: the back lies over the front instead, so the three stacked cards keep the
+     front's height and still fit one screen; a longer back grows the card while it shows */
+  .card__back {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+  }
+
   /* Three stacked cards must still fit one phone screen */
   .card__desc {
     min-height: 0;
@@ -911,8 +946,13 @@
     margin: 0;
   }
 
+  .card__back-intro {
+    margin-top: 0;
+    padding-right: 48px;
+  }
+
   .card__secrets {
-    margin: 0;
+    margin: 12px 0;
   }
 
   /* On a phone the way back is just the arrow (its words stay for screen readers),

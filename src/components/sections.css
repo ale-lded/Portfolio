@@ -374,18 +374,41 @@
   list-style: none;
 }
 
+/* Each offer is a card with two faces: it turns edge-on, swaps them and turns back
+   (lib/useFlip). Both share the one grid cell, so the card is as tall as the taller face
+   and doesn't change size as it turns */
 .service {
-  display: flex;
-  flex-direction: column;
-  padding: 28px;
+  position: relative;
+  display: grid;
   border: 1px solid var(--line-strong);
   border-radius: 18px;
   background: linear-gradient(180deg, var(--surface), var(--bg));
   transition: border-color 0.3s;
 }
 
-.service:hover {
+.service:hover,
+.service.is-flipped {
   border-color: rgba(255, 181, 71, 0.45);
+}
+
+.service__front,
+.service__back {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+}
+
+.service__back {
+  border-radius: inherit;
+  background:
+    radial-gradient(120% 60% at 50% 110%, rgba(255, 181, 71, 0.1), transparent 60%),
+    linear-gradient(180deg, var(--surface), var(--bg));
+}
+
+.service.is-flipped .service__front,
+.service:not(.is-flipped) .service__back {
+  visibility: hidden;
 }
 
 .service__index {
@@ -408,11 +431,122 @@
 }
 
 .service__note {
-  margin-top: auto;
-  padding-top: 20px;
+  margin-top: 20px;
   font-size: 13.5px;
   line-height: 1.55;
   color: var(--muted);
+}
+
+/* The way to the back, and back again: the same pill as the project cards */
+.service__flip {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 181, 71, 0.4);
+  border-radius: 999px;
+  background: rgba(255, 181, 71, 0.06);
+  color: var(--amber);
+  font-size: 11.5px;
+  cursor: pointer;
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+
+/* The button sits at the foot of the front, with room above it however long the text runs */
+.service__front > :nth-last-child(2) {
+  margin-bottom: 24px;
+}
+
+.service__flip:hover {
+  border-color: var(--amber);
+  background: rgba(255, 181, 71, 0.14);
+}
+
+.service__flip:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.service__back-name {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  outline: none;
+}
+
+.service__back-name .service__index {
+  margin-right: 6px;
+  font-weight: 400;
+}
+
+.service__label {
+  margin-top: 18px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.service__ideal {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.service__includes {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  list-style: none;
+}
+
+.service__includes li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #bdb7af;
+}
+
+.service__includes li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px rgba(255, 181, 71, 0.6);
+}
+
+.service__back-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 22px;
+}
+
+.service__back-foot .service__flip {
+  margin-top: 0;
+}
+
+.service__cta {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--amber);
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 181, 71, 0.4);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.service__cta:hover {
+  text-decoration-color: var(--amber);
 }
 
 /* ---------- Contact ---------- */
@@ -545,7 +679,8 @@
     margin-top: 40px;
   }
 
-  .service {
+  .service__front,
+  .service__back {
     padding: 22px;
   }
 

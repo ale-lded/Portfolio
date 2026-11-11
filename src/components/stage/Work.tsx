@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react'
-import { flushSync } from 'react-dom'
+import { useRef } from 'react'
 import { projects, work, type Project } from '../../content'
+import { useFlip } from '../../lib/useFlip'
 
 /** The three project cards the binary recomposes into. */
 export function Work() {
@@ -20,52 +20,9 @@ export function Work() {
 }
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const [flipped, setFlipped] = useState(false)
-  const card = useRef<HTMLLIElement>(null)
+  const { flipped, flip, card, openButton: flipButton, backStart: backHeading } = useFlip('card__back')
   const dialog = useRef<HTMLDialogElement>(null)
-  const flipButton = useRef<HTMLButtonElement>(null)
-  const backHeading = useRef<HTMLParagraphElement>(null)
   const { details, back } = project
-
-  /**
-   * The back lies over the front, so it has only the front's height. Where it holds more
-   * (a narrow phone, a longer language), the card grows to fit it while it is turned over.
-   */
-  const fitBack = (toBack: boolean) => {
-    const el = card.current
-    const backFace = el?.querySelector<HTMLElement>('.card__back')
-    if (!el || !backFace) return
-    el.style.minHeight = ''
-    // min-height counts the border too, clientHeight does not
-    const border = el.offsetHeight - el.clientHeight
-    if (toBack && backFace.scrollHeight > el.clientHeight) el.style.minHeight = `${backFace.scrollHeight + border}px`
-  }
-
-  /** Turns the card edge-on, swaps the faces out of sight, and turns it back */
-  const flip = async (to: boolean) => {
-    const el = card.current
-    // Keep the focus on the face that is now showing
-    const focus = () => (to ? backHeading.current : flipButton.current)?.focus()
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      fitBack(to)
-      flushSync(() => setFlipped(to))
-      focus()
-      return
-    }
-    const sign = to ? 1 : -1
-    const edge = (deg: number) => `perspective(1400px) rotateY(${deg}deg)`
-    await el.animate([{ transform: edge(0) }, { transform: edge(90 * sign) }], {
-      duration: 280,
-      easing: 'cubic-bezier(0.5, 0, 0.9, 0.5)',
-    }).finished
-    fitBack(to)
-    flushSync(() => setFlipped(to))
-    focus()
-    el.animate([{ transform: edge(-90 * sign) }, { transform: edge(0) }], {
-      duration: 520,
-      easing: 'cubic-bezier(0.2, 0.9, 0.3, 1.15)',
-    })
-  }
 
   return (
     <li className={`card${flipped ? ' is-flipped' : ''}`} ref={card}>
@@ -127,6 +84,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           <p className="card__back-heading" ref={backHeading} tabIndex={-1}>
             {back.heading}
           </p>
+          <p className="card__back-intro">{back.intro}</p>
           <ol className="card__secrets">
             {back.items.map((item, i) => (
               <li key={item.name}>
@@ -137,6 +95,12 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               </li>
             ))}
           </ol>
+          <p className="card__back-outro">
+            {back.outro}{' '}
+            <a className="card__back-link" href={back.cta.href}>
+              {back.cta.label} <span aria-hidden="true">→</span>
+            </a>
+          </p>
           <div className="card__back-foot">
             <button type="button" className="card__action mono" onClick={() => void flip(false)}>
               <span aria-hidden="true">↺</span> <span className="card__action-text">{back.close}</span>

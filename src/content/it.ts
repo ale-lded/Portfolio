@@ -50,17 +50,17 @@ export const it: Content = {
   },
 
   work: {
-    heading: '01 — Lavori scelti',
+    heading: '01 — Ultimi lavori',
   },
 
   projects: [
     {
       title: 'Folio',
-      description: 'Strumenti PDF che funzionano nel browser. I tuoi file non lasciano mai il tuo dispositivo.',
-      tags: ['React', 'pdf-lib', 'Open source'],
-      status: 'In corso',
+      description: 'Unisci, dividi, comprimi e firma i tuoi PDF. Gratis, senza pubblicità, direttamente nel browser.',
+      tags: ['React', 'WebAssembly', 'Open source'],
+      href: 'https://folio.alessiomura.fr',
       details: {
-        open: 'Apri',
+        open: 'Scopri',
         image: {
           src: '/projects/folio.webp',
           width: 2000,
@@ -68,41 +68,45 @@ export const it: Content = {
           alt: 'La home di Folio: una libreria di strumenti PDF, con lo strumento Split estratto e aperto.',
         },
         story: [
-          'Lavoro con i PDF di continuo, e ogni strumento online mi chiedeva di caricare i miei file, sopportare la pubblicità o pagare per togliere un limite. Così ho creato il mio.',
-          'Folio è semplice, gratuito e senza pubblicità. Tutto succede nel tuo browser: i tuoi file non vengono mai caricati, mai salvati in un database, mai visti da nessuno oltre a te.',
+          'Uno dei miei ultimi progetti. L’ho pensato per avere sempre a portata di mano uno strumento facile per i PDF: gratis, senza pubblicità e senza registrazione.',
+          'Tutto succede nel tuo browser: i file non vengono mai caricati su un server, né visti da nessuno oltre a te. Se ti serve, usalo anche tu.',
         ],
-        progress: 'Lavori in corso: Merge funziona già, Split è in arrivo, Compress e Sign sono anteprime.',
-        cta: 'Modifica il tuo PDF',
-        href: 'https://folio.alessyomura.workers.dev',
+        progress: 'Unisci · Dividi · Riordina · Comprimi · Firma · Proteggi con password',
+        cta: 'Usa Folio gratis',
+        href: 'https://folio.alessiomura.fr',
         soon: 'Presto online',
         close: 'Chiudi',
       },
     },
     {
       title: 'Questo sito',
-      description: 'Un esempio creativo: quello che immagini per il tuo sito può diventare reale, e funzionare davvero.',
+      description: 'Il sito che stai guardando, progettato e sviluppato da me, con due segreti nascosti da scovare.',
       tags: ['React', 'TypeScript', 'Canvas'],
       back: {
-        open: 'Hai trovato i due easter egg?',
-        heading: 'Due segreti, sotto gli occhi.',
+        open: 'Scopri i 2 easter egg nascosti',
+        heading: 'Fatto su misura, fin nei dettagli.',
+        intro: 'Costruito con strumenti moderni, con animazioni disegnate a mano. E due sorprese:',
         items: [
           {
             name: 'Un pixel fuori posto',
-            text: 'Cliccalo, in cima alla pagina, per un giro di pista dietro le quinte. Batti il record.',
+            text: 'Cliccalo, vicino al faro nella prima schermata, per un giro di pista dietro le quinte. Batti il record.',
           },
           {
             name: 'Un cursore smarrito',
-            text: 'Si nasconde in cima e in fondo alla pagina, e apre un terminale per messaggi segreti.',
+            text: 'Si nasconde in alto e in fondo alla pagina, e apre un terminale per messaggi segreti.',
           },
         ],
+        outro: 'Ogni idea o desiderio per il tuo sito si può realizzare. Basta parlarne.',
+        cta: { label: 'Parliamone', href: '#contact' },
         note: '(solo su desktop)',
         close: 'Rigira',
       },
     },
     {
-      title: 'Caso studio',
-      description: 'Una nuova pagina case study per una società di consulenza software, disegnata per il loro sito.',
+      title: 'Nuovo sito',
+      description: 'Un sito in preparazione per un cliente, in fase di sviluppo. Presto lo vedrai qui.',
       tags: ['Web design', 'Front end'],
+      status: 'Disponibile a breve',
     },
   ],
 
@@ -152,19 +156,32 @@ export const it: Content = {
   services: {
     label: '03 — Servizi',
     heading: 'Cosa posso realizzare per te.',
+    card: {
+      open: 'Cosa include',
+      close: 'Rigira',
+      ideal: 'Ideale per',
+      includes: 'Cosa include',
+      cta: { label: 'Parliamone', href: '#contact' },
+    },
     items: [
       {
         name: 'Redesign',
         text: 'Il tuo sito attuale, rifatto per essere moderno, veloce e facile da trovare. Stessa attività, una prima impressione molto migliore.',
+        ideal: 'Chi ha già un sito, ma è lento, datato o difficile da trovare.',
+        includes: ['Analisi del sito attuale', 'Nuovo design, moderno e su misura', 'Più veloce e perfetto su mobile', 'SEO di base, per farti trovare su Google'],
       },
       {
         name: 'Siti vetrina',
         text: 'Una casa online chiara e curata per la tua attività: chi sei, cosa fai e come raggiungerti.',
+        ideal: 'Chi apre un’attività o non ha ancora un sito.',
+        includes: ['Design su misura, niente template', 'Pagine chiare: chi sei, cosa fai, contatti', 'Testi e foto curati insieme', 'Online con il tuo dominio e l’hosting'],
       },
       {
         name: 'Web app',
         text: 'Strumenti su misura per il tuo modo di lavorare: prenotazioni, aree clienti, dashboard.',
         note: 'Per i progetti più grandi lavoro con uno sviluppatore full-stack di fiducia, così i tempi restano brevi e realistici.',
+        ideal: 'Chi ha un processo da semplificare o un’idea da costruire.',
+        includes: ['Prenotazioni e calendari', 'Aree clienti con accesso', 'Dashboard e gestione dei dati', 'Strumenti su misura, come Folio'],
       },
     ],
   },

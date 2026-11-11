@@ -64,7 +64,8 @@ export type Project = {
   status?: string
   /** Where the card leads: leave it out and the card is not a link */
   href?: string
-  /** A button on the card that opens a larger look at the project */
+  /** A button on the card that opens a larger look at the project.
+   *  progress: one line under the story (for Folio, the list of its tools) */
   details?: {
     open: string
     image: { src: string; width: number; height: number; alt: string }
@@ -80,7 +81,12 @@ export type Project = {
   back?: {
     open: string
     heading: string
+    /** A line before the secrets */
+    intro: string
     items: { name: string; text: string }[]
+    /** A line after the secrets, with a link (to the contact section) */
+    outro: string
+    cta: { label: string; href: string }
     close: string
     /** A note in brackets after the secrets, e.g. where they can be found */
     note: string
@@ -88,17 +94,17 @@ export type Project = {
 }
 
 export const work = {
-  heading: '01 — Selected work',
+  heading: '01 — Latest work',
 }
 
 export const projects: Project[] = [
   {
     title: 'Folio',
-    description: 'PDF tools that run in your browser. Your files never leave your device.',
-    tags: ['React', 'pdf-lib', 'Open source'],
-    status: 'In progress',
+    description: 'Merge, split, compress and sign your PDFs. Free, ad-free, right in your browser.',
+    tags: ['React', 'WebAssembly', 'Open source'],
+    href: 'https://folio.alessiomura.fr',
     details: {
-      open: 'Open',
+      open: 'Discover',
       image: {
         src: '/projects/folio.webp',
         width: 2000,
@@ -106,42 +112,45 @@ export const projects: Project[] = [
         alt: 'The Folio home page: a bookshelf of PDF tools, with the Split tool pulled out and open.',
       },
       story: [
-        'I work with PDFs all the time, and every online tool wanted me to upload my files, sit through ads or pay to lift a limit. So I built my own.',
-        'Folio is simple, free and ad-free. Everything happens in your browser: your files are never uploaded, never stored in a database, never seen by anyone but you.',
+        'One of my latest projects. I built it to always have an easy PDF tool at hand: free, ad-free and with no sign-up.',
+        'Everything happens in your browser: your files are never uploaded to a server, never seen by anyone but you. If you need it, use it too.',
       ],
-      progress: 'Work in progress: Merge works today, Split is on its way, Compress and Sign are previews.',
-      cta: 'Edit your PDF',
-      href: 'https://folio.alessyomura.workers.dev',
+      progress: 'Merge · Split · Reorder · Compress · Sign · Password-protect',
+      cta: 'Use Folio for free',
+      href: 'https://folio.alessiomura.fr',
       soon: 'Online soon',
       close: 'Close',
     },
   },
   {
     title: 'This site',
-    description: 'A creative example: whatever you imagine for your site can become real, and actually work.',
+    description: 'The site you are looking at, designed and built by me, with two hidden secrets to find.',
     tags: ['React', 'TypeScript', 'Canvas'],
     back: {
-      open: 'Found the two easter eggs?',
-      heading: 'Two secrets, in plain sight.',
+      open: 'Find the 2 hidden easter eggs',
+      heading: 'Made to measure, down to the details.',
+      intro: 'Built with modern tools, with hand-drawn animations. And two surprises:',
       items: [
         {
           name: 'A pixel out of place',
-          text: 'Click it, at the top of the page, for a one-lap race backstage. Beat the record.',
+          text: 'Click it, near the spotlight on the first screen, for a one-lap race backstage. Beat the record.',
         },
         {
           name: 'A stray cursor',
           text: 'It hides at the top and bottom of the page, and opens a terminal for secret notes.',
         },
       ],
+      outro: 'Any idea or wish for your website can be built. We just need to talk about it.',
+      cta: { label: 'Let’s talk', href: '#contact' },
       note: '(desktop only)',
       close: 'Flip back',
     },
   },
   {
-    // TODO: once the client agrees, use their name and link the page
-    title: 'Case study',
-    description: 'A new case-study page for a software consultancy, designed to fit their existing site.',
+    title: 'New site',
+    description: 'A site in the works for a client, in development. You will see it here soon.',
     tags: ['Web design', 'Front end'],
+    status: 'Coming soon',
   },
 ]
 
@@ -198,24 +207,41 @@ export type Service = {
   text: string
   /** A smaller line under the text */
   note?: string
+  /** The back of the card: who it is for, and what it includes */
+  ideal: string
+  includes: string[]
 }
 
 export const services = {
   label: '03 — Services',
   heading: 'What I can build for you.',
+  /** The words on the card's buttons and back, shared by the three offers */
+  card: {
+    open: 'What’s included',
+    close: 'Flip back',
+    ideal: 'Ideal for',
+    includes: 'Included',
+    cta: { label: 'Let’s talk', href: '#contact' },
+  },
   items: [
     {
       name: 'Redesign',
       text: 'Your current site, rebuilt to be modern, fast and easy to find. Same business, a much better first impression.',
+      ideal: 'Businesses that already have a site, but it is slow, dated or hard to find.',
+      includes: ['A review of your current site', 'A new design, modern and made to measure', 'Faster, and perfect on mobile', 'Basic SEO, to be found on Google'],
     },
     {
       name: 'Showcase websites',
       text: 'A clear, beautiful home for your business online: who you are, what you do, and how to reach you.',
+      ideal: 'A new business, or one that has no website yet.',
+      includes: ['A custom design, no templates', 'Clear pages: who you are, what you do, contact', 'Copy and photos, polished together', 'Online with your domain and hosting'],
     },
     {
       name: 'Web apps',
       text: 'Custom tools for the way you work: bookings, client areas, dashboards.',
       note: 'For larger projects I team up with a trusted full-stack developer, so timelines stay short and realistic.',
+      ideal: 'A process to simplify, or an idea to build.',
+      includes: ['Bookings and calendars', 'Client areas with a login', 'Dashboards and data management', 'Custom tools, like Folio'],
     },
   ] satisfies Service[],
 }

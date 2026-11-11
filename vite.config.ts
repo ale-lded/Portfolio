@@ -2,22 +2,18 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 
-/**
- * For now the site is Italian only, served at / (see LANG_SWITCH in src/lib/lang.ts).
- * To bring the languages back: index.html in English again, then
- *   en: { html: 'index.html', path: '/' },
- *   it: { html: 'it/index.html', path: '/it/' },
- *   fr: { html: 'fr/index.html', path: '/fr/' },
- */
+/** One page per language: index.html is English, it/ and fr/ the translations (src/lib/lang.ts) */
 const pages = {
-  it: { html: 'index.html', path: '/' },
+  en: { html: 'index.html', path: '/' },
+  it: { html: 'it/index.html', path: '/it/' },
+  fr: { html: 'fr/index.html', path: '/fr/' },
 }
 
 /**
  * Tells search engines the three pages are one site in three languages: a canonical link
  * and hreflang alternates on each page, plus an absolute share image. These need the site's
  * full address, so they are only written when SITE_URL is set at build time, e.g.
- * SITE_URL=https://alessiomura.com npm run build
+ * SITE_URL=https://alessiomura.fr npm run build
  */
 function languageLinks(): Plugin {
   const site = process.env.SITE_URL?.replace(/\/$/, '')

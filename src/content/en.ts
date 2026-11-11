@@ -179,13 +179,13 @@ export const about = {
       label: 'The road',
       place: 'France → Japan',
       title: 'Fifteen months on two wheels',
-      text: 'My passion for programming had never gone away. So I sold the restaurant, my partner and I bought two bikes and set off. Somewhere along the road I decided to become a **web developer**, and since then I’ve been learning the best technologies, to keep pace with today’s market.',
+      text: 'My passion for programming had never gone away. So I sold the restaurant, and my partner and I took a long break: we wanted to work out how to rebuild our working life, and what we really wanted to do. We bought two bikes and set off. Somewhere along the road I decided to become a **web developer**, and since then I’ve been learning the best technologies, to keep pace with today’s market.',
     },
     {
       label: 'Today',
       place: 'Lyon',
       title: 'Websites, made to measure',
-      text: 'Today I build **websites made to measure** from **near Lyon**, with plenty of ideas and the patience of someone who’s been on the other side of the counter. I love the big picture and the small details. Your website deserves both.',
+      text: 'Today I live **near Lyon** and build **websites made to measure**, with plenty of ideas and the patience of someone who’s been on the other side of the counter. I love the big picture and the small details. Your website deserves both.',
     },
   ],
   /** The film photo beside the bio: opens larger on click */

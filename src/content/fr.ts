@@ -131,13 +131,13 @@ export const fr: Content = {
         label: 'La route',
         place: 'France → Japon',
         title: 'Quinze mois sur deux roues',
-        text: 'Ma passion pour la programmation ne m’avait jamais quitté. Alors j’ai vendu le restaurant, ma compagne et moi avons acheté deux vélos et nous sommes partis. Quelque part sur la route, j’ai décidé de devenir **développeur web**, et depuis je me forme aux meilleures technologies pour rester en phase avec le marché d’aujourd’hui.',
+        text: 'Ma passion pour la programmation ne m’avait jamais quitté. Alors j’ai vendu le restaurant, et ma compagne et moi avons pris une longue pause : nous voulions comprendre comment reconstruire notre travail, et ce que nous voulions vraiment faire. Nous avons acheté deux vélos et nous sommes partis. Quelque part sur la route, j’ai décidé de devenir **développeur web**, et depuis je me forme aux meilleures technologies pour rester en phase avec le marché d’aujourd’hui.',
       },
       {
         label: 'Aujourd’hui',
         place: 'Lyon',
         title: 'Des sites web sur mesure',
-        text: 'Aujourd’hui, je crée des **sites web sur mesure** **près de Lyon**, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime la vue d’ensemble et les petits détails. Ton site mérite les deux.',
+        text: 'Aujourd’hui, je vis **près de Lyon** et je crée des **sites web sur mesure**, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime la vue d’ensemble et les petits détails. Ton site mérite les deux.',
       },
     ],
     photo: {

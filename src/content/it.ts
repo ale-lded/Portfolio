@@ -131,13 +131,13 @@ export const it: Content = {
         label: 'La strada',
         place: 'Francia → Giappone',
         title: 'Quindici mesi su due ruote',
-        text: 'La passione per la programmazione non se n’era mai andata. Così ho venduto il ristorante, io e la mia compagna abbiamo comprato due bici e siamo partiti. Da qualche parte lungo la strada ho deciso di diventare **sviluppatore web**, e da allora studio le migliori tecnologie per stare al passo con il mercato di oggi.',
+        text: 'La passione per la programmazione non se n’era mai andata. Così ho venduto il ristorante, e io e la mia compagna ci siamo presi una lunga pausa: volevamo capire come ricostruire il nostro lavoro, e cosa fare davvero. Abbiamo comprato due bici e siamo partiti. Da qualche parte lungo la strada ho deciso di diventare **sviluppatore web**, e da allora studio le migliori tecnologie per stare al passo con il mercato di oggi.',
       },
       {
         label: 'Oggi',
         place: 'Lione',
         title: 'Siti web su misura',
-        text: 'Oggi creo **siti web su misura** da **vicino a Lione**, con tante idee e la pazienza di chi è stato dall’altra parte del bancone. Amo il quadro generale e i piccoli dettagli. Il tuo sito merita entrambi.',
+        text: 'Oggi vivo **vicino a Lione** e creo **siti web su misura**, con tante idee e la pazienza di chi è stato dall’altra parte del bancone. Amo il quadro generale e i piccoli dettagli. Il tuo sito merita entrambi.',
       },
     ],
     photo: {

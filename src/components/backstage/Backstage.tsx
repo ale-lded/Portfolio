@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { backstage, person } from '../../content'
 import { isBackstageUrl, leaveBackstage } from '../../lib/backstage'
 import { useReducedMotion } from '../../lib/useReducedMotion'
+import { Plain } from '../Emphasis'
 import './Backstage.css'
 
 /** The minigame is only downloaded by those who find the bug. */
@@ -153,7 +154,7 @@ export function Backstage() {
       <div className="backstage__scene" ref={sceneRef} role="dialog" aria-modal="true" aria-label={backstage.label}>
         {/* The back of the set: the hero title, seen from behind */}
         <p className="backstage__set" aria-hidden="true">
-          {person.tagline}
+          <Plain text={person.tagline} />
         </p>
 
         {/* The follow-spot from behind: the lamp in silhouette, its beam going away from you */}

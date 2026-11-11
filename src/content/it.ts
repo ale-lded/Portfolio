@@ -7,7 +7,7 @@ import type { Content } from '../content'
 const person: Content['person'] = {
   name: 'Alessio Mura',
   initials: 'AM',
-  tagline: 'Siti web su misura.',
+  tagline: 'Siti web **su misura.**',
   role: 'Web designer e sviluppatore',
   lead: '“Prima ascolto, poi progetto e realizzo un sito che si adatta alla tua attività, fin nei minimi dettagli.”',
 }
@@ -29,6 +29,8 @@ export const it: Content = {
     stageLabel: 'Presentazione e lavori',
     meta: 'Lione, Francia — 2026',
     hint: 'scorri',
+    status: 'Disponibile per nuovi progetti',
+    cta: 'Parliamo del tuo progetto',
     phases: ['1/4 · Sgretolamento', '2/4 · Codice → binario', '3/4 · Ricomposizione', '4/4 · Lavori'],
   },
 

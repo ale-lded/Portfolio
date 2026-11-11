@@ -19,14 +19,14 @@
   margin: -14px 0 0 -14px;
 }
 
-/* Up in the dark, top left of the hero, away from the title and the podium light.
-   Grey-blue like a dead pixel on a screen, not the amber dust of the beam. */
+/* Up in the dark, top right of the hero, above the name and away from the copy and the
+   podium light. Grey-blue like a dead pixel on a screen, not the amber dust of the beam. */
 .bug--hero {
   --bug-idle: rgba(150, 160, 170, 0.55);
   position: absolute;
   z-index: 6;
-  left: calc(50% - 31vw);
-  top: 23%;
+  left: calc(50% + 30vw);
+  top: 22%;
   margin: -14px 0 0 -14px;
 }
 

@@ -15,6 +15,8 @@ const PALETTE = [
   '#FFB547', '#FF9A2E', '#FFD08A', '#E07818',
   // 12 card title · 13 card outline · 14 flash
   '#F2EEE8', '#C98F4E', '#FFF1D6',
+  // 15 hero accent words (Stage.css .hero__accent)
+  '#CBB594',
 ]
 /**
  * The hero title's CSS gradient (Stage.css .hero__title), as stops, sampled into
@@ -40,6 +42,8 @@ const AMBER = [8, 9, 10, 11]
 const CARD_TITLE = 12
 const CARD_OUTLINE = 13
 const FLASH = 14
+/** The hero's accent words (Stage.css .hero__accent): light, warm sand */
+const HERO_ACCENT = 15
 const ALPHA_LEVELS = 12
 const BUCKETS = PALETTE.length * ALPHA_LEVELS
 
@@ -213,9 +217,12 @@ export class ParticleScene {
     this.sA = heroStep
     const hp: number[] = []
     const aOrder: number[] = []
+    /** Per hero pixel: 1 when it belongs to the accent words, drawn in amber */
+    const hAccent: number[] = []
     for (const spec of input.hero) {
       const pts = sampleText(spec, heroStep)
       const base = hp.length / 2
+      for (let k = 0; k < pts.length / 2; k++) hAccent.push(spec.accent ? 1 : 0)
       const idx = Array.from({ length: pts.length / 2 }, (_, i) => i).sort(
         (i, j) => pts[i * 2] - pts[j * 2] || pts[i * 2 + 1] - pts[j * 2 + 1],
       )
@@ -261,10 +268,11 @@ export class ParticleScene {
 
       this.ax[i] = hp[ai * 2]
       this.ay[i] = hp[ai * 2 + 1]
-      // Same top-lit gradient as the CSS title, measured over the title's own box
+      // Same top-lit gradient as the CSS title, measured over the title's own box;
+      // the accent words keep their amber
       const { top, bottom } = input.heroBox
       const shade = clamp((this.ay[i] - top) / Math.max(1, bottom - top))
-      this.colA[i] = HERO_FIRST + Math.round(shade * (HERO_SHADES - 1))
+      this.colA[i] = hAccent[ai] ? HERO_ACCENT : HERO_FIRST + Math.round(shade * (HERO_SHADES - 1))
 
       this.bx[i] = bX[bi]
       this.by[i] = bY[bi]

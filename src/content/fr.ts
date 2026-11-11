@@ -8,7 +8,7 @@ import type { Content } from '../content'
 const person: Content['person'] = {
   name: 'Alessio Mura',
   initials: 'AM',
-  tagline: 'Des sites web sur mesure.',
+  tagline: 'Des sites web **sur mesure.**',
   role: 'Web designer et développeur',
   lead: '« J’écoute d’abord, puis je conçois et je développe un site qui correspond à ton activité, jusque dans les moindres détails. »',
 }
@@ -30,6 +30,8 @@ export const fr: Content = {
     stageLabel: 'Présentation et projets',
     meta: 'Lyon, France — 2026',
     hint: 'défiler',
+    status: 'Disponible pour de nouveaux projets',
+    cta: 'Parlons de ton projet',
     phases: ['1/4 · Effritement', '2/4 · Code → binaire', '3/4 · Recomposition', '4/4 · Projets'],
   },
 

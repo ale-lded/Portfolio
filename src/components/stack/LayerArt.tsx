@@ -163,7 +163,7 @@ function DesignSystem() {
         Aa
       </text>
       <text className="mono" x="20" y="206" fontSize="10" fill={C.muted}>
-        Inter · Space Grotesk
+        Geist · Inter
       </text>
       <rect x="316" y="20" width="150" height="38" rx="19" fill={C.amber} />
       <text className="sans" x="391" y="43.5" textAnchor="middle" fontSize="13" fontWeight="600" fill={C.ink}>

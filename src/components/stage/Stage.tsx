@@ -35,15 +35,22 @@ export function Stage() {
     if (reduced) return
     const stage = stageRef.current!
     const sticky = stickyRef.current!
-    const hero = heroRef.current!
-    const title = titleRef.current!
     const codeWin = codeWinRef.current!
     const phase = phaseRef.current!
     const phaseLabel = phase.querySelector<HTMLElement>('.phase__label')!
     const phaseFill = phase.querySelector<HTMLElement>('.phase__fill')!
-    const heroFades = [...hero.querySelectorAll<HTMLElement>('.hero__fade')]
-    const hint = hero.querySelector<HTMLElement>('.hero__hint')!
-    const bugs = [...sticky.querySelectorAll<HTMLElement>('.bug')]
+    // The hero's elements are read again on every build, not kept from the first render:
+    // the title is measured where it is now, even after its layout or font has changed
+    const heroParts = () => {
+      const hero = heroRef.current!
+      return {
+        title: titleRef.current!,
+        fades: [...hero.querySelectorAll<HTMLElement>('.hero__fade')],
+        hint: hero.querySelector<HTMLElement>('.hero__hint')!,
+        bugs: [...sticky.querySelectorAll<HTMLElement>('.bug')],
+      }
+    }
+    let parts = heroParts()
     const workHead = sticky.querySelector<HTMLElement>('.work__head')!
     const cards = [...sticky.querySelectorAll<HTMLElement>('.card')]
     const cardDecoders = cards.map((card, i) =>
@@ -62,6 +69,13 @@ export function Stage() {
     }
 
     const build = () => {
+      const previous = parts.title
+      parts = heroParts()
+      const { title } = parts
+      if (title !== previous) {
+        resizeObserver.unobserve(previous)
+        resizeObserver.observe(title)
+      }
       const origin = sticky.getBoundingClientRect()
       const cardSpecs: CardSpec[] = cards.map((card) => {
         const r = card.getBoundingClientRect()
@@ -94,11 +108,14 @@ export function Stage() {
 
     const apply = (p: number) => {
       scene.render(p)
+      const { title, fades: heroFades, hint, bugs } = parts
 
       const copyOut = sstep(T.heroCopyOut[0], T.heroCopyOut[1], p)
       for (const el of heroFades) {
         el.style.opacity = String(1 - copyOut)
         el.style.transform = copyOut ? `translateY(${-copyOut * 16}px)` : ''
+        // Gone copy can't be clicked: the buttons leave with it
+        el.style.visibility = copyOut > 0.99 ? 'hidden' : ''
       }
       hint.style.opacity = String(1 - sstep(T.hintOut[0], T.hintOut[1], p))
       // The bugs belong to the hero: they leave with its copy and can't be clicked once gone
@@ -157,19 +174,22 @@ export function Stage() {
         })
       : null
 
+    // Measure again once things settle: the window or the title changed size
     let resizeTimer = 0
-    const resizeObserver = new ResizeObserver(() => {
+    const rebuild = () => {
       if (!ready) return
       window.clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(() => {
         build()
         apply(current)
       }, 120)
-    })
+    }
+    const resizeObserver = new ResizeObserver(rebuild)
 
     // Sampling needs the real fonts, otherwise the pixels would come from a fallback face
     Promise.all([
-      document.fonts.load('500 80px "Space Grotesk Variable"'),
+      document.fonts.load('600 80px "Geist Variable"'),
+      document.fonts.load('300 80px "Geist Variable"'),
       document.fonts.load('700 100px "Inter Variable"'),
       document.fonts.load('400 16px "JetBrains Mono"'),
     ])
@@ -185,6 +205,10 @@ export function Stage() {
 
     window.addEventListener('scroll', request, { passive: true })
     resizeObserver.observe(sticky)
+    resizeObserver.observe(parts.title)
+    // In development, an edit to the hero's code or styles can move the title without
+    // resizing anything: measure again after every hot update
+    import.meta.hot?.on('vite:afterUpdate', rebuild)
 
     return () => {
       alive = false
@@ -193,6 +217,7 @@ export function Stage() {
       window.removeEventListener('scroll', request)
       spotlight?.dispose()
       resizeObserver.disconnect()
+      import.meta.hot?.off('vite:afterUpdate', rebuild)
     }
   }, [reduced])
 

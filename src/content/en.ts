@@ -7,8 +7,9 @@
 export const person = {
   name: 'Alessio Mura',
   initials: 'AM',
-  /** Service line: the hero title, and the text that transforms on scroll */
-  tagline: 'Websites, made to measure.',
+  /** Service line: the hero title, and the text that transforms on scroll.
+   *  The words between **double asterisks** take the light accent */
+  tagline: 'Websites, **made to measure.**',
   role: 'Web designer & developer',
   lead: '“I listen first, then design and build a website that fits your business, down to the smallest detail.”',
 }
@@ -27,6 +28,10 @@ export const hero = {
   stageLabel: 'Introduction and work',
   meta: 'Lyon, France — 2026',
   hint: 'scroll',
+  /** The small line above the title, with a pulsing dot */
+  status: 'Available for new projects',
+  /** The button under the title, down to the contact section */
+  cta: 'Let’s talk about your project',
   /** The four steps of the hero sequence, shown bottom left while it plays.
    *  Counted as 1/4…4/4, so they never read like the section numbers (01 — …) */
   phases: ['1/4 · Crumbling', '2/4 · Code → binary', '3/4 · Recomposing', '4/4 · Work'],

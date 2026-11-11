@@ -16,6 +16,8 @@ export type TextSpec = {
    * DOM exactly even where canvas ignores letterSpacing (Safari).
    */
   glyphs?: Glyph[]
+  /** Set on the part of a title written in the accent (the light words of the hero title) */
+  accent?: boolean
 }
 
 export type Glyph = { char: string; x: number }
@@ -66,55 +68,86 @@ export function textSpecFromElement(el: HTMLElement, origin: DOMRect): TextSpec 
 }
 
 /**
- * Like textSpecFromElement, but for text that wraps: returns one spec per
- * visual line, read character by character from the browser's own layout.
+ * Like textSpecFromElement, but for text that wraps: returns one spec per visual line,
+ * read character by character from the browser's own layout. Text inside a child element
+ * (an <em> in another font, say) becomes a run of its own, with that element's font and
+ * the accent flag, so a line can mix fonts and still land on the real text.
  */
 export function textLinesFromElement(el: HTMLElement, origin: DOMRect): TextSpec[] {
-  const node = el.firstChild
-  if (!(node instanceof Text)) return [textSpecFromElement(el, origin)]
-  const cs = getComputedStyle(el)
-  const font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
-  const letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing
-  const ctx = scratchCtx()
-  ctx.font = font
-  const m = ctx.measureText(node.data)
-  const ascent = m.fontBoundingBoxAscent
-  const descent = m.fontBoundingBoxDescent
+  const nodes: Text[] = []
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n as Text)
+  if (!nodes.length) return [textSpecFromElement(el, origin)]
 
-  type Line = { start: number; end: number; left: number; right: number; top: number; height: number; glyphs: { char: string; left: number }[] }
-  const lines: Line[] = []
-  const range = document.createRange()
-  for (let i = 0; i < node.data.length; i++) {
-    if (/\s/.test(node.data[i])) continue
-    range.setStart(node, i)
-    range.setEnd(node, i + 1)
-    const r = range.getClientRects()[0]
-    if (!r) continue
-    const line = lines[lines.length - 1]
-    const glyph = { char: node.data[i], left: r.left }
-    if (line && Math.abs(r.top - line.top) < r.height / 2) {
-      line.end = i
-      line.right = r.right
-      line.glyphs.push(glyph)
-    } else {
-      lines.push({ start: i, end: i, left: r.left, right: r.right, top: r.top, height: r.height, glyphs: [glyph] })
+  type Style = { font: string; letterSpacing: string; ascent: number; descent: number; accent: boolean }
+  const ctx = scratchCtx()
+  const styleOf = (node: Text): Style => {
+    const owner = node.parentElement ?? el
+    const cs = getComputedStyle(owner)
+    const font = `${cs.fontStyle === 'normal' ? '' : `${cs.fontStyle} `}${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+    ctx.font = font
+    const m = ctx.measureText(node.data)
+    return {
+      font,
+      letterSpacing: cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing,
+      ascent: m.fontBoundingBoxAscent,
+      descent: m.fontBoundingBoxDescent,
+      accent: owner !== el,
     }
   }
 
-  return lines.map((line) => {
-    const top = line.top + (line.height - (ascent + descent)) / 2
-    return {
-      text: node.data.slice(line.start, line.end + 1),
-      font,
-      letterSpacing,
-      x: line.left - origin.left,
-      baseline: top - origin.top + ascent,
-      width: line.right - line.left,
-      ascent,
-      descent,
-      glyphs: line.glyphs.map((g) => ({ char: g.char, x: g.left - line.left })),
+  type Run = { style: Style; text: string; left: number; right: number; top: number; height: number; glyphs: { char: string; left: number }[] }
+  type Line = { top: number; height: number; runs: Run[] }
+  const lines: Line[] = []
+  const range = document.createRange()
+  for (const node of nodes) {
+    const style = styleOf(node)
+    let run: Run | null = null
+    for (let i = 0; i < node.data.length; i++) {
+      const char = node.data[i]
+      if (/\s/.test(char)) {
+        // A space only matters inside a run, where it keeps the words of that run together
+        if (run) run.text += char
+        continue
+      }
+      range.setStart(node, i)
+      range.setEnd(node, i + 1)
+      const r = range.getClientRects()[0]
+      if (!r) continue
+      let line = lines[lines.length - 1]
+      if (!line || Math.abs(r.top + r.height / 2 - (line.top + line.height / 2)) > line.height / 2) {
+        line = { top: r.top, height: r.height, runs: [] }
+        lines.push(line)
+        run = null
+      }
+      if (!run || !line.runs.includes(run)) {
+        run = { style, text: '', left: r.left, right: r.right, top: r.top, height: r.height, glyphs: [] }
+        line.runs.push(run)
+      }
+      run.text += char
+      run.right = r.right
+      run.glyphs.push({ char, left: r.left })
     }
-  })
+  }
+
+  return lines.flatMap((line) =>
+    line.runs.map((run) => {
+      const { font, letterSpacing, ascent, descent, accent } = run.style
+      const top = run.top + (run.height - (ascent + descent)) / 2
+      return {
+        text: run.text.trim(),
+        font,
+        letterSpacing,
+        x: run.left - origin.left,
+        baseline: top - origin.top + ascent,
+        width: run.right - run.left,
+        ascent,
+        descent,
+        glyphs: run.glyphs.map((g) => ({ char: g.char, x: g.left - run.left })),
+        accent,
+      }
+    }),
+  )
 }
 
 /**

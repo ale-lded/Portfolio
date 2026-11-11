@@ -22,8 +22,10 @@ function languageLinks(): Plugin {
     transformIndexHtml(html, ctx) {
       if (!site) return html
       const own = Object.values(pages).find((p) => resolve(ctx.filename) === resolve(__dirname, p.html))
+      // Only the three language pages are translations of each other
+      if (!own) return html
       const tags = [
-        own && `<link rel="canonical" href="${site}${own.path}" />`,
+        `<link rel="canonical" href="${site}${own.path}" />`,
         ...Object.entries(pages).map(([lang, p]) => `<link rel="alternate" hreflang="${lang}" href="${site}${p.path}" />`),
         `<link rel="alternate" hreflang="x-default" href="${site}/" />`,
       ]
@@ -65,7 +67,11 @@ export default defineConfig({
   plugins: [react(), languageLinks(), hiddenPreview()],
   build: {
     rollupOptions: {
-      input: Object.fromEntries(Object.entries(pages).map(([lang, p]) => [lang, resolve(__dirname, p.html)])),
+      input: {
+        ...Object.fromEntries(Object.entries(pages).map(([lang, p]) => [lang, resolve(__dirname, p.html)])),
+        // French only: the version French law asks for, linked from every page's footer
+        legal: resolve(__dirname, 'mentions-legales/index.html'),
+      },
     },
   },
 })

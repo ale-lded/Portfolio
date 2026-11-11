@@ -340,6 +340,8 @@ export const contact = {
     { label: 'LinkedIn', href: '' },
   ],
   backToTop: 'Back to top',
+  /** The legal notice is in French only: it is the version French law asks for */
+  legal: 'Legal notice (FR)',
 }
 
 export const backstage = {

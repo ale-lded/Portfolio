@@ -34,15 +34,18 @@ export function Contact() {
           © 2026 {person.name}
           <Bug className="bug--footer" label={terminal.trigger} onClick={openTerminal} />
         </span>
-        <a
-          href="#top"
-          onClick={(e) => {
-            e.preventDefault()
-            scrollToTop()
-          }}
-        >
-          {contact.backToTop} ↑
-        </a>
+        <span className="footer__links">
+          <a href="/mentions-legales/">{contact.legal}</a>
+          <a
+            href="#top"
+            onClick={(e) => {
+              e.preventDefault()
+              scrollToTop()
+            }}
+          >
+            {contact.backToTop} ↑
+          </a>
+        </span>
       </footer>
     </>
   )

@@ -629,6 +629,17 @@
   color: var(--muted);
 }
 
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px 24px;
+}
+
+.footer__links a:hover {
+  color: var(--text);
+}
+
 @media (max-width: 960px) {
   .section {
     padding: 96px var(--pad);

@@ -260,6 +260,7 @@ export const it: Content = {
       { label: 'LinkedIn', href: '' },
     ],
     backToTop: 'Torna su',
+    legal: 'Note legali (FR)',
   },
 
   backstage: {

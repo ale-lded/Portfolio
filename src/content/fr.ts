@@ -259,6 +259,7 @@ export const fr: Content = {
       { label: 'LinkedIn', href: '' },
     ],
     backToTop: 'Haut de page',
+    legal: 'Mentions légales',
   },
 
   backstage: {

@@ -6,8 +6,8 @@ import { clamp, lerp, sstep } from './math'
  * cards: a motorised head: stiffer and quicker, but speed-capped so long moves travel at a
  * steady, slightly mechanical pace, then ease in.
  */
-const HERO = { stiffness: 0.0007, damping: 0.963, maxSpeed: 14 }
-const CARDS = { stiffness: 0.012, damping: 0.85, maxSpeed: 12 }
+const HERO = { stiffness: 0.000047, damping: 0.977, maxSpeed: 0.5 }
+const CARDS = { stiffness: 0.00625, damping: 0.919, maxSpeed: 1.5 }
 
 /** The beam's pivot, as a fraction of the viewport height: .podium__beam's top in PodiumLight.css. */
 const LAMP_Y = -0.02

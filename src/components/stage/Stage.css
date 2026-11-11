@@ -333,6 +333,7 @@
 
   /* Too narrow for three columns: the hint goes up a row, still on the centre line */
   .hero__meta {
+    bottom: 47px;
     grid-template-columns: 1fr auto;
     grid-template-areas:
       'hint hint'

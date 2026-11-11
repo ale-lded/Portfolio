@@ -148,6 +148,74 @@
   }
 }
 
+/* Touch screens: a portrait viewport is much taller than wide, so the vw-sized boxes above
+   clip the cone's sides into hard vertical edges. Size them from the height instead, so the
+   whole fan fits, and fade the light out over a wider angle for a softer, more conical beam. */
+@media not ((hover: hover) and (pointer: fine)) {
+  /* An almost flat fan: the light barely peaks in the middle and fades out over a wide angle,
+     so it reads as a haze opening up rather than a bright column */
+  .podium__cone {
+    left: -110vh;
+    width: 220vh;
+    background: conic-gradient(
+      from 180deg at 50% 0%,
+      rgba(255, 170, 75, 0.13) 0deg,
+      rgba(255, 165, 70, 0.115) 10deg,
+      rgba(255, 155, 60, 0.08) 20deg,
+      rgba(255, 150, 50, 0.04) 30deg,
+      rgba(255, 150, 50, 0.012) 39deg,
+      transparent 46deg,
+      transparent 314deg,
+      rgba(255, 150, 50, 0.012) 321deg,
+      rgba(255, 150, 50, 0.04) 330deg,
+      rgba(255, 155, 60, 0.08) 340deg,
+      rgba(255, 165, 70, 0.115) 350deg,
+      rgba(255, 170, 75, 0.13) 360deg
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, calc(0.15 + 0.6 * var(--beam-tilt, 0))) calc(12% - 8% * var(--beam-tilt, 0)),
+      #000 calc(40% - 26% * var(--beam-tilt, 0)),
+      #000 60%,
+      transparent 100%
+    );
+    filter: blur(40px);
+  }
+
+  /* The bright core is what made it look like a tube: just a faint, wide warmth in the middle */
+  .podium__core {
+    left: -45vh;
+    width: 90vh;
+    opacity: calc(var(--light, 1) * 0.3);
+    background: conic-gradient(
+      from 180deg at 50% 0%,
+      rgba(255, 214, 150, 0.12) 0deg,
+      rgba(255, 214, 150, 0.06) 8deg,
+      transparent 20deg,
+      transparent 340deg,
+      rgba(255, 214, 150, 0.06) 352deg,
+      rgba(255, 214, 150, 0.12) 360deg
+    );
+    filter: blur(44px);
+  }
+
+  .podium__mote {
+    left: calc(var(--x) * var(--y) * 40vh);
+  }
+
+  /* A wider stage: it may run off both sides of the screen */
+  .podium__floor {
+    width: 190vw;
+    height: 30vh;
+  }
+
+  .podium__ring {
+    width: 150vw;
+    height: 13vh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .podium__mote {
     display: none;

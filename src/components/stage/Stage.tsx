@@ -88,7 +88,8 @@ export function Stage() {
       scene.build({
         width: sticky.clientWidth,
         height: sticky.clientHeight,
-        dpr: Math.min(2, window.devicePixelRatio || 1),
+        // Up to 3x: phones are 3x screens, and at 2x the code text there looks blurry
+        dpr: Math.min(3, window.devicePixelRatio || 1),
         hero: textLinesFromElement(title, origin),
         heroBox: {
           top: title.getBoundingClientRect().top - origin.top,
@@ -165,18 +166,16 @@ export function Stage() {
       if (ready && !raf) raf = requestAnimationFrame(tick)
     }
 
-    // Follow-spot only with a real mouse: on touch screens the light stays put
-    const spotlight = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-      ? new Spotlight({
-          root: sticky,
-          cards: {
-            list: sticky.querySelector<HTMLElement>('.work__cards')!,
-            items: cards,
-            progress: () => current,
-            ready: T.cardsIn[1],
-          },
-        })
-      : null
+    // Follow-spot: chases a real mouse; on touch screens it only leans toward the last finger
+    const spotlight = new Spotlight({
+      root: sticky,
+      cards: {
+        list: sticky.querySelector<HTMLElement>('.work__cards')!,
+        items: cards,
+        progress: () => current,
+        ready: T.cardsIn[1],
+      },
+    })
 
     // Measure again once things settle: the window or the title changed size
     let resizeTimer = 0
@@ -219,7 +218,7 @@ export function Stage() {
       cancelAnimationFrame(raf)
       window.clearTimeout(resizeTimer)
       window.removeEventListener('scroll', request)
-      spotlight?.dispose()
+      spotlight.dispose()
       resizeObserver.disconnect()
       import.meta.hot?.off('vite:afterUpdate', rebuild)
     }

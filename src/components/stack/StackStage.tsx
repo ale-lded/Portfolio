@@ -103,8 +103,8 @@ export function StackStage() {
 
     // Pointer parallax: a few degrees of tilt, chased with inertia like the follow-spot
     const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches
-    // Same follow-spot as the hero, with its slow, heavy spring; only with a real mouse
-    const spotlight = finePointer ? new Spotlight({ root: sticky }) : null
+    // Same follow-spot as the hero, with its slow, heavy spring; on touch it leans toward the finger
+    const spotlight = new Spotlight({ root: sticky })
     const tilt = { x: 0, z: 0, tx: 0, tz: 0 }
 
     /** scroll: progress through the real stage. p: time on the reference timeline. */
@@ -458,7 +458,7 @@ export function StackStage() {
       window.removeEventListener('wheel', onWheel)
       stage.classList.remove('stack--done')
       window.removeEventListener('pointermove', onPointer)
-      spotlight?.dispose()
+      spotlight.dispose()
       io.disconnect()
       resizeObserver.disconnect()
     }

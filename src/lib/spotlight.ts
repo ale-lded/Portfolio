@@ -8,6 +8,11 @@ import { clamp, lerp, sstep } from './math'
  */
 const HERO = { stiffness: 0.000047, damping: 0.977, maxSpeed: 0.5 }
 const CARDS = { stiffness: 0.00625, damping: 0.919, maxSpeed: 1.5 }
+/** touch: a lazy, smooth drift toward the last finger, settling in a second or two. */
+const TOUCH = { stiffness: 0.0016, damping: 0.94, maxSpeed: 2.5 }
+
+/** On touch screens the light only leans toward the finger: this share of the way from centre stage. */
+const TOUCH_FOLLOW = 0.35
 
 /** The beam's pivot, as a fraction of the viewport height: .podium__beam's top in PodiumLight.css. */
 const LAMP_Y = -0.02
@@ -40,6 +45,8 @@ export class Spotlight {
   private raf = 0
   private last = 0
   private litCard: HTMLElement | null = null
+  /** No real mouse: the light leans gently toward the last touch and stays there. */
+  private touch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
 
   constructor(options: Options) {
     this.o = options
@@ -47,6 +54,7 @@ export class Spotlight {
     this.x = this.tx
     this.y = this.ty
     window.addEventListener('pointermove', this.onMove, { passive: true })
+    window.addEventListener('pointerdown', this.onMove, { passive: true })
     document.documentElement.addEventListener('pointerleave', this.onLeave)
     window.addEventListener('scroll', this.wake, { passive: true })
     window.addEventListener('resize', this.wake)
@@ -56,6 +64,7 @@ export class Spotlight {
   dispose() {
     cancelAnimationFrame(this.raf)
     window.removeEventListener('pointermove', this.onMove)
+    window.removeEventListener('pointerdown', this.onMove)
     document.documentElement.removeEventListener('pointerleave', this.onLeave)
     window.removeEventListener('scroll', this.wake)
     window.removeEventListener('resize', this.wake)
@@ -73,13 +82,22 @@ export class Spotlight {
   }
 
   private onMove = (e: PointerEvent) => {
-    if (e.pointerType !== 'mouse') return
-    this.tx = e.clientX
-    this.ty = e.clientY
+    if (this.touch) {
+      if (e.pointerType === 'mouse') return
+      this.rest()
+      this.tx += (e.clientX - this.tx) * TOUCH_FOLLOW
+      this.ty += (e.clientY - this.ty) * TOUCH_FOLLOW
+    } else {
+      if (e.pointerType !== 'mouse') return
+      this.tx = e.clientX
+      this.ty = e.clientY
+    }
     this.wake()
   }
 
   private onLeave = () => {
+    // A lifted finger also fires pointerleave: on touch the light stays where it was sent
+    if (this.touch) return
     this.rest()
     this.wake()
   }
@@ -96,10 +114,10 @@ export class Spotlight {
     this.last = now
 
     const cards = this.o.cards
-    const mix = cards ? sstep(cards.ready - 0.08, cards.ready, cards.progress()) : 0
-    const k = lerp(HERO.stiffness, CARDS.stiffness, mix)
-    const damping = lerp(HERO.damping, CARDS.damping, mix)
-    const maxSpeed = lerp(HERO.maxSpeed, CARDS.maxSpeed, mix)
+    const mix = cards && !this.touch ? sstep(cards.ready - 0.08, cards.ready, cards.progress()) : 0
+    const k = this.touch ? TOUCH.stiffness : lerp(HERO.stiffness, CARDS.stiffness, mix)
+    const damping = this.touch ? TOUCH.damping : lerp(HERO.damping, CARDS.damping, mix)
+    const maxSpeed = this.touch ? TOUCH.maxSpeed : lerp(HERO.maxSpeed, CARDS.maxSpeed, mix)
 
     this.vx = (this.vx + (this.tx - this.x) * k * dt) * Math.pow(damping, dt)
     this.vy = (this.vy + (this.ty - this.y) * k * dt) * Math.pow(damping, dt)
@@ -136,7 +154,8 @@ export class Spotlight {
 
     let lit: HTMLElement | null = null
     const cards = this.o.cards
-    if (cards && cards.progress() >= cards.ready) {
+    // Only a mouse lights cards: on touch the beam is just leaning, not aimed at anything
+    if (cards && !this.touch && cards.progress() >= cards.ready) {
       for (const card of cards.items) {
         const r = card.getBoundingClientRect()
         if (this.x >= r.left && this.x <= r.right && this.y >= r.top && this.y <= r.bottom) {

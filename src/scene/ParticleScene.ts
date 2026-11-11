@@ -339,7 +339,12 @@ export class ParticleScene {
   private layoutCode(W: number, H: number): CodeLayout {
     const ctx = this.ctx
     const maxCols = Math.max(...CODE_LINES.map((l) => l.length))
-    let fontSize = Math.max(8, Math.min(18, Math.round(W / 85)))
+    // Phones: start from the largest size and shrink only until it fits, with tighter
+    // padding and line numbers, so the code fills the screen width and stays readable
+    const narrow = W < 600
+    const padX = narrow ? 14 : PAD_X
+    const margin = narrow ? 24 : 40
+    let fontSize = narrow ? 18 : Math.max(8, Math.min(18, Math.round(W / 85)))
     let cellW = 0
     let lineH = 0
     let gutter = 0
@@ -350,14 +355,14 @@ export class ParticleScene {
       ctx.font = font
       cellW = ctx.measureText('M').width
       lineH = Math.round(fontSize * 1.7)
-      gutter = Math.round(cellW * 4.5)
-      w = Math.ceil(gutter + maxCols * cellW + PAD_X * 2)
-      if (w <= W - 40) break
+      gutter = Math.round(cellW * (narrow ? 3 : 4.5))
+      w = Math.ceil(gutter + maxCols * cellW + padX * 2)
+      if (w <= W - margin) break
     }
     const h = BAR + PAD_Y * 2 + CODE_LINES.length * lineH
     const x = Math.round((W - w) / 2)
     const y = Math.round(H * 0.48 - h / 2)
-    return { x, y, w, h, fontSize, font, cellW, lineH, originX: x + PAD_X + gutter, originY: y + BAR + PAD_Y }
+    return { x, y, w, h, fontSize, font, cellW, lineH, originX: x + padX + gutter, originY: y + BAR + PAD_Y }
   }
 
   /** Draws the scene for scroll progress p (0 → 1). */

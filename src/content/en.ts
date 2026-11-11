@@ -315,7 +315,23 @@ export const contact = {
   cta: 'Write to me',
   reply: 'I’ll get back to you quickly.',
   // TODO: switch to an address on your own domain when you have one
-  email: 'commerciale.alessiomura@gmail.com',
+  email: 'contact@alessiomura.fr',
+  /** Fill in the email that opens from the button: a subject and a short form to complete */
+  subject: 'A website for my business',
+  body: [
+    'Hi Alessio,',
+    '',
+    'my name is … and I run a … business in … .',
+    '',
+    'I’m interested in: a new website / redoing my current site / a web app.',
+    '',
+    'The project in short:',
+    '',
+    '',
+    'My current website (if any):',
+    '',
+    'Thanks!',
+  ].join('\n'),
   /** Profiles: a link with an empty href stays hidden */
   links: [
     { label: 'GitHub', href: 'https://github.com/ale-lded' },

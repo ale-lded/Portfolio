@@ -4,6 +4,11 @@ import { openTerminal } from '../lib/terminal'
 import { Bug } from './backstage/Bug'
 import './sections.css'
 
+/** The email that opens from the button, already addressed and with a short form to fill in */
+const mailto = `mailto:${contact.email}?${new URLSearchParams({ subject: contact.subject, body: contact.body })
+  .toString()
+  .replace(/\+/g, '%20')}`
+
 export function Contact() {
   return (
     <>
@@ -11,7 +16,7 @@ export function Contact() {
         <p className="section__label mono">{contact.label}</p>
         <h2 className="contact__heading">{contact.heading}</h2>
         <div className="contact__actions">
-          <a className="contact__cta" href={`mailto:${contact.email}`}>
+          <a className="contact__cta" href={mailto}>
             {contact.cta} <span aria-hidden="true">→</span>
           </a>
           {contact.links

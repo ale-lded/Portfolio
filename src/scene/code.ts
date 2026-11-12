@@ -1,25 +1,23 @@
 import { code } from '../content'
 
 /**
- * The code the title crumbles into: the client's website as a TypeScript object,
- * built from the site's copy (content.code), so it reads in the language of the page.
+ * The code the title crumbles into: the client's website as a TypeScript class,
+ * taken from the site's copy (content.code), so it reads in the language of the page.
  */
-export const CODE_LINES = [
-  `const ${code.name} = {`,
-  ...code.fields.map(([key, value]) => `  ${key}: ${value},`),
-  `  // ${code.comment}`,
-  '}',
-  `export default ${code.name}`,
-]
+export const CODE_LINES: readonly string[] = code.lines
 
 /** The colour family of each character (ParticleScene maps them onto the palette) */
-export type TokenKind = 'punct' | 'tag' | 'attr' | 'str' | 'text'
+export type TokenKind = 'punct' | 'tag' | 'attr' | 'str' | 'text' | 'type' | 'fn' | 'lit'
 
-const KEYWORDS = new Set(['const', 'let', 'export', 'default', 'true', 'false', 'null'])
+/** Keywords, in amber */
+const KEYWORDS = new Set(['class', 'extends', 'new', 'return', 'const', 'let', 'export', 'default', 'import', 'from'])
+/** Values that are not strings: booleans, numbers, this */
+const LITERALS = new Set(['true', 'false', 'null', 'this'])
 
 /**
  * Minimal TypeScript highlighter, one token kind per character:
- * keywords in amber (tag), object keys (attr), strings (str), comments and punctuation dim (punct).
+ * keywords (tag), class names (type), methods (fn), fields (attr), strings (str),
+ * true/false/this and numbers (lit), comments and punctuation dim (punct).
  */
 export function tokenizeLine(line: string): TokenKind[] {
   const chars = [...line]
@@ -36,11 +34,19 @@ export function tokenizeLine(line: string): TokenKind[] {
     } else if (chars[i] === "'") {
       const end = chars.indexOf("'", i + 1)
       fill((end === -1 ? chars.length : end + 1) - i, 'str')
+    } else if (/\d/.test(chars[i])) {
+      fill(rest.match(/^\d+/)![0].length, 'lit')
     } else if (/\p{L}|[$_]/u.test(chars[i])) {
       const word = rest.match(/^[\p{L}\p{N}$_]+/u)![0]
       const length = [...word].length
-      const isKey = /^\s*:/.test(chars.slice(i + length).join(''))
-      fill(length, KEYWORDS.has(word) ? 'tag' : isKey ? 'attr' : 'text')
+      const after = chars.slice(i + length).join('')
+      let kind: TokenKind = 'text'
+      if (KEYWORDS.has(word)) kind = 'tag'
+      else if (LITERALS.has(word)) kind = 'lit'
+      else if (/^\p{Lu}/u.test(word)) kind = 'type'
+      else if (after.startsWith('(')) kind = 'fn'
+      else if (/^\s*(:|=(?!=))/.test(after)) kind = 'attr'
+      fill(length, kind)
     } else if (/\s/.test(chars[i])) {
       fill(1, 'text')
     } else {

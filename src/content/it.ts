@@ -37,16 +37,19 @@ export const it: Content = {
   code: {
     file: 'tuo-sito.ts',
     lang: 'TS',
-    name: 'tuoSito',
-    fields: [
-      ['attività', "'la tua'"],
-      ['obiettivo', "'più clienti'"],
-      ['design', "'su misura'"],
-      ['mobile', 'true'],
-      ['veloce', 'true'],
-      ['seo', "'trovato su Google'"],
+    lines: [
+      '// ogni dettaglio conta',
+      'class TuoSito extends Web {',
+      "  design = 'su misura'",
+      "  struttura = 'solida'",
+      '  veloce = true',
+      '  mobile = true',
+      '',
+      '  suGoogle() {',
+      "    return 'prima pagina'",
+      '  }',
+      '}',
     ],
-    comment: 'ogni dettaglio conta',
   },
 
   work: {

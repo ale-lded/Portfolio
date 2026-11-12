@@ -9,7 +9,7 @@ export const MONO = '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Cons
 const PALETTE = [
   // 0–2 hero name, lit from above
   '#FFF4E6', '#E6DDD0', '#A0978B',
-  // 3–7 syntax: punct, tag, attr, string, text
+  // 3–7 syntax: punct, keyword, field, string, text
   '#6E6860', '#FFB547', '#E3C9A0', '#F28B54', '#EDE6DC',
   // 8–11 amber phosphor
   '#FFB547', '#FF9A2E', '#FFD08A', '#E07818',
@@ -17,6 +17,8 @@ const PALETTE = [
   '#F2EEE8', '#C98F4E', '#FFF1D6',
   // 15 hero accent words (Stage.css .hero__accent)
   '#CBB594',
+  // 16–18 more syntax: class names, methods, true/false/this
+  '#7FD6BE', '#8FB6F2', '#C9A6F2',
 ]
 /**
  * The hero title's CSS gradient (Stage.css .hero__title), as stops, sampled into
@@ -37,7 +39,7 @@ for (let k = 0; k < HERO_SHADES; k++) {
   const f = a1 === a0 ? 0 : (t - a0) / (a1 - a0)
   PALETTE.push(`rgb(${c0.map((c, n) => Math.round(c + (c1[n] - c) * f)).join(',')})`)
 }
-const SYNTAX: Record<TokenKind, number> = { punct: 3, tag: 4, attr: 5, str: 6, text: 7 }
+const SYNTAX: Record<TokenKind, number> = { punct: 3, tag: 4, attr: 5, str: 6, text: 7, type: 16, fn: 17, lit: 18 }
 const AMBER = [8, 9, 10, 11]
 const CARD_TITLE = 12
 const CARD_OUTLINE = 13

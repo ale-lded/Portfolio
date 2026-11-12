@@ -44,16 +44,20 @@ export const hero = {
 export const code = {
   file: 'your-site.ts',
   lang: 'TS',
-  name: 'yourSite',
-  fields: [
-    ['business', "'yours'"],
-    ['goal', "'more clients'"],
-    ['design', "'made to measure'"],
-    ['mobile', 'true'],
-    ['fast', 'true'],
-    ['seo', "'found on Google'"],
-  ] as [string, string][],
-  comment: 'every detail counts',
+  /** The client's website as a class, line by line (scene/code.ts colours it). Keep lines short: phones shrink the font to fit the longest */
+  lines: [
+    '// every detail counts',
+    'class YourSite extends Web {',
+    "  design = 'made to measure'",
+    "  build = 'solid'",
+    '  fast = true',
+    '  mobile = true',
+    '',
+    '  onGoogle() {',
+    "    return 'page one'",
+    '  }',
+    '}',
+  ],
 }
 
 export type Project = {

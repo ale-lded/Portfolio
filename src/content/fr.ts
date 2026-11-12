@@ -38,16 +38,19 @@ export const fr: Content = {
   code: {
     file: 'ton-site.ts',
     lang: 'TS',
-    name: 'tonSite',
-    fields: [
-      ['activité', "'la tienne'"],
-      ['objectif', "'plus de clients'"],
-      ['design', "'sur mesure'"],
-      ['mobile', 'true'],
-      ['rapide', 'true'],
-      ['seo', "'trouvé sur Google'"],
+    lines: [
+      '// chaque détail compte',
+      'class TonSite extends Web {',
+      "  design = 'sur mesure'",
+      "  structure = 'solide'",
+      '  rapide = true',
+      '  mobile = true',
+      '',
+      '  surGoogle() {',
+      "    return 'première page'",
+      '  }',
+      '}',
     ],
-    comment: 'chaque détail compte',
   },
 
   work: {

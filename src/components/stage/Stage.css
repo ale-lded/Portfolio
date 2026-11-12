@@ -100,12 +100,13 @@
 
 .hero__title {
   grid-area: title;
-  /* Two lines: the service, then its light accent */
-  max-width: 5.2em;
+  /* Two lines in every language: the service, then its light accent on a line of its own.
+     Wide enough for "Des sites web", the longest first line */
+  max-width: 6.2em;
   margin-top: 28px;
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(56px, 10.4vw, 176px);
+  font-size: clamp(56px, 9.6vw, 164px);
   letter-spacing: -0.05em;
   line-height: 0.95;
   text-wrap: balance;
@@ -119,6 +120,9 @@
 
 /* The accent words: the same face, light, in a warm sand tone (HERO_ACCENT in ParticleScene) */
 .hero__accent {
+  /* Smaller than the service, so "made to measure." still fits on one line */
+  display: block;
+  font-size: 0.74em;
   font-style: normal;
   font-weight: 300;
   color: #cbb594;

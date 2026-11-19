@@ -733,6 +733,24 @@
   color: var(--text);
 }
 
+/* Phones: the two sides no longer fit on one line, so they stack, both aligned left:
+   the copyright on one unbroken line, the links in a row under it */
+@media (max-width: 600px) {
+  .footer {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .footer > span:first-child {
+    white-space: nowrap;
+  }
+
+  .footer__links {
+    justify-content: flex-start;
+    gap: 8px 22px;
+  }
+}
+
 @media (max-width: 960px) {
   .section {
     padding: 96px var(--pad);

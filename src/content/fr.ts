@@ -19,7 +19,7 @@ export const fr: Content = {
   nav: {
     label: 'Principal',
     links: [
-      { label: 'À propos', href: '#about' },
+      { label: 'Qui suis-je', href: '#about' },
       { label: 'Projets', href: '#work' },
       { label: 'Services', href: '#services' },
       { label: 'Contact', href: '#contact' },
@@ -115,7 +115,7 @@ export const fr: Content = {
   ],
 
   about: {
-    label: '02 — À propos',
+    label: '02 — Qui suis-je',
     heading: 'J’ai été chef d’entreprise. Aujourd’hui, je crée des sites pour la tienne.',
     stats: [
       { value: '15', label: 'mois sur la route' },

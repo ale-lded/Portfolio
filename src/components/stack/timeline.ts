@@ -62,29 +62,34 @@ export function readWarp(u: number, r0: number, r1: number) {
 const REFERENCE_VH = 640
 
 /**
- * How much scroll each part of a layer window gets, relative to the reference:
- * the entrance (plate out, title flying to the panel) is stretched so it reads as a
- * slow, fluid arrival; the reading hold is shortened; the exit (title back on the
- * plate, plate down and back in) is stretched too, so it plays at about the same pace
- * as the entrance instead of snapping shut in a fraction of a wheel step.
+ * How much scroll each part gets, relative to the reference:
+ * the intro (the list folding into a pile and the layers opening) is compressed, it
+ * carries little to read; in each layer window the entrance (plate out, title flying
+ * to the panel) is a quick but fluid arrival, the reading hold keeps the most scroll
+ * so the step can really be read, and the exit (title back on the plate, plate down
+ * and back in) plays at about the entrance's pace instead of snapping shut.
  */
-export const ENTRANCE_SCALE = 3
-export const HOLD_SCALE = 1 / 2
-export const EXIT_SCALE = 4
+export const INTRO_SCALE = 0.55
+export const ENTRANCE_SCALE = 1.6
+export const HOLD_SCALE = 0.6
+export const EXIT_SCALE = 2.5
 
 /** Stretched or compressed spans of the reference timeline, in order and not overlapping. */
-const SPANS = Array.from({ length: 4 }, (_, i) => {
-  const s = S.layers.start + i * S.layers.step
-  const readFrom = s + S.layers.length * READ_WINDOW[0]
-  const readTo = s + S.layers.length * READ_WINDOW[1]
-  // The tail of an exit overlaps the next entrance: that part takes the entrance's scale
-  const exitTo = i < 3 ? s + S.layers.step : s + S.layers.length
-  return [
-    { from: s, to: readFrom, scale: ENTRANCE_SCALE },
-    { from: readFrom, to: readTo, scale: HOLD_SCALE, hold: true },
-    { from: readTo, to: exitTo, scale: EXIT_SCALE },
-  ]
-}).flat()
+const SPANS = [
+  { from: 0, to: S.layers.start, scale: INTRO_SCALE },
+  ...Array.from({ length: 4 }, (_, i) => {
+    const s = S.layers.start + i * S.layers.step
+    const readFrom = s + S.layers.length * READ_WINDOW[0]
+    const readTo = s + S.layers.length * READ_WINDOW[1]
+    // The tail of an exit overlaps the next entrance: that part takes the entrance's scale
+    const exitTo = i < 3 ? s + S.layers.step : s + S.layers.length
+    return [
+      { from: s, to: readFrom, scale: ENTRANCE_SCALE },
+      { from: readFrom, to: readTo, scale: HOLD_SCALE, hold: true },
+      { from: readTo, to: exitTo, scale: EXIT_SCALE },
+    ]
+  }).flat(),
+]
 
 /** Real stage length relative to the reference (scroll part only, without the last screen). */
 const LENGTH = 1 + SPANS.reduce((sum, span) => sum + (span.to - span.from) * (span.scale - 1), 0)

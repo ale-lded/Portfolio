@@ -6,7 +6,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 26px var(--pad);
-  background: linear-gradient(var(--bg) 55%, rgba(10, 10, 11, 0));
+  transition: color 0.35s ease;
 }
 
 /* Text scrolling up blurs out behind the bar instead of colliding with the logo and links */
@@ -17,8 +17,29 @@
   z-index: -1;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  /* The bar's own colour: solid at the top, fading out through the mask */
+  background-color: var(--nav-bg, #0a0a0b);
+  transition: background-color 0.35s ease;
   -webkit-mask-image: linear-gradient(#000 60%, transparent);
   mask-image: linear-gradient(#000 60%, transparent);
+}
+
+/* Over the paper "Chi sono" print the bar drops its dark band (the paper shows through,
+   still blurred) and only its words turn dark; the language dial stays a dark knob */
+.nav--light {
+  --nav-bg: transparent;
+  --text: #1c1712;
+  --muted: #4f473f;
+}
+
+.nav--light .dial {
+  --text: #f2eee8;
+}
+
+/* The blur stays within the print, so the dark strips of table at its sides
+   don't smear into the corners of the bar (same margin as .about in sections.css) */
+.nav--light::before {
+  inset: 0 clamp(10px, 1.6vw, 28px);
 }
 
 .nav__links {
@@ -26,6 +47,7 @@
   gap: 36px;
   font-size: calc(14px * var(--s));
   color: var(--muted);
+  transition: color 0.35s ease;
 }
 
 .nav__links a {

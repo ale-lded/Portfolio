@@ -101,6 +101,23 @@ export function About() {
     }
   }, [reduced])
 
+  // The print has its own paper grain: while it fills the middle of the screen, the
+  // page-wide film grain (index.css) fades out so the two don't pile up into sandpaper
+  useEffect(() => {
+    const sheet = document.getElementById('about')
+    if (!sheet) return
+    const root = document.documentElement
+    const observer = new IntersectionObserver(
+      ([entry]) => root.classList.toggle('paper-in-view', entry.isIntersecting),
+      { rootMargin: '-35% 0px -35% 0px' },
+    )
+    observer.observe(sheet)
+    return () => {
+      observer.disconnect()
+      root.classList.remove('paper-in-view')
+    }
+  }, [])
+
   // The route: the film unrolls with the scroll from the first stop to the last,
   // and lights each stop as it gets there
   useEffect(() => {

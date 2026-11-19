@@ -17,7 +17,7 @@ import { Work } from './Work'
 import './Stage.css'
 
 /**
- * The 220vh scroll stage. Its sticky child fills the viewport; scroll progress
+ * The scroll stage (Stage.css sets its height). Its sticky child fills the viewport; scroll progress
  * through the stage (0 → 1) drives the whole sequence. React builds the
  * structure once; every frame is then applied imperatively, without re-renders.
  */
@@ -64,10 +64,16 @@ export function Stage() {
     let ready = false
     let alive = true
 
+    // The stage's last screen (Stage.css) is not part of the sequence: the cards hold
+    // still there while the "Chi sono" print slides over them
+    const sequenceLength = () => stage.offsetHeight - window.innerHeight - sticky.offsetHeight
     const progress = () => {
-      const total = stage.offsetHeight - window.innerHeight
+      const total = sequenceLength()
       return total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0
     }
+    /** 0 → 1 over that last screen, as the print covers the pinned view */
+    const coverProgress = () =>
+      clamp((-stage.getBoundingClientRect().top - sequenceLength()) / Math.max(1, sticky.offsetHeight))
 
     const build = () => {
       const previous = parts.title
@@ -171,6 +177,7 @@ export function Stage() {
       current += (target - current) * 0.12
       if (Math.abs(target - current) < 0.0003) current = target
       apply(current)
+      sticky.style.setProperty('--cover', coverProgress().toFixed(3))
       if (current !== target) raf = requestAnimationFrame(tick)
     }
     const request = () => {
@@ -214,6 +221,7 @@ export function Stage() {
         build()
         current = progress()
         apply(current)
+        sticky.style.setProperty('--cover', coverProgress().toFixed(3))
         ready = true
       })
 

@@ -1,6 +1,10 @@
 .stage {
   position: relative;
-  height: 220vh;
+  /* 120vh of scroll for the sequence, then one more screen where the finished cards
+     stay pinned while the "Chi sono" print slides up over them: the negative margin
+     lets that print start one screen early, on top of the pinned view */
+  height: 320vh;
+  margin-bottom: -100vh;
 }
 
 /* Where the "Progetti" link lands: the point where the cards are already composed */
@@ -12,10 +16,23 @@
 
 .stage__sticky {
   --light: 1;
+  /* 0 → 1 while the print covers the pinned cards: they recede, smaller and darker */
+  --cover: 0;
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
+  transform: scale(calc(1 - var(--cover) * 0.06));
+}
+
+.stage__sticky::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background: #050505;
+  opacity: calc(var(--cover) * 0.6);
 }
 
 /* ---------- Hero ---------- */
@@ -862,6 +879,7 @@
 /* ---------- Static layout for reduced motion ---------- */
 .stage--static {
   height: auto;
+  margin-bottom: 0;
 }
 
 .stage--static .stage__anchor {

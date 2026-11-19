@@ -10,7 +10,63 @@
   color: var(--muted);
 }
 
-/* ---------- About ---------- */
+/* ---------- About: a photographic print laid on the dark table ----------
+   The colour tokens are redefined for everything inside, so the section's own rules
+   keep using var(--text), var(--muted)… and come out dark on the paper */
+.about {
+  --sheet: #e4d9c8;
+  --bg: var(--sheet);
+  --text: #1c1712;
+  --body: #41382f;
+  --muted: #5f564d;
+  --amber: #8a480a;
+  --amber-deep: #723b07;
+  --amber-soft: rgba(138, 72, 10, 0.12);
+  --line: rgba(28, 23, 18, 0.12);
+  --line-strong: rgba(28, 23, 18, 0.22);
+  /* The print stops short of the screen edges, a strip of dark table on each side;
+     the inner padding shrinks by as much, so the content stays on the page's column */
+  --edge: clamp(10px, 1.6vw, 28px);
+  margin-inline: var(--edge);
+  padding-inline: calc(var(--pad) - var(--edge));
+  /* Above the pinned cards it slides over (Stage.css) */
+  z-index: 3;
+  border-top: 0;
+  border-radius: 12px;
+  color: var(--text);
+  /* Paper: a fine fibre grain, warm light falling from above, edges a touch darker */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .24 0 0 0 0 .12 0 0 0 -.7 .42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"),
+    radial-gradient(90% 55% at 50% 0%, rgba(255, 244, 222, 0.55), transparent 70%),
+    radial-gradient(140% 100% at 50% 45%, transparent 55%, rgba(92, 64, 34, 0.16)),
+    var(--sheet);
+  /* Lifted off the table: a soft shadow under it and a faint light on the top edge */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 240, 0.6),
+    0 2px 0 rgba(0, 0, 0, 0.25),
+    0 40px 90px -30px rgba(0, 0, 0, 0.8);
+}
+
+/* It arrives slightly turned and settles flat on the table, like a print laid down */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .about {
+      animation: print-down linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 50%;
+    }
+  }
+}
+
+@keyframes print-down {
+  from {
+    transform: translateY(90px) rotate(-1.4deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
 .about__heading {
   max-width: 16em;
   font-size: calc(clamp(32px, 4vw, 56px) * var(--s));
@@ -99,7 +155,7 @@
   height: auto;
   margin-bottom: -3px;
   transform: translateX(-50%);
-  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 10px 14px rgba(40, 24, 8, 0.35));
 }
 
 /* The film. Perforations and frame lines are anchored to its bottom edge, so as it
@@ -180,7 +236,7 @@
   margin-top: 16px;
   font-size: calc(18px * var(--s));
   line-height: 1.65;
-  color: #bdb7af;
+  color: var(--body, #bdb7af);
 }
 
 /* The highlights: brighter words with an amber marker stroke under them */
@@ -216,8 +272,8 @@
 }
 
 .route--live .chapter.is-reached .chapter__stop {
-  border-color: #ffe2b0;
-  background: radial-gradient(circle at 50% 45%, #fff3df, var(--amber) 70%);
+  border-color: #e8a040;
+  background: radial-gradient(circle at 50% 45%, #fff3df, #ffb547 70%);
   box-shadow:
     0 0 10px 2px rgba(255, 181, 71, 0.7),
     0 0 28px 6px rgba(255, 181, 71, 0.3);
@@ -246,7 +302,7 @@
   background: none;
   cursor: zoom-in;
   overflow: hidden;
-  box-shadow: 0 30px 80px -40px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 30px 70px -36px rgba(40, 24, 8, 0.55);
 }
 
 .photo__img {
@@ -281,6 +337,12 @@
 }
 
 .lightbox {
+  --bg: #0a0a0b;
+  --text: #f2eee8;
+  --muted: #a39e97;
+  --amber: #ffb547;
+  --line: rgba(255, 236, 214, 0.08);
+  --line-strong: rgba(255, 236, 214, 0.16);
   max-width: none;
   max-height: none;
   width: 100%;
@@ -299,7 +361,8 @@
 }
 
 .lightbox::backdrop {
-  background: rgba(6, 6, 7, 0.88);
+  /* Dense enough to stay a dark room even over the ivory "Chi sono" sheet */
+  background: rgba(6, 6, 7, 0.95);
   backdrop-filter: blur(6px);
 }
 
@@ -673,6 +736,10 @@
 @media (max-width: 960px) {
   .section {
     padding: 96px var(--pad);
+  }
+
+  .about {
+    border-radius: 8px;
   }
 
   .stats {

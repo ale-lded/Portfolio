@@ -60,7 +60,7 @@ export const it: Content = {
     {
       title: 'Folio',
       description: 'Unisci, dividi, comprimi e firma i tuoi PDF. Gratis, senza pubblicità, direttamente nel browser.',
-      tags: ['React', 'WebAssembly', 'Open source'],
+      tags: ['Gratis', 'Senza pubblicità', 'Privato'],
       href: 'https://folio.alessiomura.fr',
       details: {
         open: 'Scopri',
@@ -83,10 +83,10 @@ export const it: Content = {
     },
     {
       title: 'Questo sito',
-      description: 'Il sito che stai guardando, progettato e sviluppato da me, con due segreti nascosti da scovare.',
-      tags: ['React', 'TypeScript', 'Canvas'],
+      description: 'Il sito che stai guardando, progettato e sviluppato da me, curato in ogni dettaglio.',
+      tags: ['Su misura', 'Veloce', 'Animato a mano'],
       back: {
-        open: 'Scopri i 2 easter egg nascosti',
+        open: 'Dietro le quinte',
         heading: 'Fatto su misura, fin nei dettagli.',
         intro: 'Costruito con strumenti moderni, con animazioni disegnate a mano. E due sorprese:',
         items: [
@@ -108,7 +108,7 @@ export const it: Content = {
     {
       title: 'Nuovo sito',
       description: 'Un sito in preparazione per un cliente, in fase di sviluppo. Presto lo vedrai qui.',
-      tags: ['Web design', 'Front end'],
+      tags: ['Design', 'Sviluppo'],
       status: 'Disponibile a breve',
     },
   ],
@@ -221,7 +221,7 @@ export const it: Content = {
       heading: 'Dalla prima chiamata al lancio.',
       text: 'Una sola persona con cui parlare, dall’inizio alla fine.',
     },
-    phases: ['1/4 · Assemblaggio', '2/4 · Vista esplosa', '3/4 · Compressione', '4/4 · Il metodo'],
+    phases: ['1/4 · I passi', '2/4 · Uno per uno', '3/4 · Tutto insieme', '4/4 · Il metodo'],
     art: {
       brief: {
         title: 'Prima chiamata',

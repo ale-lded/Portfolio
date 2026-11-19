@@ -105,7 +105,7 @@ export const projects: Project[] = [
   {
     title: 'Folio',
     description: 'Merge, split, compress and sign your PDFs. Free, ad-free, right in your browser.',
-    tags: ['React', 'WebAssembly', 'Open source'],
+    tags: ['Free', 'No ads', 'Private'],
     href: 'https://folio.alessiomura.fr',
     details: {
       open: 'Discover',
@@ -128,10 +128,10 @@ export const projects: Project[] = [
   },
   {
     title: 'This site',
-    description: 'The site you are looking at, designed and built by me, with two hidden secrets to find.',
-    tags: ['React', 'TypeScript', 'Canvas'],
+    description: 'The site you are looking at, designed and built by me, with care in every detail.',
+    tags: ['Made to measure', 'Fast', 'Hand-animated'],
     back: {
-      open: 'Find the 2 hidden easter eggs',
+      open: 'Behind the scenes',
       heading: 'Made to measure, down to the details.',
       intro: 'Built with modern tools, with hand-drawn animations. And two surprises:',
       items: [
@@ -153,7 +153,7 @@ export const projects: Project[] = [
   {
     title: 'New site',
     description: 'A site in the works for a client, in development. You will see it here soon.',
-    tags: ['Web design', 'Front end'],
+    tags: ['Design', 'Development'],
     status: 'Coming soon',
   },
 ]
@@ -294,7 +294,7 @@ export const stack = {
     text: 'One person you can talk to, all the way through.',
   },
   /** The four steps of the stack sequence, shown bottom left while it plays */
-  phases: ['1/4 · Assembly', '2/4 · Exploded view', '3/4 · Compression', '4/4 · The method'],
+  phases: ['1/4 · The steps', '2/4 · One by one', '3/4 · All together', '4/4 · The method'],
   /** Words drawn inside the layer illustrations (LayerArt) */
   art: {
     /** The notes taken during the first call */

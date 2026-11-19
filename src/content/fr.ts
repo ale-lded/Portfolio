@@ -1,6 +1,6 @@
 /**
  * Le texte en français : même forme que en.ts, champ par champ (TypeScript signale ce qui manque).
- * On tutoie, comme en italien : un ton chaleureux et direct. Typographie française : espace insécable ( ) avant : ; ? ! et dans les « ».
+ * On vouvoie : c’est l’usage avec les entreprises en France (l’italien, lui, tutoie). Typographie française : espace insécable ( ) avant : ; ? ! et dans les « ».
  * Les noms des outils de Folio restent en anglais, comme dans l'application.
  */
 import type { Content } from '../content'
@@ -10,7 +10,7 @@ const person: Content['person'] = {
   initials: 'AM',
   tagline: 'Des sites web **sur mesure.**',
   role: 'Web designer et développeur',
-  lead: '« J’écoute d’abord, puis je conçois et je développe un site qui correspond à ton activité, jusque dans les moindres détails. »',
+  lead: '« J’écoute d’abord, puis je conçois et je développe un site qui correspond à votre activité, jusque dans les moindres détails. »',
 }
 
 export const fr: Content = {
@@ -31,16 +31,16 @@ export const fr: Content = {
     meta: 'Lyon, France — 2026',
     hint: 'défiler',
     status: 'Disponible pour de nouveaux projets',
-    cta: 'Parlons de ton projet',
+    cta: 'Parlons de votre projet',
     phases: ['1/4 · Effritement', '2/4 · Code → binaire', '3/4 · Recomposition', '4/4 · Projets'],
   },
 
   code: {
-    file: 'ton-site.ts',
+    file: 'votre-site.ts',
     lang: 'TS',
     lines: [
       '// chaque détail compte',
-      'class TonSite extends Web {',
+      'class VotreSite extends Web {',
       "  design = 'sur mesure'",
       "  structure = 'solide'",
       '  rapide = true',
@@ -60,7 +60,7 @@ export const fr: Content = {
   projects: [
     {
       title: 'Folio',
-      description: 'Fusionne, divise, compresse et signe tes PDF. Gratuit, sans publicité, directement dans ton navigateur.',
+      description: 'Fusionnez, divisez, compressez et signez vos PDF. Gratuit, sans publicité, directement dans votre navigateur.',
       tags: ['React', 'WebAssembly', 'Open source'],
       href: 'https://folio.alessiomura.fr',
       details: {
@@ -73,7 +73,7 @@ export const fr: Content = {
         },
         story: [
           'Un de mes derniers projets. Je l’ai pensé pour avoir toujours sous la main un outil PDF facile : gratuit, sans publicité et sans inscription.',
-          'Tout se passe dans ton navigateur : tes fichiers ne sont jamais envoyés sur un serveur, ni vus par personne d’autre que toi. Si tu en as besoin, utilise-le toi aussi.',
+          'Tout se passe dans votre navigateur : vos fichiers ne sont jamais envoyés sur un serveur, ni vus par personne d’autre que vous. Si vous en avez besoin, utilisez-le vous aussi.',
         ],
         progress: 'Fusionner · Diviser · Réorganiser · Compresser · Signer · Protéger par mot de passe',
         cta: 'Utiliser Folio gratuitement',
@@ -84,23 +84,23 @@ export const fr: Content = {
     },
     {
       title: 'Ce site',
-      description: 'Le site que tu regardes, conçu et développé par moi, avec deux secrets cachés à dénicher.',
+      description: 'Le site que vous regardez, conçu et développé par moi, avec deux secrets cachés à dénicher.',
       tags: ['React', 'TypeScript', 'Canvas'],
       back: {
-        open: 'Découvre les 2 easter eggs cachés',
+        open: 'Découvrez les 2 easter eggs cachés',
         heading: 'Fait sur mesure, jusque dans les détails.',
         intro: 'Construit avec des outils modernes, avec des animations dessinées à la main. Et deux surprises :',
         items: [
           {
             name: 'Un pixel déplacé',
-            text: 'Clique dessus, près du projecteur sur le premier écran, pour un tour de piste en coulisses. Bats le record.',
+            text: 'Cliquez dessus, près du projecteur sur le premier écran, pour un tour de piste en coulisses. Battez le record.',
           },
           {
             name: 'Un curseur égaré',
             text: 'Il se cache en haut et en bas de la page, et ouvre un terminal pour messages secrets.',
           },
         ],
-        outro: 'Chaque idée ou envie pour ton site peut devenir réelle. Il suffit d’en parler.',
+        outro: 'Chaque idée ou envie pour votre site peut devenir réelle. Il suffit d’en parler.',
         cta: { label: 'Parlons-en', href: '#contact' },
         note: '(uniquement sur ordinateur)',
         close: 'Retourner',
@@ -116,7 +116,7 @@ export const fr: Content = {
 
   about: {
     label: '02 — Qui suis-je',
-    heading: 'J’ai été chef d’entreprise. Aujourd’hui, je crée des sites pour la tienne.',
+    heading: 'J’ai été chef d’entreprise. Aujourd’hui, je crée des sites pour la vôtre.',
     stats: [
       { value: '15', label: 'mois sur la route' },
       { value: '30', label: 'pays traversés' },
@@ -140,7 +140,7 @@ export const fr: Content = {
         label: 'Aujourd’hui',
         place: 'Lyon',
         title: 'Des sites web sur mesure',
-        text: 'Aujourd’hui, je vis **près de Lyon** et je crée des **sites web sur mesure**, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime la vue d’ensemble et les petits détails. Ton site mérite les deux.',
+        text: 'Aujourd’hui, je vis **près de Lyon** et je crée des **sites web sur mesure**, avec plein d’idées et la patience de quelqu’un qui a été de l’autre côté du comptoir. J’aime la vue d’ensemble et les petits détails. Votre site mérite les deux.',
       },
     ],
     photo: {
@@ -158,7 +158,7 @@ export const fr: Content = {
 
   services: {
     label: '03 — Services',
-    heading: 'Ce que je peux créer pour toi.',
+    heading: 'Ce que je peux créer pour vous.',
     card: {
       open: 'Ce qui est inclus',
       close: 'Retourner',
@@ -169,19 +169,19 @@ export const fr: Content = {
     items: [
       {
         name: 'Refonte',
-        text: 'Ton site actuel, refait pour être moderne, rapide et facile à trouver. La même entreprise, une bien meilleure première impression.',
+        text: 'Votre site actuel, refait pour être moderne, rapide et facile à trouver. La même entreprise, une bien meilleure première impression.',
         ideal: 'Ceux qui ont déjà un site, mais lent, daté ou difficile à trouver.',
         includes: ['Analyse du site actuel', 'Nouveau design, moderne et sur mesure', 'Plus rapide et parfait sur mobile', 'SEO de base, pour être trouvé sur Google'],
       },
       {
         name: 'Sites vitrines',
-        text: 'Une vitrine en ligne claire et soignée pour ton entreprise : qui tu es, ce que tu fais et comment te joindre.',
+        text: 'Une vitrine en ligne claire et soignée pour votre entreprise : qui vous êtes, ce que vous faites et comment vous joindre.',
         ideal: 'Ceux qui lancent leur activité ou n’ont pas encore de site.',
-        includes: ['Design sur mesure, pas de template', 'Des pages claires : qui tu es, ce que tu fais, contact', 'Textes et photos soignés ensemble', 'En ligne avec ton domaine et l’hébergement'],
+        includes: ['Design sur mesure, pas de template', 'Des pages claires : qui vous êtes, ce que vous faites, contact', 'Textes et photos soignés ensemble', 'En ligne avec votre domaine et l’hébergement'],
       },
       {
         name: 'Photo et vidéo',
-        text: 'Je viens chez toi pour photographier et filmer ton entreprise : de vraies images pour ton site, ta publicité et tes réseaux sociaux.',
+        text: 'Je viens chez vous pour photographier et filmer votre entreprise : de vraies images pour votre site, votre publicité et vos réseaux sociaux.',
         note: 'Pour l’instant, sur place à Lyon et dans ses environs.',
         ideal: 'Ceux qui veulent montrer leur entreprise telle qu’elle est, pas avec des photos de banque d’images.',
         includes: ['Séance photo sur place', 'Vidéos pour le site et la publicité', 'Montages courts pour les réseaux sociaux', 'Caméras, micros et lumières professionnels'],
@@ -193,13 +193,13 @@ export const fr: Content = {
     label: '04 — Ma méthode',
     intro: {
       heading: 'Quatre étapes, aucune surprise.',
-      text: 'Du premier appel au jour du lancement, tu sais toujours où on en est et ce qui vient ensuite.',
+      text: 'Du premier appel au jour du lancement, vous savez toujours où en est le projet et ce qui vient ensuite.',
     },
     skills: [
       {
         name: 'Écoute',
         note: 'Appel, besoins, objectifs',
-        detail: 'On parle de ton entreprise, de tes clients et de ce que ton site doit accomplir. Sans jargon, sans engagement.',
+        detail: 'On parle de votre entreprise, de vos clients et de ce que votre site doit accomplir. Sans jargon, sans engagement.',
       },
       {
         name: 'Conception',
@@ -209,7 +209,7 @@ export const fr: Content = {
       {
         name: 'Design',
         note: 'Maquettes, retouches incluses',
-        detail: 'Tu vois ton site avant qu’il soit construit, et on l’affine jusqu’à ce qu’il te ressemble.',
+        detail: 'Vous voyez votre site avant qu’il soit construit, et on l’affine jusqu’à ce qu’il vous ressemble.',
       },
       {
         name: 'Mise en ligne',
@@ -225,7 +225,7 @@ export const fr: Content = {
     art: {
       brief: {
         title: 'Premier appel',
-        questions: ['Qui sont tes clients ?', 'Que doit faire le site ?', 'Ce que tu aimes, ou pas ?'],
+        questions: ['Qui sont vos clients ?', 'Que doit faire le site ?', 'Ce que vous aimez, ou pas ?'],
         answer: 'Plus de réservations, moins d’appels',
       },
       flow: ['Accueil', 'Services', 'Contact'],
@@ -237,9 +237,9 @@ export const fr: Content = {
 
   contact: {
     label: '05 — Contact',
-    heading: 'Parlons de ton site.',
-    cta: 'Écris-moi',
-    reply: 'Je te réponds rapidement.',
+    heading: 'Parlons de votre site.',
+    cta: 'Écrivez-moi',
+    reply: 'Je vous réponds rapidement.',
     email: 'contact@alessiomura.fr',
     subject: 'Un site pour mon activité',
     body: [
@@ -300,7 +300,7 @@ export const fr: Content = {
     time: 'Temps',
     best: 'Meilleur',
     record: 'Record',
-    yourBest: 'Ton meilleur',
+    yourBest: 'Votre meilleur',
     beaten: 'Nouveau record',
     toRecord: 'du record',
     savedAs: 'Enregistré sous',
@@ -313,8 +313,8 @@ export const fr: Content = {
     change: 'Changer de voiture',
     quit: 'Retour sur scène',
     finish: 'Arrivée',
-    podium: 'Tu es sur le podium',
-    initials: 'Tes initiales',
+    podium: 'Vous êtes sur le podium',
+    initials: 'Vos initiales',
     save: 'Enregistrer',
     again: 'Encore une course',
   },
@@ -323,16 +323,16 @@ export const fr: Content = {
     trigger: 'Un curseur égaré',
     title: 'cipher.sys',
     label: 'Terminal chiffré',
-    intro: 'Écris un message secret, envoie le code à un ami, il l’ouvre ici.',
+    intro: 'Écrivez un message secret, envoyez le code à un ami, il l’ouvre ici.',
     modeLabel: 'Mode',
     modes: { encrypt: 'Chiffrer', decrypt: 'Déchiffrer' },
     keyLabel: 'Clé (facultative)',
     keyPlaceholder: 'un mot que vous connaissez tous les deux',
-    keyHint: 'Laisse-la vide et n’importe qui ayant ce site pourra ouvrir le message.',
-    inputLabel: { encrypt: 'Ton message', decrypt: 'Code à déchiffrer' },
+    keyHint: 'Laissez-la vide et n’importe qui ayant ce site pourra ouvrir le message.',
+    inputLabel: { encrypt: 'Votre message', decrypt: 'Code à déchiffrer' },
     inputPlaceholder: {
-      encrypt: 'Tape un message secret…',
-      decrypt: 'Colle un code qui commence par AM:',
+      encrypt: 'Tapez un message secret…',
+      decrypt: 'Collez un code qui commence par AM:',
     },
     run: { encrypt: 'Chiffrer le message', decrypt: 'Déchiffrer le code' },
     runHint: '⌘ ↵',
@@ -341,7 +341,7 @@ export const fr: Content = {
     idle: 'Le résultat apparaîtra ici.',
     copy: 'Copier',
     copied: 'Copié ✓',
-    copyFailed: 'Sélectionné : appuie sur ⌘C',
+    copyFailed: 'Sélectionné : appuyez sur ⌘C',
     check: 'Tester',
     errors: {
       empty: 'Rien à traiter pour l’instant.',

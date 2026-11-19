@@ -256,11 +256,12 @@ export const fr: Content = {
       '',
       'Merci !',
     ].join('\n'),
-    links: [
-      { label: 'GitHub', href: 'https://github.com/ale-lded' },
-      { label: 'Malt', href: '' },
-      { label: 'LinkedIn', href: '' },
-    ],
+    whatsapp: {
+      label: 'WhatsApp',
+      message: 'Bonjour Alessio, j’aimerais vous parler d’un projet pour mon entreprise.',
+    },
+    links: [{ label: 'Instagram', href: '' }],
+    footerLinks: [{ label: 'GitHub', href: 'https://github.com/ale-lded' }],
     backToTop: 'Haut de page',
     legal: 'Mentions légales',
   },

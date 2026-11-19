@@ -336,13 +336,19 @@ export const contact = {
     '',
     'Thanks!',
   ].join('\n'),
-  /** Profiles: a link with an empty href stays hidden */
+  /** The WhatsApp button beside the email one: the chat opens with this message already typed
+   *  (the number itself is in Contact.tsx, the same for every language) */
+  whatsapp: {
+    label: 'WhatsApp',
+    message: 'Hi Alessio, I’d like to talk about a project for my business.',
+  },
+  /** Profiles next to the buttons: a link with an empty href stays hidden */
   links: [
-    { label: 'GitHub', href: 'https://github.com/ale-lded' },
-    // TODO: add your Malt and LinkedIn profiles
-    { label: 'Malt', href: '' },
-    { label: 'LinkedIn', href: '' },
+    // TODO: add your Instagram profile when it is ready
+    { label: 'Instagram', href: '' },
   ],
+  /** Smaller links in the footer, for the curious */
+  footerLinks: [{ label: 'GitHub', href: 'https://github.com/ale-lded' }],
   backToTop: 'Back to top',
   /** The legal notice is in French only: it is the version French law asks for */
   legal: 'Legal notice (FR)',

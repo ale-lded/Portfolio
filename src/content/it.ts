@@ -257,11 +257,12 @@ export const it: Content = {
       '',
       'Grazie!',
     ].join('\n'),
-    links: [
-      { label: 'GitHub', href: 'https://github.com/ale-lded' },
-      { label: 'Malt', href: '' },
-      { label: 'LinkedIn', href: '' },
-    ],
+    whatsapp: {
+      label: 'WhatsApp',
+      message: 'Ciao Alessio, vorrei parlarti di un progetto per la mia attività.',
+    },
+    links: [{ label: 'Instagram', href: '' }],
+    footerLinks: [{ label: 'GitHub', href: 'https://github.com/ale-lded' }],
     backToTop: 'Torna su',
     legal: 'Note legali (FR)',
   },

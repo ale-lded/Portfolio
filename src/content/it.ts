@@ -106,10 +106,11 @@ export const it: Content = {
       },
     },
     {
-      title: 'Nuovo sito',
-      description: 'Un sito in preparazione per un cliente, in fase di sviluppo. Presto lo vedrai qui.',
-      tags: ['Design', 'Sviluppo'],
-      status: 'Disponibile a breve',
+      title: 'Il tuo sito',
+      description: 'Il prossimo lavoro qui potrebbe essere il tuo. Raccontami la tua attività: ne parliamo insieme, senza impegno.',
+      tags: ['Su misura', 'Senza impegno'],
+      status: 'Posto libero',
+      cta: { label: 'Prenota il posto', href: '#contact' },
     },
   ],
 

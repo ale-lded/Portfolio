@@ -22,7 +22,7 @@ export function Work() {
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const { flipped, flip, card, openButton: flipButton, backStart: backHeading } = useFlip('card__back')
   const dialog = useRef<HTMLDialogElement>(null)
-  const { details, back } = project
+  const { details, back, cta } = project
 
   return (
     <li className={`card${flipped ? ' is-flipped' : ''}`} ref={card}>
@@ -60,6 +60,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </ul>
         {/* Always there, even empty, so the titles line up across the cards */}
         <div className="card__actions">
+          {cta && (
+            <a className="card__action mono" href={cta.href}>
+              {cta.label} <span aria-hidden="true">→</span>
+            </a>
+          )}
           {details && (
             <button type="button" className="card__action mono" onClick={() => dialog.current?.showModal()}>
               {details.open} <span aria-hidden="true">↗</span>

@@ -107,10 +107,11 @@ export const fr: Content = {
       },
     },
     {
-      title: 'Nouveau site',
-      description: 'Un site en préparation pour un client, en cours de développement. Bientôt visible ici.',
-      tags: ['Design', 'Développement'],
-      status: 'Disponible bientôt',
+      title: 'Votre site',
+      description: 'Le prochain projet ici pourrait être le vôtre. Parlez-moi de votre activité : on en discute ensemble, sans engagement.',
+      tags: ['Sur mesure', 'Sans engagement'],
+      status: 'Place libre',
+      cta: { label: 'Réserver la place', href: '#contact' },
     },
   ],
 

@@ -68,6 +68,8 @@ export type Project = {
   status?: string
   /** Where the card leads: leave it out and the card is not a link */
   href?: string
+  /** A button on the card that leads somewhere on the page, e.g. the contact section */
+  cta?: { label: string; href: string }
   /** A button on the card that opens a larger look at the project.
    *  progress: one line under the story (for Folio, the list of its tools) */
   details?: {
@@ -151,10 +153,11 @@ export const projects: Project[] = [
     },
   },
   {
-    title: 'New site',
-    description: 'A site in the works for a client, in development. You will see it here soon.',
-    tags: ['Design', 'Development'],
-    status: 'Coming soon',
+    title: 'Your site',
+    description: 'The next project here could be yours. Tell me about your business and we’ll talk it over, no strings attached.',
+    tags: ['Made to measure', 'No commitment'],
+    status: 'Open slot',
+    cta: { label: 'Book the slot', href: '#contact' },
   },
 ]
 

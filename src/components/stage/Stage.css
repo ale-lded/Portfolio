@@ -614,6 +614,7 @@
   background: rgba(255, 181, 71, 0.06);
   color: var(--amber);
   font-size: calc(12.5px * var(--s));
+  text-decoration: none;
   cursor: pointer;
   transition:
     background 0.3s,

@@ -54,7 +54,6 @@ function hiddenPreview(): Plugin {
       return html.replace('</head>', '    <meta name="robots" content="noindex, nofollow" />\n  </head>')
     },
     generateBundle() {
-      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: 'User-agent: *\nAllow: /\n' })
       if (hidden) {
         this.emitFile({ type: 'asset', fileName: '_headers', source: '/*\n  X-Robots-Tag: noindex, nofollow\n' })
       }
@@ -62,9 +61,47 @@ function hiddenPreview(): Plugin {
   }
 }
 
+/**
+ * robots.txt, and for the real site a sitemap.xml: the three language pages, each with its
+ * translations, dated with the build. It needs the site's address (SITE_URL), and a hidden
+ * preview gets none, so it never points crawlers at pages that ask not to be indexed.
+ * The mentions légales stay out of it: required by law, of no use to a search.
+ */
+function crawlerFiles(): Plugin {
+  const site = process.env.SITE_URL?.replace(/\/$/, '')
+  const listed = !!site && !process.env.HIDDEN
+  return {
+    name: 'crawler-files',
+    generateBundle() {
+      const robots = ['User-agent: *', 'Allow: /', ...(listed ? ['', `Sitemap: ${site}/sitemap.xml`] : [])]
+      this.emitFile({ type: 'asset', fileName: 'robots.txt', source: robots.join('\n') + '\n' })
+      if (!listed) return
+      const today = new Date().toISOString().slice(0, 10)
+      const alternates = [
+        ...Object.entries(pages).map(([lang, p]) => [lang, p.path]),
+        ['x-default', pages.en.path],
+      ]
+        .map(([lang, path]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${site}${path}" />`)
+        .join('\n')
+      const urls = Object.values(pages)
+        .map((p) => `  <url>\n    <loc>${site}${p.path}</loc>\n    <lastmod>${today}</lastmod>\n${alternates}\n  </url>`)
+        .join('\n')
+      this.emitFile({
+        type: 'asset',
+        fileName: 'sitemap.xml',
+        source: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls}
+</urlset>
+`,
+      })
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), languageLinks(), hiddenPreview()],
+  plugins: [react(), languageLinks(), hiddenPreview(), crawlerFiles()],
   build: {
     rollupOptions: {
       input: {

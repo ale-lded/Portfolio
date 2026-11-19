@@ -18,7 +18,7 @@ SITE_URL=https://alessiomura.fr npm run build
 npm run preview
 ```
 
-- `SITE_URL` scrive canonical, hreflang e l'immagine di condivisione con l'indirizzo completo.
+- `SITE_URL` scrive canonical, hreflang, la sitemap e l'immagine di condivisione con l'indirizzo completo. La build scrive anche i testi nelle pagine HTML (prerendering, `scripts/prerender.mjs`).
 - `HIDDEN=1` crea una build di anteprima che i motori di ricerca non indicizzano.
 
 I testi sono in `src/content/` (`en.ts`, `it.ts`, `fr.ts`); le mentions légales in `mentions-legales/index.html`.

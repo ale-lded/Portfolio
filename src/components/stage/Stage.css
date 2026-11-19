@@ -221,6 +221,15 @@
   background: var(--amber);
 }
 
+/* Short laptop screens (older 13" MacBooks with the Dock and toolbars): center the hero
+   in the space below the nav, so the status line never slides under the bar */
+@media (min-width: 901px) and (max-height: 680px) {
+  .hero {
+    padding-top: 76px;
+    padding-bottom: 40px;
+  }
+}
+
 /* Tablets and phones: one column, the name first and on one line, then the offer */
 @media (max-width: 900px) {
   .hero {

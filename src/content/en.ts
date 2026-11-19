@@ -213,6 +213,9 @@ export type Service = {
   text: string
   /** A smaller line under the text */
   note?: string
+  /** Where the offer is available, for search engines (src/lib/structuredData.ts):
+   *  the whole country when it is done remotely, the Rhône when it means being there */
+  area: 'country' | 'region'
   /** The back of the card: who it is for, and what it includes */
   ideal: string
   includes: string[]
@@ -233,19 +236,24 @@ export const services = {
     {
       name: 'Redesign',
       text: 'Your current site, rebuilt to be modern, fast and easy to find. Same business, a much better first impression.',
+      note: 'Remotely too, anywhere in France.',
+      area: 'country',
       ideal: 'Businesses that already have a site, but it is slow, dated or hard to find.',
       includes: ['A review of your current site', 'A new design, modern and made to measure', 'Faster, and perfect on mobile', 'Basic SEO, to be found on Google'],
     },
     {
       name: 'Showcase websites',
       text: 'A clear, beautiful home for your business online: who you are, what you do, and how to reach you.',
+      note: 'Remotely too, anywhere in France.',
+      area: 'country',
       ideal: 'A new business, or one that has no website yet.',
       includes: ['A custom design, no templates', 'Clear pages: who you are, what you do, contact', 'Copy and photos, polished together', 'Online with your domain and hosting'],
     },
     {
       name: 'Photo & video',
       text: 'I come to you to photograph and film your business: real images for your website, your ads and your social media.',
-      note: 'For now, on location in and around Lyon.',
+      note: 'On location anywhere in the Rhône.',
+      area: 'region',
       ideal: 'Businesses that want to show themselves as they really are, not with stock photos.',
       includes: ['On-location photo shoots', 'Video for your website and ads', 'Short edits for social media', 'Professional cameras, mics and lights'],
     },

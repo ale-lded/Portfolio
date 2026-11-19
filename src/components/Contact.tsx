@@ -1,4 +1,5 @@
 import { contact, person, terminal } from '../content'
+import { BUSINESS } from '../lib/business'
 import { scrollToTop } from '../lib/scroll'
 import { openTerminal } from '../lib/terminal'
 import { Bug } from './backstage/Bug'
@@ -9,9 +10,9 @@ const mailto = `mailto:${contact.email}?${new URLSearchParams({ subject: contact
   .toString()
   .replace(/\+/g, '%20')}`
 
-/** The WhatsApp number: international format, digits only, no + or spaces (e.g. 33612345678).
- *  Empty hides the button. It is never written out on the page, only used in the link. */
-const WHATSAPP = '33771931555'
+/** The WhatsApp number (src/lib/business.ts), digits only as wa.me wants it.
+ *  It is never written out on the page, only used in the link. */
+const WHATSAPP = BUSINESS.phone.replace(/\D/g, '')
 
 /** The WhatsApp chat, opening with a first message in the page's language */
 const whatsapp = WHATSAPP && `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(contact.whatsapp.message)}`

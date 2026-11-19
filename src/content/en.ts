@@ -195,6 +195,8 @@ export const about = {
   /** The film photo beside the bio: opens larger on click */
   photo: {
     src: '/photos/fuji.webp',
+    /** A 1040px copy for the page itself (520px wide at most, on 2x screens); the lightbox keeps the original */
+    small: '/photos/fuji-1040.webp',
     width: 2000,
     height: 1360,
     alt: 'Alessio standing with his loaded touring bike by a lake, Mount Fuji rising above the clouds behind him.',

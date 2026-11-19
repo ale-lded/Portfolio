@@ -157,7 +157,9 @@ export function About() {
             <button type="button" className="photo__open" onClick={() => dialog.current?.showModal()}>
               <img
                 className="photo__img"
-                src={photo.src}
+                src={photo.small}
+                srcSet={`${photo.small} 1040w, ${photo.src} 2000w`}
+                sizes="(max-width: 960px) min(520px, calc(100vw - 48px)), 520px"
                 width={photo.width}
                 height={photo.height}
                 alt={photo.alt}

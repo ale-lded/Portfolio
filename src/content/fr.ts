@@ -145,6 +145,7 @@ export const fr: Content = {
     ],
     photo: {
       src: '/photos/fuji.webp',
+      small: '/photos/fuji-1040.webp',
       width: 2000,
       height: 1360,
       alt: 'Alessio debout à côté de son vélo de voyage chargé, au bord d’un lac, le mont Fuji au-dessus des nuages derrière lui.',

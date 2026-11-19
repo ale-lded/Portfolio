@@ -63,7 +63,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 28px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -104,7 +104,7 @@
 }
 
 .stack__count {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -223,7 +223,7 @@
 
 .plate__n {
   grid-row: span 2;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--amber);
 }
 
@@ -242,7 +242,7 @@
 .plate__note {
   grid-column: 2;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -456,7 +456,7 @@
   }
 
   .plate__note {
-    font-size: 10.5px;
+    font-size: 12px;
   }
 
   .plate__body {

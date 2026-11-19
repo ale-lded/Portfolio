@@ -6,7 +6,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
   opacity: 0;
 }

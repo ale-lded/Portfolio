@@ -5,29 +5,6 @@
   height: var(--stack-h);
 }
 
-/* Snap stops (see SNAP_POINTS in timeline.ts): a scroll gesture can't fly past a card.
-   Only these points snap, so the rest of the page scrolls freely. */
-.stack__snaps {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.stack__snap {
-  position: absolute;
-  left: 0;
-  top: calc(var(--at) * (var(--stack-h) - 100vh));
-  width: 1px;
-  height: 1px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-}
-
-.stack--done .stack__snaps,
-.stack--static .stack__snaps {
-  display: none;
-}
-
 .stack__sticky {
   --light: 0.5;
   position: sticky;

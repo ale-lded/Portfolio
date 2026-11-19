@@ -65,8 +65,9 @@ export function Stage() {
     let alive = true
 
     // The stage's last screen (Stage.css) is not part of the sequence: the cards hold
-    // still there while the "Chi sono" print slides over them
-    const sequenceLength = () => stage.offsetHeight - window.innerHeight - sticky.offsetHeight
+    // still there while the "Chi sono" print slides over them. Measured against the pinned
+    // scene (100vh), not window.innerHeight, which a phone's toolbar changes as it moves
+    const sequenceLength = () => stage.offsetHeight - 2 * sticky.offsetHeight
     const progress = () => {
       const total = sequenceLength()
       return total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0

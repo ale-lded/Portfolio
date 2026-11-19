@@ -123,8 +123,8 @@ export function timelineAt(scroll: number) {
 }
 
 /**
- * Scroll positions (fractions of the real stage) the page snaps to: the middle of each
- * layer's reading hold, and the finished stack. See .stack__snap in Stack.css.
+ * Scroll positions (fractions of the real stage) where a fast wheel or trackpad gesture
+ * is held (StackStage): the middle of each layer's reading hold, and the finished stack.
  */
 export const SNAP_POINTS = [
   ...SPANS.filter((span) => span.hold).map((span) => scrollAt((span.from + span.to) / 2)),

@@ -220,8 +220,11 @@ export function StackStage() {
       if (phaseLabel.textContent !== label) phaseLabel.textContent = label
     }
 
+    // Measured against the pinned scene (100vh), not window.innerHeight: on phones the
+    // browser's toolbar changes innerHeight as it shows and hides, which would shift the
+    // whole sequence by a few percent each time the visitor touches the screen
     const progress = () => {
-      const total = stage.offsetHeight - window.innerHeight
+      const total = stage.offsetHeight - sticky.offsetHeight
       return total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0
     }
 
@@ -329,7 +332,8 @@ export function StackStage() {
      * least STOP_MIN ms, until the gesture goes quiet or STOP_MAX ms have passed. Reversing
      * direction releases at once. A slow scroll is never stopped or pulled: the visitor is
      * already reading at their own pace, and holding them there only makes the motion stutter.
-     * Touch scrolling has no wheel events and keeps the CSS snap points only.
+     * Touch scrolling has no wheel events and is never stopped: the finger moves the
+     * sequence in proportion, and the reading holds are long enough to be seen.
      */
     const STOP_MIN = 400
     const STOP_QUIET = 160
@@ -360,7 +364,7 @@ export function StackStage() {
     const stopBetween = (a: number, b: number) => {
       if (latched || a === b) return null
       const top = stage.getBoundingClientRect().top + window.scrollY
-      const total = stage.offsetHeight - window.innerHeight
+      const total = stage.offsetHeight - sticky.offsetHeight
       const ys = SNAP_POINTS.map((point) => top + point * total)
       if (b < a) ys.reverse()
       return ys.find((y) => (b > a ? a < y - 1 && b >= y : a > y + 1 && b <= y)) ?? null
@@ -533,12 +537,6 @@ export function StackStage() {
         <PhaseIndicator ref={phaseRef} label={STACK_PHASES[0][1]} />
       </div>
 
-      {/* Magnetic stops: one per readable card, plus the finished stack */}
-      <div className="stack__snaps" aria-hidden="true">
-        {SNAP_POINTS.map((point) => (
-          <span key={point} className="stack__snap" style={{ '--at': point } as CSSProperties} />
-        ))}
-      </div>
     </section>
   )
 }

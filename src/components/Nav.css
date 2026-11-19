@@ -24,7 +24,7 @@
 .nav__links {
   display: flex;
   gap: 36px;
-  font-size: 14px;
+  font-size: calc(14px * var(--s));
   color: var(--muted);
 }
 
@@ -64,7 +64,7 @@
 @media (max-width: 400px) {
   .nav__links {
     gap: 12px;
-    font-size: 13px;
+    font-size: calc(13px * var(--s));
   }
 
   .nav .dial {
@@ -76,7 +76,7 @@
 @media (max-width: 360px) {
   .nav__links {
     gap: 10px;
-    font-size: 12px;
+    font-size: calc(12px * var(--s));
   }
 
   .nav .dial {

@@ -71,7 +71,7 @@
   top: 50%;
   width: 22px;
   margin: -7px 0 0 -11px;
-  font-size: 12px;
+  font-size: calc(12px * var(--s));
   line-height: 14px;
   letter-spacing: 0.04em;
   text-align: center;
@@ -95,7 +95,7 @@
   position: absolute;
   left: 50%;
   top: calc(100% + 6px);
-  font-size: 12px;
+  font-size: calc(12px * var(--s));
   white-space: nowrap;
   color: var(--muted);
   opacity: 0;

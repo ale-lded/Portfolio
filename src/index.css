@@ -14,8 +14,31 @@
   --display: 'Geist Variable', var(--sans);
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  --pad: 48px;
+  /* --s: a gentle size-up on large monitors (1 up to 1800px wide). --col: the centered
+     column every section lines up to; --pad grows past it, so on wide screens the
+     whole site sits in the middle with the same margins left and right */
+  --s: 1;
+  --col: calc(1440px * var(--s));
+  --pad: max(48px, (100vw - var(--col)) / 2);
   color-scheme: dark;
+}
+
+@media (min-width: 1800px) {
+  :root {
+    --s: 1.06;
+  }
+}
+
+@media (min-width: 2100px) {
+  :root {
+    --s: 1.1;
+  }
+}
+
+@media (min-width: 2400px) {
+  :root {
+    --s: 1.15;
+  }
 }
 
 *,

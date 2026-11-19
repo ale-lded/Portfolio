@@ -54,7 +54,7 @@
   z-index: 6;
   left: var(--pad);
   top: 50%;
-  width: min(360px, 30vw);
+  width: min(calc(360px * var(--s)), 30vw);
   transform: translateY(-50%);
 }
 
@@ -63,7 +63,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 28px;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
 }
 
@@ -97,14 +97,14 @@
 }
 
 .stack__heading {
-  font-size: clamp(28px, 2.8vw, 40px);
+  font-size: calc(clamp(28px, 2.8vw, 40px) * var(--s));
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.08;
 }
 
 .stack__count {
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
 }
 
@@ -116,7 +116,7 @@
 .stack__name {
   width: fit-content;
   margin-top: 14px;
-  font-size: clamp(26px, 2.6vw, 36px);
+  font-size: calc(clamp(26px, 2.6vw, 36px) * var(--s));
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.08;
@@ -125,7 +125,7 @@
 .stack__text {
   max-width: 34ch;
   margin-top: 16px;
-  font-size: 16px;
+  font-size: calc(16px * var(--s));
   line-height: 1.6;
   color: #bdb7af;
 }
@@ -135,7 +135,8 @@
 .stack__scene {
   position: absolute;
   z-index: 4;
-  left: 62%;
+  /* 62% of the screen on laptops; on wide screens the same spot within the centered column */
+  left: calc(50% + min(12%, var(--col) * 0.12));
   top: 50%;
   width: 0;
   height: 0;
@@ -143,7 +144,7 @@
 }
 
 .stack__group {
-  --pw: min(clamp(240px, 30vw, 430px), 52vh);
+  --pw: min(clamp(240px, 30vw, calc(430px * var(--s))), 52vh);
   --ph: calc(var(--pw) * 0.62);
   --t: 12px;
   position: absolute;
@@ -223,7 +224,7 @@
 
 .plate__n {
   grid-row: span 2;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--amber);
 }
 
@@ -232,7 +233,7 @@
   justify-self: start;
   max-width: 100%;
   overflow: hidden;
-  font-size: 20px;
+  font-size: calc(20px * var(--s));
   font-weight: 500;
   letter-spacing: -0.02em;
   white-space: nowrap;
@@ -242,7 +243,7 @@
 .plate__note {
   grid-column: 2;
   overflow: hidden;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -421,7 +422,7 @@
 
   .stack__heading,
   .stack__name {
-    font-size: 24px;
+    font-size: calc(24px * var(--s));
   }
 
   .stack__name {
@@ -430,7 +431,7 @@
 
   .stack__text {
     margin-top: 10px;
-    font-size: 14px;
+    font-size: calc(14px * var(--s));
   }
 
   .stack__scene {
@@ -452,11 +453,11 @@
   }
 
   .plate__name {
-    font-size: 16px;
+    font-size: calc(16px * var(--s));
   }
 
   .plate__note {
-    font-size: 12px;
+    font-size: calc(12px * var(--s));
   }
 
   .plate__body {
@@ -560,7 +561,7 @@
   overflow: visible;
   clip-path: none;
   padding: 6px 0 20px 52px;
-  font-size: 15px;
+  font-size: calc(15px * var(--s));
   line-height: 1.6;
   color: var(--muted);
   white-space: normal;

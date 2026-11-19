@@ -65,7 +65,7 @@
   border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: rgba(255, 236, 214, 0.03);
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: #cfc8be;
 }
 
@@ -106,7 +106,7 @@
   margin-top: 28px;
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(56px, 9.6vw, 164px);
+  font-size: calc(clamp(56px, 9.6vw, 164px) * var(--s));
   letter-spacing: -0.05em;
   line-height: 0.95;
   text-wrap: balance;
@@ -131,7 +131,7 @@
 .hero__lead {
   max-width: 32em;
   margin-top: 40px;
-  font-size: 17px;
+  font-size: calc(17px * var(--s));
   line-height: 1.6;
   /* Dimmer than the title, still above 4.5:1 on the background */
   color: #a39e97;
@@ -145,7 +145,7 @@
   min-height: 52px;
   padding: 0 24px;
   border-radius: 999px;
-  font-size: 15px;
+  font-size: calc(15px * var(--s));
   font-weight: 500;
   transition:
     background 0.25s ease,
@@ -189,7 +189,7 @@
 .hero__name {
   font-family: var(--display);
   font-weight: 600;
-  font-size: clamp(44px, 4.8vw, 88px);
+  font-size: calc(clamp(44px, 4.8vw, 88px) * var(--s));
   letter-spacing: -0.05em;
   line-height: 0.9;
   color: var(--text);
@@ -205,7 +205,7 @@
 
 .hero__role {
   margin-top: 20px;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
@@ -257,7 +257,7 @@
   }
 
   .hero__name {
-    font-size: clamp(24px, 6vw, 40px);
+    font-size: calc(clamp(24px, 6vw, 40px) * var(--s));
     letter-spacing: -0.03em;
   }
 
@@ -271,19 +271,19 @@
 
   .hero__title {
     margin-top: 20px;
-    font-size: clamp(44px, 12vw, 96px);
+    font-size: calc(clamp(44px, 12vw, 96px) * var(--s));
   }
 
   .hero__lead {
     margin-top: 20px;
-    font-size: 15px;
+    font-size: calc(15px * var(--s));
   }
 
   .button {
     min-height: 48px;
     margin-top: 28px;
     padding: 0 20px;
-    font-size: 14px;
+    font-size: calc(14px * var(--s));
   }
 }
 
@@ -318,7 +318,7 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
 }
 
@@ -411,7 +411,7 @@
   height: 44px;
   padding: 0 16px;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
 }
 
@@ -444,7 +444,7 @@
   z-index: 4;
   left: 50%;
   top: 47%;
-  width: min(1200px, calc(100vw - 2 * var(--pad)));
+  width: min(calc(1200px * var(--s)), calc(100vw - 2 * var(--pad)));
   transform: translate(-50%, -50%);
 }
 
@@ -453,7 +453,7 @@
   justify-content: space-between;
   align-items: baseline;
   margin-bottom: 22px;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
   opacity: 0;
 }
@@ -508,12 +508,12 @@
 
 .card__secret-name .card__index {
   margin-right: 6px;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--s));
   font-weight: 400;
 }
 
 .card__back-heading {
-  font-size: 20px;
+  font-size: calc(20px * var(--s));
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.15;
@@ -523,7 +523,7 @@
 /* Before the secrets: what the site is made of */
 .card__back-intro {
   margin-top: 8px;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   line-height: 1.45;
   color: #bdb7af;
 }
@@ -538,7 +538,7 @@
 /* After the secrets: any idea can be built, and the way to the contact section */
 .card__back-outro {
   margin-bottom: 16px;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   line-height: 1.45;
   color: var(--text);
 }
@@ -557,7 +557,7 @@
 }
 
 .card__secret-name {
-  font-size: 15px;
+  font-size: calc(15px * var(--s));
   white-space: nowrap;
   font-weight: 600;
   color: var(--text);
@@ -565,7 +565,7 @@
 
 .card__secret-text {
   margin-top: 2px;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   line-height: 1.45;
   color: var(--muted);
 }
@@ -586,7 +586,7 @@
   border-radius: 999px;
   background: rgba(255, 181, 71, 0.06);
   color: var(--amber);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--s));
   cursor: pointer;
   transition:
     background 0.3s,
@@ -617,7 +617,7 @@
 }
 
 .card__back-note {
-  font-size: 12px;
+  font-size: calc(12px * var(--s));
   color: var(--muted);
   text-align: right;
 }
@@ -680,7 +680,7 @@
 
 .project__title {
   margin-bottom: 12px;
-  font-size: 40px;
+  font-size: calc(40px * var(--s));
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1;
@@ -691,7 +691,7 @@
 }
 
 .project__story p {
-  font-size: 16px;
+  font-size: calc(16px * var(--s));
   line-height: 1.6;
   color: #bdb7af;
 }
@@ -701,7 +701,7 @@
 }
 
 .project__story .project__progress {
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
 }
 
@@ -721,7 +721,7 @@
   border-radius: 999px;
   background: var(--amber);
   color: #1a0f00;
-  font-size: 15px;
+  font-size: calc(15px * var(--s));
   font-weight: 600;
   transition: transform 0.3s;
 }
@@ -740,7 +740,7 @@
 }
 
 .project__soon {
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
   color: var(--muted);
 }
 
@@ -775,7 +775,7 @@
 .card__top {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: calc(13px * var(--s));
 }
 
 .card__index {
@@ -798,7 +798,7 @@
   padding: 3px 9px;
   border: 1px solid rgba(255, 181, 71, 0.4);
   border-radius: 999px;
-  font-size: 12px;
+  font-size: calc(12px * var(--s));
   color: var(--amber);
 }
 
@@ -821,7 +821,7 @@
 
 .card__title {
   margin-top: auto;
-  font-size: 44px;
+  font-size: calc(44px * var(--s));
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1;
@@ -831,7 +831,7 @@
 .card__desc {
   min-height: 4.5em;
   margin-top: 14px;
-  font-size: 16px;
+  font-size: calc(16px * var(--s));
   line-height: 1.5;
   color: var(--muted);
 }
@@ -847,7 +847,7 @@
   padding: 6px 11px;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--s));
   color: #cfc8be;
 }
 
@@ -944,7 +944,7 @@
   .card__desc {
     min-height: 0;
     margin-top: 10px;
-    font-size: 15px;
+    font-size: calc(15px * var(--s));
   }
 
   .card__tags {
@@ -1015,17 +1015,17 @@
   }
 
   .project__title {
-    font-size: 30px;
+    font-size: calc(30px * var(--s));
   }
 
   .card__title {
     margin-top: 18px;
-    font-size: 30px;
+    font-size: calc(30px * var(--s));
   }
 
   .card__desc {
     min-height: 0;
-    font-size: 14px;
+    font-size: calc(14px * var(--s));
   }
 
   .card__tags {
@@ -1042,12 +1042,12 @@
 
   .stage:not(.stage--static) .card__title {
     margin-top: 10px;
-    font-size: 25px;
+    font-size: calc(25px * var(--s));
   }
 
   .stage:not(.stage--static) .card__desc {
     margin-top: 6px;
-    font-size: 13.5px;
+    font-size: calc(13.5px * var(--s));
     line-height: 1.4;
   }
 
@@ -1064,7 +1064,7 @@
   }
 
   .stage:not(.stage--static) .card__desc {
-    font-size: 13px;
+    font-size: calc(13px * var(--s));
   }
 
   .stage:not(.stage--static) .card__back {
@@ -1072,7 +1072,7 @@
   }
 
   .stage:not(.stage--static) .card__secret-text {
-    font-size: 13px;
+    font-size: calc(13px * var(--s));
     line-height: 1.4;
   }
 
@@ -1081,6 +1081,6 @@
   }
 
   .stage:not(.stage--static) .card__secret-name {
-    font-size: 14px;
+    font-size: calc(14px * var(--s));
   }
 }

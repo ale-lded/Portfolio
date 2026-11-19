@@ -11,7 +11,7 @@ const pages = {
 
 /**
  * Tells search engines the three pages are one site in three languages: a canonical link
- * and hreflang alternates on each page, plus an absolute share image. These need the site's
+ * and hreflang alternates on each page, plus absolute share images (public/og/). These need the site's
  * full address, so they are only written when SITE_URL is set at build time, e.g.
  * SITE_URL=https://alessiomura.fr npm run build
  */
@@ -33,7 +33,8 @@ function languageLinks(): Plugin {
         .join('\n    ')
       return html
         .replace('</head>', `    ${tags}\n  </head>`)
-        .replace('content="/photos/fuji.webp"', `content="${site}/photos/fuji.webp"`)
+        // Share previews need the image's full address (og:image, twitter:image)
+        .replace(/(<meta (?:property="og:image"|name="twitter:image") content=")\//g, `$1${site}/`)
     },
   }
 }

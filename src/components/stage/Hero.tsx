@@ -22,9 +22,11 @@ export const Hero = forwardRef<HTMLElement, HeroProps>(function Hero({ titleRef 
           {hero.status}
         </p>
 
-        <h1 className="hero__title" ref={titleRef}>
-          <Emphasis text={person.tagline} as="em" className="hero__accent" />
-        </h1>
+        <div className="hero__headline">
+          <h1 className="hero__title" ref={titleRef}>
+            <Emphasis text={person.tagline} as="em" className="hero__accent" />
+          </h1>
+        </div>
 
         <div className="hero__body hero__fade">
           <p className="hero__lead">{person.lead}</p>

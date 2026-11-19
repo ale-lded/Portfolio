@@ -115,8 +115,15 @@
   }
 }
 
-.hero__title {
+/* The title's cell, measured as a container: the title never grows past what its column
+   can hold on two lines (the name beside it narrows the column at many widths) */
+.hero__headline {
   grid-area: title;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.hero__title {
   /* Two lines in every language: the service, then its light accent on a line of its own.
      Wide enough for "Des sites web", the longest first line */
   max-width: 6.2em;
@@ -124,6 +131,8 @@
   font-family: var(--display);
   font-weight: 600;
   font-size: calc(clamp(56px, 9.6vw, 164px) * var(--s));
+  /* …and never wider than the column: 6.2em = 100% of it */
+  font-size: min(calc(clamp(56px, 9.6vw, 164px) * var(--s)), calc(100cqi / 6.2));
   letter-spacing: -0.05em;
   line-height: 0.95;
   text-wrap: balance;
@@ -289,6 +298,7 @@
   .hero__title {
     margin-top: 20px;
     font-size: calc(clamp(44px, 12vw, 96px) * var(--s));
+    font-size: min(calc(clamp(44px, 12vw, 96px) * var(--s)), calc(100cqi / 6.2));
   }
 
   .hero__lead {

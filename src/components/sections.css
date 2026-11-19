@@ -73,44 +73,54 @@
   top: 120px;
 }
 
-/* ---------- The route: the bio as three stops on a line drawn by the scroll ---------- */
+/* ---------- The route: the bio as three stops on a 35mm film the scroll pulls out of its canister ---------- */
 .route {
-  --stop: 14px;
+  /* --strip: the film's width. --lead: how far past a stop's frame the film reaches
+     when it gets there, so the frame is under the full width, not the leader */
+  --strip: 28px;
+  --lead: 40px;
   position: relative;
 }
 
+/* The track: a faint outline of where the film is going */
 .route__line {
   position: absolute;
-  left: calc(var(--stop) / 2 - 1px);
-  top: calc(var(--stop) / 2 + 2px);
-  width: 2px;
-  height: var(--route-length, 0px);
-  background: var(--line-strong);
-  border-radius: 2px;
+  left: 0;
+  top: 0;
+  width: var(--strip);
+  height: calc(var(--route-length, 0px) + var(--lead));
+  border-inline: 1px dashed var(--line);
 }
 
-.route__fill {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(var(--amber-deep), var(--amber));
-  transform: scaleY(var(--route, 0));
-  transform-origin: top;
-}
-
-/* The pen: a small glowing point riding the tip of the line */
-.route__pen {
+/* The canister, sitting on top of the track: the film leaves through its felt lip */
+.route__can {
   position: absolute;
   left: 50%;
-  top: calc(var(--route, 0) * 100%);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #fff3df;
-  box-shadow:
-    0 0 10px 2px var(--amber),
-    0 0 28px 6px rgba(255, 181, 71, 0.35);
-  transform: translate(-50%, -50%);
+  bottom: 100%;
+  width: 52px;
+  height: auto;
+  margin-bottom: -3px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.6));
+}
+
+/* The film. Perforations and frame lines are anchored to its bottom edge, so as it
+   grows they slide down with the leader, as if pulled out of the canister */
+.route__film {
+  position: absolute;
+  left: -1px;
+  top: 0;
+  width: var(--strip);
+  height: calc(var(--route, 0) * var(--route-length, 0px) + var(--lead));
+  background:
+    linear-gradient(90deg, rgba(255, 222, 170, 0.14), transparent 28% 72%, rgba(0, 0, 0, 0.3)),
+    repeating-linear-gradient(0deg, rgba(14, 8, 3, 0.6) 0 3px, transparent 3px 46px) 50% 100% / 14px 100% no-repeat,
+    linear-gradient(90deg, #4a2b0f, #70451a 50%, #4a2b0f);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Cpath fill-rule='evenodd' d='M0 0H28V10H0ZM3 3h3.5v4.5H3ZM21.5 3H25v4.5h-3.5Z'/%3E%3C/svg%3E") 0 100% / 28px 10px repeat-y;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Cpath fill-rule='evenodd' d='M0 0H28V10H0ZM3 3h3.5v4.5H3ZM21.5 3H25v4.5h-3.5Z'/%3E%3C/svg%3E") 0 100% / 28px 10px repeat-y;
+  /* The leader: the film's cut tip, a narrower tongue with an angled end */
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 54% calc(100% - 16px), 54% calc(100% - 7px), 38% 100%, 0 100%);
+  box-shadow: 0 0 22px rgba(255, 138, 31, 0.18);
 }
 
 .route__stops {
@@ -119,22 +129,24 @@
 
 .chapter {
   position: relative;
-  padding-left: calc(var(--stop) + 40px);
+  padding-left: calc(var(--strip) + 36px);
 }
 
 .chapter + .chapter {
   margin-top: 80px;
 }
 
+/* Each stop is a frame on the film: an empty outline on the track, lit from behind
+   once the film reaches it */
 .chapter__stop {
   position: absolute;
   z-index: 1;
-  left: 0;
-  top: 2px;
-  width: var(--stop);
-  height: var(--stop);
-  border: 2px solid var(--line-strong);
-  border-radius: 50%;
+  left: calc((var(--strip) - 14px) / 2 - 1px);
+  top: 4px;
+  width: 14px;
+  height: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
   background: var(--bg);
   transition:
     background 0.4s ease,
@@ -206,11 +218,11 @@
 }
 
 .route--live .chapter.is-reached .chapter__stop {
-  border-color: var(--amber);
-  background: var(--amber);
+  border-color: #ffe2b0;
+  background: radial-gradient(circle at 50% 45%, #fff3df, var(--amber) 70%);
   box-shadow:
-    0 0 0 6px var(--amber-soft),
-    0 0 24px rgba(255, 181, 71, 0.5);
+    0 0 10px 2px rgba(255, 181, 71, 0.7),
+    0 0 28px 6px rgba(255, 181, 71, 0.3);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -218,10 +230,6 @@
   .chapter__stop,
   .chapter__text strong {
     transition: none;
-  }
-
-  .route__pen {
-    display: none;
   }
 }
 
@@ -673,7 +681,7 @@
   }
 
   .chapter {
-    padding-left: calc(var(--stop) + 24px);
+    padding-left: calc(var(--strip) + 24px);
   }
 
   .chapter + .chapter {

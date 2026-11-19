@@ -6,15 +6,53 @@ import { useReducedMotion } from '../lib/useReducedMotion'
 import { Emphasis } from './Emphasis'
 import './sections.css'
 
-/** Where the route's pen sits, as a fraction of the viewport height: the line is drawn up to here */
+/** Where the film's leader sits, as a fraction of the viewport height: the film unrolls up to here */
 const PEN = 0.62
 /** Seconds each number takes to decode, and the delay between one and the next */
 const DECODE_S = 0.9
 const STAGGER_S = 0.15
 
 /**
- * Who I am: the heading, the ride in numbers, then the bio as three stops on a route
- * that draws itself as you scroll, beside the film photo.
+ * A 35mm film canister seen from the front, lying on its side: metal body, amber label,
+ * the spool's end on the right and the felt lip at the bottom the film comes out of.
+ * Centered on x = 26 so it sits squarely over the strip.
+ */
+function FilmCanister() {
+  return (
+    <svg className="route__can" viewBox="0 0 52 34" width="52" height="34">
+      <defs>
+        <linearGradient id="can-metal" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#3a3a40" />
+          <stop offset="0.28" stopColor="#6a6a72" />
+          <stop offset="0.62" stopColor="#2a2a2f" />
+          <stop offset="1" stopColor="#141417" />
+        </linearGradient>
+        <linearGradient id="can-label" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffd88f" />
+          <stop offset="0.3" stopColor="#ffb547" />
+          <stop offset="0.7" stopColor="#b8701c" />
+          <stop offset="1" stopColor="#5e340a" />
+        </linearGradient>
+      </defs>
+      {/* The spool's end, poking out on the right */}
+      <rect x="46" y="12" width="5" height="10" rx="1.5" fill="url(#can-metal)" />
+      {/* End caps, slightly wider than the body */}
+      <rect x="5" y="2" width="6" height="30" rx="2" fill="url(#can-metal)" />
+      <rect x="41" y="2" width="6" height="30" rx="2" fill="url(#can-metal)" />
+      <rect x="10" y="4" width="32" height="26" fill="url(#can-metal)" />
+      <rect x="14" y="4" width="24" height="26" fill="url(#can-label)" />
+      <text x="26" y="20" textAnchor="middle" fontFamily="var(--mono)" fontSize="7" fontWeight="700" fill="#1a1006">
+        35
+      </text>
+      {/* The felt lip */}
+      <rect x="9" y="28" width="34" height="4" rx="1" fill="#0b0b0d" />
+    </svg>
+  )
+}
+
+/**
+ * Who I am: the heading, the ride in numbers, then the bio as three stops on a 35mm
+ * film the scroll pulls out of its canister, beside the film photo.
  * The method lives in the stack sequence further down (StackStage).
  */
 export function About() {
@@ -63,7 +101,7 @@ export function About() {
     }
   }, [reduced])
 
-  // The route: the amber line follows the scroll from the first stop to the last,
+  // The route: the film unrolls with the scroll from the first stop to the last,
   // and lights each stop as it gets there
   useEffect(() => {
     const route = routeRef.current
@@ -75,7 +113,7 @@ export function About() {
     let raf = 0
     const update = () => {
       raf = 0
-      // The line runs from the first stop's dot (top of the list) to the last one's
+      // The film runs from the first stop's frame (top of the list) to the last one's
       const length = last.offsetTop
       route.style.setProperty('--route-length', `${length}px`)
       const top = route.getBoundingClientRect().top
@@ -137,8 +175,8 @@ export function About() {
 
         <div ref={routeRef} className="route">
           <span className="route__line" aria-hidden="true">
-            <span className="route__fill" />
-            <span className="route__pen" />
+            <FilmCanister />
+            <span className="route__film" />
           </span>
           <ol className="route__stops">
           {about.chapters.map((chapter, i) => (

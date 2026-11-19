@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { projects, work, type Project } from '../../content'
 import { useFlip } from '../../lib/useFlip'
 
-/** The three project cards the binary recomposes into. */
+/** The three project cards the code's pixels fly into. */
 export function Work() {
   return (
     <div className="work">

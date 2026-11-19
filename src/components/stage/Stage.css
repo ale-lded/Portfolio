@@ -1,13 +1,13 @@
 .stage {
   position: relative;
-  height: 300vh;
+  height: 220vh;
 }
 
 /* Where the "Progetti" link lands: the point where the cards are already composed */
 .stage__anchor {
   position: absolute;
   left: 0;
-  top: 180vh;
+  top: 116vh;
 }
 
 .stage__sticky {

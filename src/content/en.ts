@@ -32,9 +32,9 @@ export const hero = {
   status: 'Available for new projects',
   /** The button under the title, down to the contact section */
   cta: 'Let’s talk about your project',
-  /** The four steps of the hero sequence, shown bottom left while it plays.
-   *  Counted as 1/4…4/4, so they never read like the section numbers (01 — …) */
-  phases: ['1/4 · Crumbling', '2/4 · Code → binary', '3/4 · Recomposing', '4/4 · Work'],
+  /** The three steps of the hero sequence, shown bottom left while it plays.
+   *  Counted as 1/3…3/3, so they never read like the section numbers (01 — …) */
+  phases: ['1/3 · Idea', '2/3 · Code', '3/3 · Work'],
 }
 
 /**

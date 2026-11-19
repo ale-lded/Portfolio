@@ -2,7 +2,7 @@ import { bezier, clamp, easeInOutCubic, lerp, sstep } from '../lib/math'
 import { hash2, mulberry32 } from '../lib/random'
 import { CODE_LINES, tokenizeLine, type TokenKind } from './code'
 import { sampleGlyph, sampleRoundedRect, sampleText, type Rect, type TextSpec } from './sample'
-import { lineBinary, lineStart, T } from './timeline'
+import { lineStart, T } from './timeline'
 
 export const MONO = '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
 
@@ -11,13 +11,11 @@ const PALETTE = [
   '#FFF4E6', '#E6DDD0', '#A0978B',
   // 3–7 syntax: punct, keyword, field, string, text
   '#6E6860', '#FFB547', '#E3C9A0', '#F28B54', '#EDE6DC',
-  // 8–11 amber phosphor
-  '#FFB547', '#FF9A2E', '#FFD08A', '#E07818',
-  // 12 card title · 13 card outline · 14 flash
-  '#F2EEE8', '#C98F4E', '#FFF1D6',
-  // 15 hero accent words (Stage.css .hero__accent)
+  // 8 card title · 9 card outline
+  '#F2EEE8', '#C98F4E',
+  // 10 hero accent words (Stage.css .hero__accent)
   '#CBB594',
-  // 16–18 more syntax: class names, methods, true/false/this
+  // 11–13 more syntax: class names, methods, true/false/this
   '#7FD6BE', '#8FB6F2', '#C9A6F2',
 ]
 /**
@@ -39,13 +37,11 @@ for (let k = 0; k < HERO_SHADES; k++) {
   const f = a1 === a0 ? 0 : (t - a0) / (a1 - a0)
   PALETTE.push(`rgb(${c0.map((c, n) => Math.round(c + (c1[n] - c) * f)).join(',')})`)
 }
-const SYNTAX: Record<TokenKind, number> = { punct: 3, tag: 4, attr: 5, str: 6, text: 7, type: 16, fn: 17, lit: 18 }
-const AMBER = [8, 9, 10, 11]
-const CARD_TITLE = 12
-const CARD_OUTLINE = 13
-const FLASH = 14
+const SYNTAX: Record<TokenKind, number> = { punct: 3, tag: 4, attr: 5, str: 6, text: 7, type: 11, fn: 12, lit: 13 }
+const CARD_TITLE = 8
+const CARD_OUTLINE = 9
 /** The hero's accent words (Stage.css .hero__accent): light, warm sand */
-const HERO_ACCENT = 15
+const HERO_ACCENT = 10
 const ALPHA_LEVELS = 12
 const BUCKETS = PALETTE.length * ALPHA_LEVELS
 
@@ -79,10 +75,11 @@ export type CodeLayout = Rect & {
 type Run = { text: string; col: number; color: string }
 
 /**
- * The pixel sequence. Every particle is one "pixel" with four homes:
- * A on the hero service line, B inside a code glyph, C inside a binary glyph, D on a
- * project card. `render(p)` is a pure function of scroll progress, so the
- * sequence plays identically backwards.
+ * The pixel sequence. Every particle is one "pixel" with three homes:
+ * A on the hero service line, B inside a code glyph, D on a project card: the title
+ * crumbles into the code, and the code lifts off into the cards.
+ * `render(p)` is a pure function of scroll progress, so the sequence plays
+ * identically backwards.
  */
 export class ParticleScene {
   private ctx: CanvasRenderingContext2D
@@ -97,8 +94,6 @@ export class ParticleScene {
   private ay = new Float32Array(0)
   private bx = new Float32Array(0)
   private by = new Float32Array(0)
-  private cx = new Float32Array(0)
-  private cy = new Float32Array(0)
   private dx = new Float32Array(0)
   private dy = new Float32Array(0)
   // Sizes per home
@@ -108,25 +103,20 @@ export class ParticleScene {
   // Colors
   private colA = new Uint8Array(0)
   private colB = new Uint8Array(0)
-  private colC = new Uint8Array(0)
   private colD = new Uint8Array(0)
   // Timing
   private td = new Float32Array(0) // detach from the name
   private ta = new Float32Array(0) // start flying to the code
-  private tb = new Float32Array(0) // turn binary
-  private tr = new Float32Array(0) // start raining
-  private tc = new Float32Array(0) // converge on the cards
+  private tc = new Float32Array(0) // lift off the code, toward the cards
   private line = new Uint8Array(0)
   // Motion character
   private wind = new Float32Array(0)
   private lift = new Float32Array(0)
   private bend = new Float32Array(0)
-  /** Height where falling digits settle, on the podium */
-  private floor = 0
 
-  // Per-line state of the code
+  // Per-line state of the code: when it is fully assembled, and when its pixels start leaving
   private lineDone = new Float32Array(CODE_LINES.length)
-  private lineTb = new Float32Array(CODE_LINES.length)
+  private lineLift = new Float32Array(CODE_LINES.length)
   private runs: Run[][] = []
 
   // Per-frame scratch
@@ -160,7 +150,6 @@ export class ParticleScene {
     this.canvas.style.height = `${H}px`
 
     const code = (this.code = this.layoutCode(W, H))
-    this.floor = H * 0.84
     const rnd = mulberry32(20261106)
     const maxCols = Math.max(...CODE_LINES.map((l) => l.length))
 
@@ -177,12 +166,11 @@ export class ParticleScene {
       return g
     }
 
-    type Char = { line: number; col: number; bit: string; tb: number; tr: number }
+    type Char = { line: number; col: number }
     const chars: Char[] = []
     const bX: number[] = []
     const bY: number[] = []
     const bChar: number[] = []
-    const bK: number[] = []
     const bCol: number[] = []
     this.runs = CODE_LINES.map((text, li) => {
       const kinds = tokenizeLine(text)
@@ -195,18 +183,11 @@ export class ParticleScene {
         if (c === ' ') return
         const g = glyph(c)
         const charIndex = chars.length
-        chars.push({
-          line: li,
-          col: ci,
-          bit: rnd() < 0.5 ? '0' : '1',
-          tb: lineBinary(li) + rnd() * 0.02,
-          tr: T.rainStart + ((hash2(ci, 3) % 100) / 100) * 0.03 + li * 0.002,
-        })
+        chars.push({ line: li, col: ci })
         for (let k = 0; k < g.length / 2; k++) {
           bX.push(code.originX + ci * code.cellW + g[k * 2])
           bY.push(code.originY + li * code.lineH + g[k * 2 + 1])
           bChar.push(charIndex)
-          bK.push(k)
           bCol.push(SYNTAX[kinds[ci]])
         }
       })
@@ -261,7 +242,7 @@ export class ParticleScene {
     const N = (this.n = Math.max(nA, nB, 1))
     this.allocate(N)
     this.lineDone.fill(0)
-    this.lineTb.fill(1)
+    this.lineLift.fill(1)
 
     for (let i = 0; i < N; i++) {
       const ai = aOrder[Math.floor((i * nA) / N)]
@@ -281,18 +262,10 @@ export class ParticleScene {
       this.colB[i] = bCol[bi]
       this.line[i] = ch.line
 
-      const g = glyph(ch.bit)
-      const k = bK[bi] % (g.length / 2)
-      this.cx[i] = code.originX + ch.col * code.cellW + g[k * 2]
-      this.cy[i] = code.originY + ch.line * code.lineH + g[k * 2 + 1]
-      this.colC[i] = AMBER[(rnd() * AMBER.length) | 0]
-
       // The first words crumble first and become the first lines of code
       const u = Math.floor((i * nA) / N) / Math.max(1, nA)
       this.td[i] = T.crumbleStart + u * T.crumbleSpread + rnd() * 0.015
-      this.ta[i] = Math.max(lineStart(ch.line) + (ch.col / maxCols) * 0.02 + rnd() * 0.01, this.td[i] + 0.03)
-      this.tb[i] = ch.tb
-      this.tr[i] = ch.tr
+      this.ta[i] = Math.max(lineStart(ch.line) + (ch.col / maxCols) * T.flyByColumn + rnd() * T.flyJitter, this.td[i] + 0.03)
 
       this.wind[i] = rnd() * 1.2 - 0.3
       this.lift[i] = rnd()
@@ -300,11 +273,11 @@ export class ParticleScene {
 
       const done = this.ta[i] + T.fly
       if (done > this.lineDone[ch.line]) this.lineDone[ch.line] = done
-      if (ch.tb < this.lineTb[ch.line]) this.lineTb[ch.line] = ch.tb
     }
 
-    // Cards: sort particles by their binary x so each card pulls from the part of the code above it
-    const byX = Array.from({ length: N }, (_, i) => i).sort((i, j) => this.cx[i] - this.cx[j])
+    // Cards: sort particles by their x in the code, so each card pulls from the part of the
+    // window above it and the code empties left to right
+    const byX = Array.from({ length: N }, (_, i) => i).sort((i, j) => this.bx[i] - this.bx[j])
     for (let r = 0; r < N; r++) {
       const i = byX[r]
       if (nD) {
@@ -314,12 +287,14 @@ export class ParticleScene {
         this.sD[i] = dSize[di]
         this.colD[i] = dCol[di]
       } else {
-        this.dx[i] = this.cx[i]
-        this.dy[i] = this.cy[i]
+        this.dx[i] = this.bx[i]
+        this.dy[i] = this.by[i]
         this.sD[i] = this.sB
-        this.colD[i] = this.colC[i]
+        this.colD[i] = this.colB[i]
       }
-      this.tc[i] = T.convergeStart + (r / N) * 0.03 + rnd() * 0.03
+      this.tc[i] = T.liftStart + (r / N) * T.liftSpread + rnd() * T.liftJitter
+      // A line's crisp text gives way to its pixels just before the first of them leaves
+      if (this.tc[i] < this.lineLift[this.line[i]]) this.lineLift[this.line[i]] = this.tc[i]
     }
   }
 
@@ -327,10 +302,10 @@ export class ParticleScene {
     const f = () => new Float32Array(N)
     const u = () => new Uint8Array(N)
     this.ax = f(); this.ay = f(); this.bx = f(); this.by = f()
-    this.cx = f(); this.cy = f(); this.dx = f(); this.dy = f()
+    this.dx = f(); this.dy = f()
     this.sD = f()
-    this.colA = u(); this.colB = u(); this.colC = u(); this.colD = u()
-    this.td = f(); this.ta = f(); this.tb = f(); this.tr = f(); this.tc = f()
+    this.colA = u(); this.colB = u(); this.colD = u()
+    this.td = f(); this.ta = f(); this.tc = f()
     this.line = u()
     this.wind = f(); this.lift = f(); this.bend = f()
     this.px = f(); this.py = f(); this.ps = f()
@@ -377,14 +352,13 @@ export class ParticleScene {
 
     const winA = sstep(T.codeWindowIn[0], T.codeWindowIn[1], p) * (1 - sstep(T.codeWindowOut[0], T.codeWindowOut[1], p))
 
-    // Crisp code text: shown once a line has fully assembled, until it starts turning binary
+    // Crisp code text: shown once a line has fully assembled, until its pixels start leaving
     const crisp = this.lineDone.map((done, li) => {
-      const tb = this.lineTb[li]
-      return sstep(done - 0.006, done + 0.006, p) * (1 - sstep(tb - 0.006, tb - 0.001, p))
+      const lift = this.lineLift[li]
+      return sstep(done - 0.006, done + 0.006, p) * (1 - sstep(lift - 0.006, lift - 0.001, p))
     })
 
     if (winA > 0.001) this.drawCodeChrome(p, winA, crisp)
-    this.drawAmbientRain(p, winA)
     this.drawParticles(p, crisp)
     ctx.globalAlpha = 1
   }
@@ -419,7 +393,7 @@ export class ParticleScene {
     })
 
     // Caret after the last assembled line
-    if (p < this.lineTb[0]) {
+    if (p < this.lineLift[0]) {
       let li = 0
       let col = 0
       for (let i = 0; i < CODE_LINES.length; i++) {
@@ -434,49 +408,6 @@ export class ParticleScene {
     }
   }
 
-  /** Thin columns of amber digits behind everything while the code turns binary. */
-  private drawAmbientRain(p: number, winA: number) {
-    const [in0, in1, out0, out1] = T.ambientRain
-    const rainA = sstep(in0, in1, p) * (1 - sstep(out0, out1, p))
-    if (rainA <= 0.002) return
-    const { ctx, w: W, h: H } = this
-    const code = this.code!
-    ctx.font = code.font
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    const lh = code.lineH
-    const step = Math.round(code.cellW * 1.6)
-    const cols = Math.ceil(W / step)
-    const flicker = Math.floor(p * 60)
-    for (let col = 0; col < cols; col++) {
-      if (hash2(col, 99) % 100 < 62) continue
-      const speed = 0.7 + ((hash2(col, 7) % 100) / 100) * 0.9
-      const offset = (hash2(col, 13) % 100) / 100
-      const trail = 8 + (hash2(col, 21) % 12)
-      const headY = (offset - 0.35 + (p - in0) * 4 * speed) * (H + trail * lh)
-      const headRow = Math.floor(headY / lh)
-      const x = col * step + step / 2
-      const inWinX = x > code.x && x < code.x + code.w
-      for (let t = 0; t <= trail; t++) {
-        const row = headRow - t
-        const y = row * lh + lh / 2
-        if (y < -lh || y > H + lh) continue
-        let a = rainA * (t === 0 ? 0.42 : (1 - t / trail) * 0.2)
-        if (inWinX && y > code.y && y < code.y + code.h) a *= 1 - winA * 0.95
-        if (a < 0.008) continue
-        ctx.globalAlpha = a
-        ctx.fillStyle = t === 0 ? '#FFE2B0' : PALETTE[AMBER[hash2(col, row) % AMBER.length]]
-        ctx.fillText(hash2(col * 131 + row, flicker) & 1 ? '1' : '0', x, y)
-      }
-    }
-  }
-
-  /** Binary digits fall like rain and pile up on the podium. */
-  private fall(i: number, dt: number) {
-    const settle = this.floor + this.bend[i] * 28
-    return Math.min(this.cy[i] + dt * dt * 34000, settle)
-  }
-
   private drawParticles(p: number, crisp: Float32Array) {
     const { ctx, n: N } = this
     const swapA = sstep(T.swap[0], T.swap[1], p)
@@ -488,7 +419,6 @@ export class ParticleScene {
     for (let i = 0; i < N; i++) {
       const td = this.td[i]
       const ta = this.ta[i]
-      const tb = this.tb[i]
       const tc = this.tc[i]
       let x: number
       let y: number
@@ -528,45 +458,24 @@ export class ParticleScene {
         y = bezier(sy, Math.min(sy, by) - 30 - Math.abs(this.bend[i]) * 120, by, t)
         size = lerp(this.sA, this.sB, t)
         color = t < 0.55 ? this.colA[i] : this.colB[i]
-      } else if (p < tb) {
+      } else if (p < tc) {
         // Part of the code: hidden while the crisp line is shown
         x = this.bx[i]
         y = this.by[i]
         a = 1 - crisp[this.line[i]]
         size = this.sB
         color = this.colB[i]
-      } else if (p < tb + T.morph) {
-        // The glyph's pixels rearrange into a 0 or a 1
-        const t = easeInOutCubic((p - tb) / T.morph)
-        x = lerp(this.bx[i], this.cx[i], t)
-        y = lerp(this.by[i], this.cy[i], t) - Math.sin(t * Math.PI) * 3
-        size = this.sB
-        color = t < 0.4 ? this.colB[i] : FLASH
-      } else if (p < tc) {
-        // Binary, then a rain that dims as it falls
-        x = this.cx[i]
-        y = this.cy[i]
-        size = this.sB
-        color = p < tb + T.morph + 0.012 ? FLASH : this.colC[i]
-        const dt = p - this.tr[i]
-        if (dt > 0) {
-          y = this.fall(i, dt)
-          a = 1 - 0.72 * sstep(0, 0.07, dt)
-        }
       } else if (p < tc + T.converge) {
-        // Gathered back up into the project cards
+        // Lifts off the code in a soft arc and lands on its project card
         const t = easeInOutCubic((p - tc) / T.converge)
-        const dt = Math.max(0, tc - this.tr[i])
-        const sx = this.cx[i]
-        const sy = dt > 0 ? this.fall(i, dt) : this.cy[i]
-        const a0 = 1 - 0.72 * sstep(0, 0.07, dt)
+        const sx = this.bx[i]
+        const sy = this.by[i]
         const dx = this.dx[i]
         const dy = this.dy[i]
-        x = bezier(sx, (sx + dx) / 2 + this.bend[i] * 260, dx, t)
-        y = bezier(sy, (sy + dy) / 2 + this.bend[i] * 140, dy, t)
-        a = lerp(a0, 1, t)
+        x = bezier(sx, (sx + dx) / 2 + this.bend[i] * 220, dx, t)
+        y = bezier(sy, Math.min(sy, dy) - 40 - Math.abs(this.bend[i]) * 140, dy, t)
         size = lerp(this.sB, this.sD[i], t)
-        color = t < 0.6 ? this.colC[i] : this.colD[i]
+        color = t < 0.6 ? this.colB[i] : this.colD[i]
       } else {
         x = this.dx[i]
         y = this.dy[i]

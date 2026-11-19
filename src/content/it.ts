@@ -31,7 +31,7 @@ export const it: Content = {
     hint: 'scorri',
     status: 'Disponibile per nuovi progetti',
     cta: 'Parliamo del tuo progetto',
-    phases: ['1/4 · Sgretolamento', '2/4 · Codice → binario', '3/4 · Ricomposizione', '4/4 · Lavori'],
+    phases: ['1/3 · Idea', '2/3 · Codice', '3/3 · Lavori'],
   },
 
   code: {

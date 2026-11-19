@@ -17,7 +17,7 @@ import { Work } from './Work'
 import './Stage.css'
 
 /**
- * The 300vh scroll stage. Its sticky child fills the viewport; scroll progress
+ * The 220vh scroll stage. Its sticky child fills the viewport; scroll progress
  * through the stage (0 → 1) drives the whole sequence. React builds the
  * structure once; every frame is then applied imperatively, without re-renders.
  */
@@ -136,7 +136,7 @@ export function Stage() {
       codeWin.style.visibility = winA > 0.001 ? 'visible' : 'hidden'
 
       // The spotlight dims while the code is on screen and comes back up for the work
-      const light = 1 - 0.55 * sstep(0.1, 0.2, p) + 0.6 * sstep(0.62, 0.8, p)
+      const light = 1 - 0.55 * sstep(0.12, 0.24, p) + 0.6 * sstep(0.66, 0.86, p)
       sticky.style.setProperty('--light', light.toFixed(3))
 
       workHead.style.opacity = String(sstep(T.cardsIn[0] - 0.04, T.cardsIn[1] - 0.04, p))
@@ -158,7 +158,7 @@ export function Stage() {
       cardList.style.pointerEvents = cardsUp ? '' : 'none'
       if (!cardsUp && cardList.scrollLeft !== 0) cardList.scrollLeft = 0
 
-      phase.style.opacity = String(sstep(0.07, 0.12, p))
+      phase.style.opacity = String(sstep(0.08, 0.14, p))
       phaseFill.style.transform = `scaleX(${p.toFixed(4)})`
       const label = PHASES.find(([end]) => p < end)![1]
       if (phaseLabel.textContent !== label) phaseLabel.textContent = label

@@ -32,7 +32,7 @@ export const fr: Content = {
     hint: 'défiler',
     status: 'Disponible pour de nouveaux projets',
     cta: 'Parlons de votre projet',
-    phases: ['1/4 · Effritement', '2/4 · Code → binaire', '3/4 · Recomposition', '4/4 · Projets'],
+    phases: ['1/3 · Idée', '2/3 · Code', '3/3 · Projets'],
   },
 
   code: {

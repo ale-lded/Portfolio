@@ -19,6 +19,36 @@
     />
     <meta property="og:image" content="/photos/fuji.webp" />
     <meta name="twitter:card" content="summary_large_image" />
+    <!-- The page's content is in the HTML (scripts/prerender.mjs): a first-time visitor whose
+         browser speaks Italian or French goes to their page before any of it is drawn.
+         Same rules as settleLang() in src/lib/lang.ts, which still runs as a fallback. -->
+    <script>
+      ;(function () {
+        var paths = { en: '/', it: '/it/', fr: '/fr/' }
+        try {
+          var target = new URLSearchParams(location.search).get('lang')
+          if (!paths[target]) {
+            try {
+              target = localStorage.getItem('lang')
+            } catch (e) {
+              target = null
+            }
+          }
+          if (!paths[target]) {
+            target = null
+            var tags = navigator.languages || [navigator.language]
+            for (var i = 0; i < tags.length; i++) {
+              var code = String(tags[i] || '').slice(0, 2).toLowerCase()
+              if (paths[code]) {
+                target = code
+                break
+              }
+            }
+          }
+          if (target && target !== 'en') location.replace(paths[target] + location.hash)
+        } catch (e) {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

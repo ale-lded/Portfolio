@@ -162,7 +162,10 @@ export function About() {
       <ul ref={statsRef} className="stats">
         {about.stats.map((stat) => (
           <li key={stat.label} className="stat">
-            <span className="stat__value" data-decode={stat.value} />
+            {/* The value is in the HTML for search engines; the decoder takes it from there */}
+            <span className="stat__value" data-decode={stat.value}>
+              {stat.value}
+            </span>
             <span className="stat__label mono">{stat.label}</span>
           </li>
         ))}

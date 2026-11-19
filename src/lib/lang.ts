@@ -18,8 +18,16 @@ const SCROLL_KEY = 'lang-scroll'
 const isLang = (value: string | null | undefined): value is Lang => LANGS.some((l) => l.code === value)
 const byCode = (code: Lang) => LANGS.find((l) => l.code === code)!
 
-/** The language of this page, as its HTML declares it */
-export const pageLang: Lang = isLang(document.documentElement.lang) ? document.documentElement.lang : 'en'
+declare global {
+  /** Set by scripts/prerender.mjs while it writes each language's page at build time */
+  var __PRERENDER_LANG__: string | undefined
+}
+
+/** The language of this page, as its HTML declares it (or as the build is writing it) */
+export const pageLang: Lang = (() => {
+  const lang = typeof document === 'undefined' ? globalThis.__PRERENDER_LANG__ : document.documentElement.lang
+  return isLang(lang) ? lang : 'en'
+})()
 
 function saved(): Lang | null {
   try {

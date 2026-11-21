@@ -4,9 +4,9 @@
  * that is what lets search engines list the French site for a search in French.
  */
 export const LANGS = [
-  { code: 'en', short: 'EN', name: 'English', path: '/' },
+  { code: 'en', short: 'EN', name: 'English', path: '/en/' },
   { code: 'it', short: 'IT', name: 'Italiano', path: '/it/' },
-  { code: 'fr', short: 'FR', name: 'Français', path: '/fr/' },
+  { code: 'fr', short: 'FR', name: 'Français', path: '/' },
 ] as const
 
 export type Lang = (typeof LANGS)[number]['code']
@@ -50,28 +50,18 @@ export function goToLang(lang: Lang) {
 }
 
 /**
- * Runs before the app renders. On the English home page, a first-time visitor whose
- * browser speaks Italian or French is sent to their page; a saved choice wins over the
- * browser, and a ?lang= link wins over both. The /it/ and /fr/ pages are never redirected:
- * someone who opens one asked for it. Returns false when the page is about to change.
+ * Runs before the app renders. The home page is French: a visitor who chose another
+ * language before is sent back to it, and a ?lang= link wins over that. Never by the
+ * browser's language: crawlers read pages with an English browser and must find the
+ * French home where it is. The /en/ and /it/ pages are never redirected: someone who
+ * opens one asked for it. Returns false when the page is about to change.
  */
 export function settleLang(): boolean {
   const params = new URLSearchParams(window.location.search)
   const asked = params.get('lang')
   let target: Lang | null = isLang(asked) ? asked : null
 
-  if (!target && pageLang === 'en') {
-    target = saved()
-    if (!target) {
-      for (const tag of navigator.languages ?? [navigator.language]) {
-        const code = tag.slice(0, 2).toLowerCase()
-        if (isLang(code)) {
-          target = code
-          break
-        }
-      }
-    }
-  }
+  if (!target && pageLang === 'fr') target = saved()
 
   if (target && target !== pageLang) {
     window.location.replace(byCode(target).path + window.location.hash)

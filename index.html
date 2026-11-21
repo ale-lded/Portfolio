@@ -1,35 +1,37 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0A0A0B" />
-    <title>Website design in Lyon &amp; the Rhône · Alessio Mura</title>
+    <title>Création de sites web à Lyon et dans le Rhône · Alessio Mura</title>
     <meta
       name="description"
-      content="Showcase websites, redesigns, photo and video for your business. Made to measure, fast and easy to find on Google, by a web designer near Lyon, France."
+      content="Site vitrine, refonte de site internet, photo et vidéo pour votre entreprise. Sur mesure, rapide et bien référencé, par un web designer près de Lyon."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="en_GB" />
-    <meta property="og:title" content="Alessio Mura — Websites, made to measure" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content="Alessio Mura — Des sites web sur mesure" />
     <meta
       property="og:description"
-      content="Redesigns, showcase websites, photo and video for businesses, designed and built near Lyon, France."
+      content="Refonte, site vitrine, photo et vidéo pour votre entreprise, conçus et développés près de Lyon."
     />
-    <meta property="og:image" content="/og/og-en.jpg" />
+    <meta property="og:image" content="/og/og-fr.jpg" />
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Alessio Mura — Websites, made to measure. Web designer &amp; developer near Lyon, France." />
+    <meta property="og:image:alt" content="Alessio Mura — Des sites web sur mesure. Web designer et développeur près de Lyon." />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/og/og-en.jpg" />
-    <!-- The page's content is in the HTML (scripts/prerender.mjs): a first-time visitor whose
-         browser speaks Italian or French goes to their page before any of it is drawn.
-         Same rules as settleLang() in src/lib/lang.ts, which still runs as a fallback. -->
+    <meta name="twitter:image" content="/og/og-fr.jpg" />
+    <!-- The page's content is in the HTML (scripts/prerender.mjs): a visitor who chose
+         another language before, or follows a ?lang= link, goes to that page before any of
+         it is drawn. Never the browser's language: crawlers read pages with an English
+         browser, and must find the French home here. Same rules as settleLang() in
+         src/lib/lang.ts, which still runs as a fallback. -->
     <script>
       ;(function () {
-        var paths = { en: '/', it: '/it/', fr: '/fr/' }
+        var paths = { fr: '/', en: '/en/', it: '/it/' }
         try {
           var target = new URLSearchParams(location.search).get('lang')
           if (!paths[target]) {
@@ -39,18 +41,7 @@
               target = null
             }
           }
-          if (!paths[target]) {
-            target = null
-            var tags = navigator.languages || [navigator.language]
-            for (var i = 0; i < tags.length; i++) {
-              var code = String(tags[i] || '').slice(0, 2).toLowerCase()
-              if (paths[code]) {
-                target = code
-                break
-              }
-            }
-          }
-          if (target && target !== 'en') location.replace(paths[target] + location.hash)
+          if (paths[target] && target !== 'fr') location.replace(paths[target] + location.hash)
         } catch (e) {}
       })()
     </script>

@@ -2,12 +2,15 @@ import react from '@vitejs/plugin-react'
 import { resolve } from 'node:path'
 import { defineConfig, type Plugin } from 'vite'
 
-/** One page per language: index.html is English, it/ and fr/ the translations (src/lib/lang.ts) */
+/** One page per language: index.html is French, the home of a business in France; en/ and
+ *  it/ the translations (src/lib/lang.ts) */
 const pages = {
-  en: { html: 'index.html', path: '/' },
+  fr: { html: 'index.html', path: '/' },
+  en: { html: 'en/index.html', path: '/en/' },
   it: { html: 'it/index.html', path: '/it/' },
-  fr: { html: 'fr/index.html', path: '/fr/' },
 }
+/** For a language the site doesn't speak, search engines offer the English page */
+const fallback = pages.en.path
 
 /**
  * Tells search engines the three pages are one site in three languages: a canonical link
@@ -27,7 +30,7 @@ function languageLinks(): Plugin {
       const tags = [
         `<link rel="canonical" href="${site}${own.path}" />`,
         ...Object.entries(pages).map(([lang, p]) => `<link rel="alternate" hreflang="${lang}" href="${site}${p.path}" />`),
-        `<link rel="alternate" hreflang="x-default" href="${site}/" />`,
+        `<link rel="alternate" hreflang="x-default" href="${site}${fallback}" />`,
       ]
         .filter(Boolean)
         .join('\n    ')
@@ -80,7 +83,7 @@ function crawlerFiles(): Plugin {
       const today = new Date().toISOString().slice(0, 10)
       const alternates = [
         ...Object.entries(pages).map(([lang, p]) => [lang, p.path]),
-        ['x-default', pages.en.path],
+        ['x-default', fallback],
       ]
         .map(([lang, path]) => `    <xhtml:link rel="alternate" hreflang="${lang}" href="${site}${path}" />`)
         .join('\n')

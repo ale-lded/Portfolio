@@ -1,6 +1,6 @@
 /**
  * Every piece of copy on the site, in the language of the page.
- * Each language is its own page (/, /it/, /fr/: see lib/lang.ts), so the copy is chosen
+ * Each language is its own page (/ in French, /en/, /it/: see lib/lang.ts), so the copy is chosen
  * once, when the page loads, and every component keeps importing plain constants.
  * The texts themselves live in content/en.ts, content/it.ts and content/fr.ts.
  */

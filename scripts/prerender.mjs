@@ -1,6 +1,6 @@
 /**
  * Runs after `vite build` (see the build script in package.json): writes the page's real
- * content into dist/index.html, dist/it/index.html and dist/fr/index.html, so search
+ * content into dist/index.html (French), dist/en/index.html and dist/it/index.html, so search
  * engines and AI assistants that don't run JavaScript read the whole site, not an empty
  * <div id="root">. Visitors see no difference: the app draws itself again over it.
  * With SITE_URL set it also adds the page's structured data (src/lib/structuredData.ts).
@@ -18,9 +18,9 @@ import { build } from 'vite'
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const out = resolve(root, 'dist-ssr')
 const pages = [
-  { lang: 'en', html: 'dist/index.html' },
+  { lang: 'fr', html: 'dist/index.html' },
+  { lang: 'en', html: 'dist/en/index.html' },
   { lang: 'it', html: 'dist/it/index.html' },
-  { lang: 'fr', html: 'dist/fr/index.html' },
 ]
 const EMPTY = '<div id="root"></div>'
 const site = process.env.SITE_URL?.replace(/\/$/, '')

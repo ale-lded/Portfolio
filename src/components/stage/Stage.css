@@ -4,7 +4,8 @@
      site, 130vh slide through the other pages), then one more screen where the finished
      window stays pinned while the "Chi sono" print slides up over it: the negative margin
      lets that print start one screen early, on top of the pinned view */
-  height: 450vh;
+  /* --trim: the build's scroll, dropped once it has played (the latch in Stage.tsx) */
+  height: calc(450vh - var(--trim, 0px));
   margin-bottom: -100vh;
 }
 
@@ -598,36 +599,6 @@
   height: 100%;
   background: #faf7f3;
   color: #1d1a17;
-}
-
-.folio__try {
-  position: absolute;
-  z-index: 1;
-  top: 12px;
-  right: 4.5cqw;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: #1d1a17;
-  font-size: 13px;
-  text-decoration: none;
-  color: #faf7f3;
-  box-shadow: 0 8px 24px -10px rgba(29, 26, 23, 0.6);
-  transition:
-    background 0.3s,
-    transform 0.3s;
-}
-
-.folio__try:hover {
-  background: #e8541a;
-  transform: translateY(-1px);
-}
-
-.folio__try:focus-visible {
-  outline: 2px solid #e8541a;
-  outline-offset: 3px;
 }
 
 .folio__nav {
@@ -1464,7 +1435,7 @@
   /* Phones and tablets: the stage holds just the build (Stage.tsx), 120vh of scroll plus
      the screen the About print covers */
   .stage:not(.stage--static) {
-    height: 320vh;
+    height: calc(320vh - var(--trim, 0px));
   }
 
   /* The window fills the screen between the nav and the phase line; its pages are swiped by
@@ -1633,12 +1604,6 @@
     display: none;
   }
 
-  .folio__try {
-    top: 10px;
-    right: 14px;
-    padding: 6px 12px;
-    font-size: 12px;
-  }
 
   .folio__brand {
     font-size: 16px;
@@ -1714,25 +1679,7 @@
     font-size: 13.5px;
   }
 
-  /* Room under the shelf for the free-to-use link below */
-  .folio__hero {
-    padding-bottom: 60px;
-  }
-
-  /* Its free-to-use link sits on the page, at the bottom, instead of under the window */
-  .folio__try {
-    top: auto;
-    right: auto;
-    left: 50%;
-    bottom: 14px;
-    white-space: nowrap;
-    transform: translateX(-50%);
-  }
-
-  .folio__try:hover {
-    transform: translateX(-50%) translateY(-1px);
-  }
-
+  /* Under the window the link would repeat the page's own orange button */
   .work__info-item .picker__action[target='_blank'] {
     display: none;
   }

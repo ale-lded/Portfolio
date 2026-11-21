@@ -70,7 +70,6 @@ export const work = {
       title: ['Everything your', 'PDFs need.'],
       lead: ['Merge, split,', 'compress and sign.'],
       drop: 'Drop your PDFs here',
-      button: 'Upload a PDF',
       alt: 'Folio’s bookshelf of PDF tools, with the Split tool pulled out and open.',
     },
   },

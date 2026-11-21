@@ -327,10 +327,6 @@ function FolioPage() {
   const { href, page, cta } = work.folio
   return (
     <div className="folio">
-      {/* Always in view over the page: Folio is free to use, today */}
-      <a className="folio__try mono" href={href} target="_blank" rel="noreferrer">
-        {cta} <span aria-hidden="true">↗</span>
-      </a>
       <div className="folio__nav">
         <span className="folio__logo" aria-hidden="true" />
         <span className="folio__brand">Folio</span>
@@ -349,8 +345,9 @@ function FolioPage() {
             {page.lead[1]}
           </p>
           <p className="folio__drop">{page.drop}</p>
+          {/* Folio's own button, in its own colours: it opens Folio, free to use */}
           <a className="folio__button" href={href} target="_blank" rel="noreferrer">
-            <span aria-hidden="true">↑</span> {page.button}
+            {cta} <span aria-hidden="true">↗</span>
           </a>
         </div>
         <div className="folio__shot">

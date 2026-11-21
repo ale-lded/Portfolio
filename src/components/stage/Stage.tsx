@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { backstage, code, hero, terminal } from '../../content'
 import { enterBackstage } from '../../lib/backstage'
 import { openTerminal } from '../../lib/terminal'
-import { clamp, sstep } from '../../lib/math'
+import { clamp, lerp, sstep } from '../../lib/math'
 import { Spotlight } from '../../lib/spotlight'
 import { useReducedMotion } from '../../lib/useReducedMotion'
 import { ParticleScene, type LandingText, type LineTarget } from '../../scene/ParticleScene'
@@ -75,16 +75,36 @@ export function Stage() {
     let ready = false
     let alive = true
 
+    /**
+     * One-way latch, as on the "How I work" stage. Once the page is built, the build never
+     * plays backwards: scrolling back up keeps the finished window, and the hero fades back
+     * in over the stage's first stretch. Once the scroll comes to rest past the build, the
+     * stage drops the build's scroll (`trimmed` px), so going back up is not a long scroll
+     * over a still scene. Back at the very top it re-arms, and going down plays it all again.
+     */
+    let latched = false
+    let trimmed = 0
+    let trimTimer = 0
+    const anchor = stage.querySelector<HTMLElement>('.stage__anchor')!
+
     // The stage's last screen (Stage.css) is not part of the sequence: the window holds
     // still there while the "Chi sono" print slides over it. Measured against the pinned
     // scene (100vh), not window.innerHeight, which a phone's toolbar changes as it moves
     const sequenceLength = () => stage.offsetHeight - 2 * sticky.offsetHeight
+    /** The sequence as it was before the build's scroll was trimmed away */
+    const fullLength = () => sequenceLength() + trimmed
     // On phones the stage (Stage.css) holds just the build: its scroll maps onto the build's
     // share of the timeline, and the slides never come
+    const scale = () => (swipe.matches ? BUILD : 1)
+    /** Where the build is complete, and the hero's stretch at the top, as raw scroll (0 → 1) */
+    const builtAt = () => T.pickerIn[1] / scale()
+    const heroStretch = () => (sticky.offsetHeight * 0.3) / Math.max(1, fullLength())
     const progress = () => {
-      const total = sequenceLength()
-      const at = total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0
-      return swipe.matches ? at * BUILD : at
+      const total = fullLength()
+      let at = total > 0 ? -stage.getBoundingClientRect().top / total : 0
+      // Trimmed: past the hero's stretch the scroll lands straight on the finished page
+      if (trimmed && at > heroStretch()) at += trimmed / total
+      return clamp(at) * scale()
     }
     /** 0 → 1 over that last screen, as the print covers the pinned view */
     const coverProgress = () =>
@@ -149,6 +169,9 @@ export function Stage() {
       })
     }
 
+    /** The spotlight dims while the code is on screen and comes back up for the work */
+    const lightAt = (p: number) => 1 - 0.55 * sstep(0.12 * BUILD, 0.24 * BUILD, p) + 0.6 * sstep(0.66 * BUILD, 0.86 * BUILD, p)
+
     const apply = (p: number) => {
       scene.render(p)
       const { title, fades: heroFades, hint, bugs } = parts
@@ -180,9 +203,7 @@ export function Stage() {
       codeWin.style.clipPath = cut > 0 ? `inset(${cut.toFixed(1)}px 0 0 0 round 14px)` : ''
       codeWin.style.visibility = winA > 0.001 ? 'visible' : 'hidden'
 
-      // The spotlight dims while the code is on screen and comes back up for the work
-      const light = 1 - 0.55 * sstep(0.12 * BUILD, 0.24 * BUILD, p) + 0.6 * sstep(0.66 * BUILD, 0.86 * BUILD, p)
-      sticky.style.setProperty('--light', light.toFixed(3))
+      sticky.style.setProperty('--light', lightAt(p).toFixed(3))
 
       // The page fills in behind the editor; each line's words show up for real where that
       // line lands; the rest of the page, the heading and the picker come up after
@@ -224,13 +245,79 @@ export function Stage() {
       if (phaseLabel.textContent !== label) phaseLabel.textContent = label
     }
 
+    /**
+     * apply(), with the latch: once built, any point before the build's end shows the finished
+     * page, and over the stage's first stretch the hero comes back in its place (never the
+     * build in reverse: the window fades out, then the title and its copy fade in)
+     */
+    const show = (p: number) => {
+      const done = T.pickerIn[1]
+      if (!latched || p >= done) {
+        apply(p)
+        return
+      }
+      apply(done)
+      // In two beats, never both at once: going up, the window fades out, then the hero in
+      const edge = heroStretch() * scale()
+      const hero = 1 - sstep(edge * 0.1, edge * 0.45, p)
+      const page = sstep(edge * 0.55, edge * 0.9, p)
+      const { title, fades, hint, bugs } = parts
+      for (const el of [...fades, ...bugs]) {
+        el.style.opacity = hero.toFixed(3)
+        el.style.transform = ''
+        el.style.visibility = hero > 0.01 ? '' : 'hidden'
+      }
+      hint.style.opacity = hero.toFixed(3)
+      title.style.opacity = hero.toFixed(3)
+      for (const el of [browser, workHead, ...pickers]) el.style.opacity = page.toFixed(3)
+      work.style.pointerEvents = page > 0.5 ? '' : 'none'
+      phase.style.opacity = (Number(phase.style.opacity) * page).toFixed(3)
+      sticky.style.setProperty('--light', lerp(lightAt(done), 1, 1 - page).toFixed(3))
+    }
+
+    /** Drops the build's scroll, keeping the view exactly where it is */
+    const trim = () => {
+      if (!latched || trimmed) return
+      const total = fullLength()
+      const at = -stage.getBoundingClientRect().top / total
+      const cut = Math.round((builtAt() - heroStretch()) * total)
+      // Only once the visitor is past the build, so nothing on screen moves
+      if (cut <= 0 || at < builtAt()) return
+      trimmed = cut
+      stage.style.setProperty('--trim', `${cut}px`)
+      anchor.style.top = `calc(116vh - ${cut}px)`
+      window.scrollBy({ top: -cut, behavior: 'instant' })
+    }
+
+    const updateLatch = () => {
+      if (!latched && current >= T.pickerIn[1]) latched = true
+      else if (latched && stage.getBoundingClientRect().top >= -1) {
+        // Back at the very top: re-arm, with the build's scroll back in place below the view.
+        // The view already shows the hero: jump straight there, rather than letting the
+        // smoothing catch up through the build backwards
+        latched = false
+        if (trimmed) {
+          trimmed = 0
+          stage.style.removeProperty('--trim')
+          anchor.style.top = ''
+        }
+        current = progress()
+        apply(current)
+      }
+      // Trimming changes the page's height: only once the scroll has come to rest, so a
+      // smooth scroll (a nav link) is never cut short
+      window.clearTimeout(trimTimer)
+      if (latched && !trimmed) trimTimer = window.setTimeout(trim, 200)
+    }
+
     // Smoothly chase the real scroll position; reversible because apply() only depends on p
     const tick = () => {
       raf = 0
       const target = progress()
       current += (target - current) * 0.12
       if (Math.abs(target - current) < 0.0003) current = target
-      apply(current)
+      show(current)
+      updateLatch()
       sticky.style.setProperty('--cover', coverProgress().toFixed(3))
       if (current !== target) raf = requestAnimationFrame(tick)
     }
@@ -257,7 +344,7 @@ export function Stage() {
       window.clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(() => {
         build()
-        apply(current)
+        show(current)
       }, 120)
     }
     const resizeObserver = new ResizeObserver(rebuild)
@@ -285,7 +372,10 @@ export function Stage() {
       const page = (e as CustomEvent<number>).detail
       picked = { page, at: performance.now() }
       shownPage = page
-      const top = stage.getBoundingClientRect().top + window.scrollY + pageAt(page) * sequenceLength()
+      // Where the page shows, in the stage as it is now (trimmed or not)
+      let at = pageAt(page) / scale()
+      if (trimmed && at > heroStretch()) at -= trimmed / fullLength()
+      const top = stage.getBoundingClientRect().top + window.scrollY + at * fullLength()
       window.scrollTo({ top, behavior: 'smooth' })
     }
     work.addEventListener(PICK_EVENT, onPick)
@@ -301,6 +391,9 @@ export function Stage() {
       alive = false
       cancelAnimationFrame(raf)
       window.clearTimeout(resizeTimer)
+      window.clearTimeout(trimTimer)
+      stage.style.removeProperty('--trim')
+      anchor.style.top = ''
       window.removeEventListener('scroll', request)
       work.removeEventListener(PICK_EVENT, onPick)
       spotlight.dispose()

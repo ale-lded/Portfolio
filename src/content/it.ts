@@ -56,7 +56,6 @@ export const it: Content = {
         title: ['Everything your', 'PDFs need.'],
         lead: ['Merge, split,', 'compress and sign.'],
         drop: 'Drop your PDFs here',
-        button: 'Upload a PDF',
         alt: 'Lo scaffale di strumenti PDF di Folio, con lo strumento Split estratto e aperto.',
       },
     },

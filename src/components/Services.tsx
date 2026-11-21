@@ -28,6 +28,7 @@ function ServiceCard({ item, index }: { item: Service; index: number }) {
         <span className="service__index mono">{number}</span>
         <h3 className="service__name">{item.name}</h3>
         <p className="service__text">{item.text}</p>
+        <p className="service__price mono">{item.price}</p>
         {item.note && <p className="service__note">{item.note}</p>}
         <button
           type="button"

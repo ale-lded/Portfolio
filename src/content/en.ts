@@ -199,6 +199,8 @@ export const about = {
 export type Service = {
   name: string
   text: string
+  /** Where the price starts, on the front of the card: "From €900" */
+  price: string
   /** A smaller line under the text */
   note?: string
   /** Where the offer is available, for search engines (src/lib/structuredData.ts):
@@ -224,6 +226,7 @@ export const services = {
     {
       name: 'Redesign',
       text: 'Your current site, rebuilt to be modern, fast and easy to find. Same business, a much better first impression.',
+      price: 'From €900',
       note: 'Remotely too, anywhere in France.',
       area: 'country',
       ideal: 'Businesses that already have a site, but it is slow, dated or hard to find.',
@@ -232,6 +235,7 @@ export const services = {
     {
       name: 'Showcase websites',
       text: 'A clear, beautiful home for your business online: who you are, what you do, and how to reach you.',
+      price: 'From €1,100',
       note: 'Remotely too, anywhere in France.',
       area: 'country',
       ideal: 'A new business, or one that has no website yet.',
@@ -240,6 +244,7 @@ export const services = {
     {
       name: 'Photo & video',
       text: 'I come to you to photograph and film your business: real images for your website, your ads and your social media.',
+      price: 'From €250',
       note: 'On location anywhere in the Rhône.',
       area: 'region',
       ideal: 'Businesses that want to show themselves as they really are, not with stock photos.',

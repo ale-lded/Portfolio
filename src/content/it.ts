@@ -186,6 +186,7 @@ export const it: Content = {
       {
         name: 'Redesign',
         text: 'Il tuo sito attuale, rifatto per essere moderno, veloce e facile da trovare. Stessa attività, una prima impressione molto migliore.',
+        price: 'A partire da 900 €',
         note: 'Anche a distanza, in tutta la Francia.',
         area: 'country',
         ideal: 'Chi ha già un sito, ma è lento, datato o difficile da trovare.',
@@ -194,6 +195,7 @@ export const it: Content = {
       {
         name: 'Siti vetrina',
         text: 'Una casa online chiara e curata per la tua attività: chi sei, cosa fai e come raggiungerti.',
+        price: 'A partire da 1.100 €',
         note: 'Anche a distanza, in tutta la Francia.',
         area: 'country',
         ideal: 'Chi apre un’attività o non ha ancora un sito.',
@@ -202,6 +204,7 @@ export const it: Content = {
       {
         name: 'Foto e video',
         text: 'Vengo da te per fotografare e filmare la tua attività: immagini vere per il sito, la pubblicità e i social.',
+        price: 'A partire da 250 €',
         note: 'Sul posto in tutto il Rhône.',
         area: 'region',
         ideal: 'Chi vuole mostrare la propria attività com’è davvero, non con foto di repertorio.',

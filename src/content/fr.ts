@@ -186,6 +186,7 @@ export const fr: Content = {
       {
         name: 'Refonte',
         text: 'Votre site actuel, refait pour être moderne, rapide et facile à trouver. La même entreprise, une bien meilleure première impression.',
+        price: 'À partir de 900 €',
         note: 'Aussi à distance, partout en France.',
         area: 'country',
         ideal: 'Ceux qui ont déjà un site, mais lent, daté ou difficile à trouver.',
@@ -194,6 +195,7 @@ export const fr: Content = {
       {
         name: 'Sites vitrines',
         text: 'Une vitrine en ligne claire et soignée pour votre entreprise : qui vous êtes, ce que vous faites et comment vous joindre.',
+        price: 'À partir de 1 100 €',
         note: 'Aussi à distance, partout en France.',
         area: 'country',
         ideal: 'Ceux qui lancent leur activité ou n’ont pas encore de site.',
@@ -202,6 +204,7 @@ export const fr: Content = {
       {
         name: 'Photo et vidéo',
         text: 'Je viens chez vous pour photographier et filmer votre entreprise : de vraies images pour votre site, votre publicité et vos réseaux sociaux.',
+        price: 'À partir de 250 €',
         note: 'Sur place dans tout le Rhône.',
         area: 'region',
         ideal: 'Ceux qui veulent montrer leur entreprise telle qu’elle est, pas avec des photos de banque d’images.',

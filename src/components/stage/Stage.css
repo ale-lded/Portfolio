@@ -1587,6 +1587,47 @@
   }
 }
 
+/* Phones: each page in the window laid out the way a phone would show it */
+@media (max-width: 600px) {
+  /* Folio: its free-to-use link is on the card under the window; the shelf gets the room */
+  .folio__try,
+  .folio__badge {
+    display: none;
+  }
+
+  .folio__title {
+    margin-top: 0;
+  }
+
+  .folio__shot {
+    justify-self: center;
+  }
+
+  /* This site: its first screen on top, whole, and the two surprises under it, not over it */
+  .sitepage {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sitepage__shot {
+    flex: none;
+    height: auto;
+    aspect-ratio: 1200 / 630;
+  }
+
+  .sitepage__panel {
+    position: static;
+    flex: 1;
+    padding: 16px 20px 20px;
+    background: #0a0a0b;
+  }
+
+  /* The surprises only work on a computer: on a phone, just their names */
+  .sitepage__text {
+    display: none;
+  }
+}
+
 /* Short phones (SE-sized and below): a shorter window, so it still fits between the nav
    and the phase caption with its caption under it */
 @media (max-width: 960px) and (max-height: 760px) {

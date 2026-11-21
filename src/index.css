@@ -56,10 +56,13 @@ html {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
+  /* Nothing may stick out sideways (the About print arrives slightly turned): clip, not
+     hidden, which iOS Safari ignores under a finger and which would break the sticky stages */
+  overflow-x: clip;
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Film grain: a barely visible texture that keeps large dark areas from looking flat */

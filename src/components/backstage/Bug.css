@@ -30,7 +30,7 @@
   margin: -14px 0 0 -14px;
 }
 
-/* In the footer, right after the copyright: a stray cursor, grey like the text around it */
+/* In the footer, right after the copyright: the dead pixel again, grey like the text around it */
 .bug--footer {
   --bug-idle: rgba(142, 138, 132, 0.75);
   position: relative;

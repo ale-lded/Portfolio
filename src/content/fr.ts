@@ -36,84 +36,98 @@ export const fr: Content = {
   },
 
   code: {
-    file: 'votre-site.ts',
-    lang: 'TS',
-    lines: [
-      '// chaque détail compte',
-      'class VotreSite extends Web {',
-      "  design = 'sur mesure'",
-      "  structure = 'solide'",
-      '  rapide = true',
-      '  mobile = true',
-      '',
-      '  surGoogle() {',
-      "    return 'première page'",
-      '  }',
-      '}',
-    ],
+    file: 'index.html',
+    lang: 'HTML',
   },
 
   work: {
     heading: '01 — Derniers projets',
-  },
-
-  projects: [
-    {
-      title: 'Folio',
+    tabsLabel: 'Projets',
+    folio: {
+      tab: 'Folio',
+      kind: 'Outil PDF',
+      url: 'folio.alessiomura.fr',
+      href: 'https://folio.alessiomura.fr',
       description: 'Fusionnez, divisez, compressez et signez vos PDF. Gratuit, sans publicité, directement dans votre navigateur.',
       tags: ['Gratuit', 'Sans publicité', 'Privé'],
-      href: 'https://folio.alessiomura.fr',
-      details: {
-        open: 'Découvrir',
-        image: {
-          src: '/projects/folio.webp',
-          width: 2000,
-          height: 1050,
-          alt: 'La page d’accueil de Folio : une bibliothèque d’outils PDF, avec l’outil Split sorti et ouvert.',
-        },
-        story: [
-          'Un de mes derniers projets. Je l’ai pensé pour avoir toujours sous la main un outil PDF facile : gratuit, sans publicité et sans inscription.',
-          'Tout se passe dans votre navigateur : vos fichiers ne sont jamais envoyés sur un serveur, ni vus par personne d’autre que vous. Si vous en avez besoin, utilisez-le vous aussi.',
-        ],
-        progress: 'Fusionner · Diviser · Réorganiser · Compresser · Signer · Protéger par mot de passe',
-        cta: 'Utiliser Folio gratuitement',
-        href: 'https://folio.alessiomura.fr',
-        soon: 'Bientôt en ligne',
-        close: 'Fermer',
+      cta: 'Utiliser Folio gratuitement',
+      story: 'Je l’ai créé pour avoir toujours sous la main un outil PDF simple. Vous pouvez l’utiliser vous aussi : sans inscription, et vos fichiers ne quittent jamais votre appareil.',
+      page: {
+        badge: 'Your files never leave your device',
+        title: ['Everything your', 'PDFs need.'],
+        lead: ['Merge, split,', 'compress and sign.'],
+        drop: 'Drop your PDFs here',
+        button: 'Upload a PDF',
+        alt: 'La bibliothèque d’outils PDF de Folio, avec l’outil Split sorti et ouvert.',
       },
     },
-    {
-      title: 'Ce site',
+    site: {
+      tab: 'Ce site',
+      kind: 'Portfolio',
+      url: 'alessiomura.fr',
       description: 'Le site que vous regardez, conçu et développé par moi, soigné dans chaque détail.',
-      tags: ['Sur mesure', 'Rapide', 'Animé à la main'],
-      back: {
-        open: 'Dans les coulisses',
-        heading: 'Fait sur mesure, jusque dans les détails.',
-        intro: 'Construit avec des outils modernes, avec des animations dessinées à la main. Et deux surprises :',
-        items: [
-          {
-            name: 'Un pixel déplacé',
-            text: 'Cliquez dessus, près du projecteur sur le premier écran, pour un tour de piste en coulisses. Battez le record.',
-          },
-          {
-            name: 'Un curseur égaré',
-            text: 'Il se cache en haut et en bas de la page, et ouvre un terminal pour messages secrets.',
-          },
+      alt: 'Le premier écran de ce site.',
+      heading: 'Deux surprises cachées ici',
+      items: [
+        {
+          name: 'Un pixel déplacé',
+          text: 'Cliquez dessus, près du projecteur sur le premier écran, pour un tour de piste en coulisses. Battez le record.',
+        },
+        {
+          name: 'Un pixel mort',
+          text: 'Gris, en haut à droite sur le premier écran et en bas de la page après le copyright. Il ouvre un terminal pour messages secrets.',
+        },
+      ],
+      note: '(uniquement sur ordinateur)',
+    },
+    demo: {
+      tab: 'Bistrot',
+      kind: 'Exemple',
+      url: 'votre-bistrot.fr',
+      status: 'Place libre',
+      description: 'Un exemple de site pour un restaurant : carte, horaires, réservations. Le prochain pourrait être le vôtre.',
+      cta: { label: 'Réserver la place', href: '#contact' },
+      page: {
+        label: 'Exemple',
+        brand: 'Votre bistrot',
+        links: ['Carte', 'Horaires', 'Contact'],
+        kicker: 'Cuisine de saison · Lyon',
+        title: ['Cuisine maison,', 'à deux pas d’ici.'],
+        lead: ['Produits du marché,', 'carte de saison.'],
+        book: 'Réserver une table',
+        menu: 'Voir la carte',
+        alt: 'Une assiette de saison sur une table en bois (photo d’exemple).',
+        photoFile: 'votre-photo.jpg',
+        info: [
+          { label: 'Ouvert', value: 'Mar–Sam · 12h–14h · 19h–22h' },
+          { label: 'Où', value: 'Votre rue, Lyon' },
+          { label: 'Appeler', value: '04 00 00 00 00' },
         ],
-        outro: 'Chaque idée ou envie pour votre site peut devenir réelle. Il suffit d’en parler.',
-        cta: { label: 'Parlons-en', href: '#contact' },
-        note: '(uniquement sur ordinateur)',
-        close: 'Retourner',
       },
     },
-    {
-      title: 'Votre site',
-      description: 'Le prochain projet ici pourrait être le vôtre. Parlez-moi de votre activité : on en discute ensemble, sans engagement.',
-      tags: ['Sur mesure', 'Sans engagement'],
+    carpenter: {
+      tab: 'Menuisier',
+      kind: 'Exemple',
+      url: 'votre-menuiserie.fr',
       status: 'Place libre',
-      cta: { label: 'Réserver la place', href: '#contact' },
+      description: 'Un exemple de site pour un artisan : les réalisations en avant, et une façon simple de demander un devis.',
+      page: {
+        label: 'Exemple',
+        brand: 'Votre menuiserie',
+        links: ['Réalisations', 'Atelier', 'Contact'],
+        kicker: 'Meubles sur mesure · Lyon',
+        title: ['Fait main,', 'pensé pour chez vous.'],
+        lead: 'Tables, cuisines et bibliothèques en bois massif, dessinées et fabriquées pour la pièce qui les accueille.',
+        quote: 'Demander un devis',
+        works: 'Voir les réalisations',
+        photos: [
+          { src: '/examples/workshop.jpg', alt: 'Un menuisier rabote à la main une planche de chêne sur l’établi (photo d’exemple).', caption: 'À l’atelier' },
+          { src: '/examples/bookcase.jpg', alt: 'Une bibliothèque en chêne sur mesure dans un salon (photo d’exemple).', caption: 'Bibliothèque en chêne' },
+          { src: '/examples/joint.jpg', alt: 'Des mains ajustant une queue d’aronde en noyer (photo d’exemple).', caption: 'Assemblages à la main' },
+        ],
+      },
     },
-  ],
+  },
 
   about: {
     label: '02 — Qui suis-je',
@@ -328,7 +342,7 @@ export const fr: Content = {
   },
 
   terminal: {
-    trigger: 'Un curseur égaré',
+    trigger: 'Un pixel mort',
     title: 'cipher.sys',
     label: 'Terminal chiffré',
     intro: 'Écrivez un message secret, envoyez le code à un ami, il l’ouvre ici.',

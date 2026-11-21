@@ -1,13 +1,14 @@
 .stage {
   position: relative;
-  /* 120vh of scroll for the sequence, then one more screen where the finished cards
-     stay pinned while the "Chi sono" print slides up over them: the negative margin
+  /* 250vh of scroll for the sequence (scene/timeline.ts: 120vh build the first example
+     site, 130vh slide through the other pages), then one more screen where the finished
+     window stays pinned while the "Chi sono" print slides up over it: the negative margin
      lets that print start one screen early, on top of the pinned view */
-  height: 320vh;
+  height: 450vh;
   margin-bottom: -100vh;
 }
 
-/* Where the "Progetti" link lands: the point where the cards are already composed */
+/* Where the "Progetti" link lands: the point where the window is already built */
 .stage__anchor {
   position: absolute;
   left: 0;
@@ -16,7 +17,7 @@
 
 .stage__sticky {
   --light: 1;
-  /* 0 → 1 while the print covers the pinned cards: they recede, smaller and darker */
+  /* 0 → 1 while the print covers the pinned window: it recedes, smaller and darker */
   --cover: 0;
   position: sticky;
   top: 0;
@@ -419,7 +420,9 @@
 /* ---------- Code window (chrome only: the code itself is drawn on the canvas) ---------- */
 .code-win {
   position: absolute;
-  z-index: 3;
+  transform-origin: 0 0;
+  /* Above the page: the editor floats over it while its lines move out */
+  z-index: 4;
   opacity: 0;
   visibility: hidden;
   border: 1px solid var(--line);
@@ -465,418 +468,823 @@
   pointer-events: none;
 }
 
-/* ---------- Work ---------- */
+/* ---------- Work: one browser window, and a picker under it ---------- */
 .work {
   position: absolute;
-  z-index: 4;
+  z-index: 3;
   left: 50%;
-  top: 47%;
+  top: 50%;
   width: min(calc(1200px * var(--s)), calc(100vw - 2 * var(--pad)));
   transform: translate(-50%, -50%);
 }
 
+/* The paper cards on the left, the window beside them; one column on phones */
+.work {
+  display: grid;
+  grid-template-columns: minmax(220px, calc(280px * var(--s))) minmax(0, 1fr);
+  grid-template-areas:
+    'head head'
+    'picker browser';
+  gap: 0 18px;
+}
+
 .work__head {
+  grid-area: head;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 22px;
-  font-size: calc(13px * var(--s));
-  color: var(--muted);
-  opacity: 0;
-}
-
-.work__cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.card {
-  position: relative;
-  display: grid;
-  min-height: 340px;
-  border: 1px solid rgba(201, 143, 78, 0.35);
-  border-radius: 18px;
-  background:
-    radial-gradient(120% 60% at 50% -10%, rgba(255, 181, 71, 0.09), transparent 60%),
-    linear-gradient(180deg, #151413, #0e0d0d);
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    border-color 0.4s,
-    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-    box-shadow 0.5s,
-    filter 0.6s ease;
-}
-
-/* The two faces: the card turns edge-on, swaps them, and turns back (lib/useFlip).
-   Both share the one grid cell, so the card is as tall as the taller face whichever
-   side is showing, and doesn't change size as it turns */
-.card__front,
-.card__back {
-  grid-area: 1 / 1;
-  display: flex;
-  flex-direction: column;
-  padding: 28px;
-}
-
-.card__back {
-  position: relative;
-  border-radius: inherit;
-  background:
-    radial-gradient(120% 60% at 50% 110%, rgba(255, 181, 71, 0.12), transparent 60%),
-    linear-gradient(180deg, #151413, #0e0d0d);
-}
-
-.card.is-flipped .card__front,
-.card:not(.is-flipped) .card__back {
-  visibility: hidden;
-}
-
-.card__secret-name .card__index {
-  margin-right: 6px;
-  font-size: calc(12.5px * var(--s));
-  font-weight: 400;
-}
-
-.card__back-heading {
-  font-size: calc(20px * var(--s));
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.15;
-  outline: none;
-}
-
-/* Before the secrets: what the site is made of */
-.card__back-intro {
-  margin-top: 8px;
-  font-size: calc(13px * var(--s));
-  line-height: 1.45;
-  color: #bdb7af;
-}
-
-.card__secrets {
-  display: grid;
-  gap: 12px;
-  margin: 14px 0;
-  list-style: none;
-}
-
-/* After the secrets: any idea can be built, and the way to the contact section */
-.card__back-outro {
   margin-bottom: 16px;
   font-size: calc(13px * var(--s));
-  line-height: 1.45;
-  color: var(--text);
+  color: var(--muted);
+  opacity: 0;
 }
 
-.card__back-link {
-  color: var(--amber);
+.browser {
+  grid-area: browser;
+  display: flex;
+  flex-direction: column;
+  height: min(calc(680px * var(--s)), 70vh);
+  overflow: hidden;
+  border: 1px solid rgba(201, 143, 78, 0.35);
+  border-radius: 16px;
+  background: #121110;
+  box-shadow:
+    0 60px 140px -50px rgba(255, 150, 50, 0.28),
+    0 30px 80px -30px rgba(0, 0, 0, 0.9);
+  opacity: 0;
+}
+
+.browser__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 16px;
+  height: 42px;
+  padding: 0 14px 0 16px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #181614, #121110);
+}
+
+.browser__dots {
+  display: flex;
+  gap: 8px;
+}
+
+.browser__dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #2a2724;
+}
+
+.browser__url {
+  overflow: hidden;
+  margin-left: 8px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: #1a1816;
+  font-size: calc(12px * var(--s));
   white-space: nowrap;
-  text-decoration: underline;
-  text-decoration-color: rgba(255, 181, 71, 0.4);
-  text-underline-offset: 3px;
-  transition: text-decoration-color 0.2s ease;
-}
-
-.card__back-link:hover {
-  text-decoration-color: var(--amber);
-}
-
-.card__secret-name {
-  font-size: calc(15px * var(--s));
-  white-space: nowrap;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.card__secret-text {
-  margin-top: 2px;
-  font-size: calc(13px * var(--s));
-  line-height: 1.45;
+  text-overflow: ellipsis;
   color: var(--muted);
 }
 
-.card__actions {
-  /* Above the title link, which stretches over the whole card */
-  position: relative;
-  z-index: 1;
-  display: flex;
-  min-height: 34px;
-  margin-top: 22px;
+.browser__url span {
+  font-size: 0.7em;
+  color: #6fbf73;
 }
 
-.card__action {
-  align-self: flex-start;
-  padding: 8px 14px;
+.browser__badge {
+  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
+  padding: 3px 10px;
   border: 1px solid rgba(255, 181, 71, 0.4);
   border-radius: 999px;
-  background: rgba(255, 181, 71, 0.06);
+  font-size: calc(12px * var(--s));
   color: var(--amber);
-  font-size: calc(12.5px * var(--s));
+}
+
+/* The four pages side by side on a rail, slid by the scroll (Stage.tsx); each page is one
+   window wide, and sizes its type to the window (container units) */
+.browser__view {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.browser__pages {
+  height: 100%;
+  container-type: size;
+}
+
+.rail {
+  display: flex;
+  width: 400%;
+  height: 100%;
+}
+
+.rail__page {
+  flex: 0 0 25%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ---- Folio: its own light page, in its own colours ---- */
+.folio {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #faf7f3;
+  color: #1d1a17;
+}
+
+.folio__try {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  right: 4.5cqw;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #1d1a17;
+  font-size: 13px;
   text-decoration: none;
-  cursor: pointer;
+  color: #faf7f3;
+  box-shadow: 0 8px 24px -10px rgba(29, 26, 23, 0.6);
   transition:
     background 0.3s,
-    border-color 0.3s;
+    transform 0.3s;
 }
 
-.card__action:hover {
-  border-color: var(--amber);
-  background: rgba(255, 181, 71, 0.14);
+.folio__try:hover {
+  background: #e8541a;
+  transform: translateY(-1px);
 }
 
-.card__action:focus-visible {
-  outline: 2px solid var(--amber);
+.folio__try:focus-visible {
+  outline: 2px solid #e8541a;
   outline-offset: 3px;
 }
 
-/* The way back, and beside it the note on where the secrets live */
-.card__back-foot {
+.folio__nav {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: auto;
-}
-
-.card__back-foot .card__action {
-  margin-top: 0;
-}
-
-.card__back-note {
-  font-size: calc(12px * var(--s));
-  color: var(--muted);
-  text-align: right;
-}
-
-@media (max-width: 960px) {
-  /* Stacked cards: no need to line the titles up, so an empty row takes no room */
-  .card__actions:empty {
-    display: none;
-  }
-}
-
-/* ---------- Project dialog (Folio) ---------- */
-.project {
-  max-width: none;
-  max-height: none;
-  width: 100%;
-  height: 100%;
-  padding: 64px var(--pad) 24px;
-  border: 0;
-  background: transparent;
-  color: var(--text);
-  display: none;
-  overflow: auto;
-}
-
-.project[open] {
-  display: grid;
-  animation: lightbox-in 0.35s ease both;
-}
-
-.project::backdrop {
-  background: rgba(6, 6, 7, 0.88);
-  backdrop-filter: blur(6px);
-}
-
-.project__panel {
-  /* Auto margins centre it, yet keep its top reachable when it is taller than the screen */
-  margin: auto;
-  width: min(1040px, 100%);
-  border: 1px solid rgba(201, 143, 78, 0.35);
-  border-radius: 20px;
-  overflow: hidden;
-  background: linear-gradient(180deg, #151413, #0e0d0d);
-  box-shadow: 0 60px 140px -50px rgba(0, 0, 0, 0.95);
-}
-
-.project__shot {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid var(--line);
-}
-
-.project__body {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 32px;
-  padding: 32px;
-}
-
-.project__title {
-  margin-bottom: 12px;
-  font-size: calc(40px * var(--s));
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1;
-}
-
-.project__body .card__status {
-  display: inline-block;
-}
-
-.project__story p {
-  font-size: calc(16px * var(--s));
-  line-height: 1.6;
-  color: #bdb7af;
-}
-
-.project__story p + p {
-  margin-top: 12px;
-}
-
-.project__story .project__progress {
-  font-size: calc(13px * var(--s));
-  color: var(--muted);
-}
-
-.project__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.project__cta {
-  display: inline-flex;
+  flex: none;
   align-items: center;
   gap: 10px;
-  padding: 14px 22px;
-  border-radius: 999px;
-  background: var(--amber);
-  color: #1a0f00;
-  font-size: calc(15px * var(--s));
-  font-weight: 600;
-  transition: transform 0.3s;
+  padding: 14px 4.5cqw;
+  border-bottom: 1px solid #ece6de;
 }
 
-.project__cta:hover {
+/* Folio's mark: a white page on an orange tile */
+.folio__logo {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #e8541a;
+}
+
+.folio__logo::after {
+  content: '';
+  position: absolute;
+  inset: 7px 8px;
+  border: 1.5px solid #fff;
+  border-radius: 2px;
+}
+
+.folio__brand {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.folio__hero {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1.08fr;
+  align-items: center;
+  gap: 3.5cqw;
+  min-height: 0;
+  padding: 3cqh 4.5cqw;
+}
+
+.folio__badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid #e6dfd5;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12.5px;
+  color: #6f6a64;
+}
+
+.folio__badge::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #e8541a;
+  vertical-align: 1px;
+}
+
+.folio__title {
+  margin-top: 4cqh;
+  font-size: 52px;
+  font-size: min(5.2cqw, 11.5cqh);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.95;
+}
+
+.folio__lead {
+  margin-top: 3cqh;
+  font-size: 18px;
+  font-size: max(14px, min(1.6cqw, 3.6cqh));
+  line-height: 1.45;
+  color: #6f6a64;
+}
+
+.folio__drop {
+  max-width: 24em;
+  margin-top: 4cqh;
+  padding: 2.4cqh 16px;
+  border: 1.5px dashed #d9d1c6;
+  border-radius: 12px;
+  font-size: 13px;
+  text-align: center;
+  color: #8a847c;
+}
+
+.folio__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1.8cqh;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #e8541a;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  transition:
+    transform 0.3s,
+    background 0.3s;
+}
+
+.folio__button:hover {
+  background: #d4470f;
   transform: translateY(-2px);
 }
 
-.project__cta--soon {
-  opacity: 0.45;
-  cursor: not-allowed;
+.folio__button:focus-visible {
+  outline: 2px solid #1d1a17;
+  outline-offset: 3px;
 }
 
-.project__cta--soon:hover {
-  transform: none;
+.folio__shot {
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 980 / 670;
+  border-radius: 10px;
 }
 
-.project__soon {
-  font-size: calc(13px * var(--s));
-  color: var(--muted);
+.folio__shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-/* Follow-spot on a card: a warm pool of light where the beam lands */
-.card::after {
-  content: '';
+/* ---- This site: its first screen, with the two surprises over it ---- */
+.sitepage {
+  position: relative;
+  height: 100%;
+  background: #0a0a0b;
+}
+
+.sitepage__shot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Whole, never cropped: its black edges are the page's own black */
+  object-fit: contain;
+  object-position: top;
+}
+
+.sitepage__panel {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(280px circle at var(--lx, 50%) var(--ly, 50%), rgba(255, 181, 71, 0.14), transparent 70%);
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition: opacity 0.5s ease;
+  inset: auto 0 0;
+  padding: 16cqh 4cqw 4cqh;
+  background: linear-gradient(180deg, transparent, rgba(10, 10, 11, 0.94) 30%, #0a0a0b 46%);
 }
 
-.card.is-lit::after {
-  opacity: 1;
+.sitepage__heading {
+  font-family: var(--display);
+  font-size: calc(22px * var(--s));
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
-/* The other cards step back a little, but stay readable */
-.work__cards.has-lit .card:not(.is-lit) {
-  filter: brightness(0.75) saturate(0.9);
-}
-
-.card:hover {
-  border-color: rgba(255, 181, 71, 0.7);
-  transform: translateY(-4px);
-  box-shadow: 0 30px 80px -30px rgba(255, 150, 50, 0.35);
-}
-
-.card__top {
-  display: flex;
-  justify-content: space-between;
-  font-size: calc(13px * var(--s));
-}
-
-.card__index {
-  color: var(--amber);
-}
-
-.card__arrow {
-  color: var(--muted);
-  transition:
-    transform 0.4s,
-    color 0.4s;
-}
-
-.card:hover .card__arrow {
-  transform: translate(3px, -3px);
-  color: var(--amber);
-}
-
-.card__status {
-  padding: 3px 9px;
-  border: 1px solid rgba(255, 181, 71, 0.4);
-  border-radius: 999px;
+.sitepage__note {
+  margin-left: 8px;
   font-size: calc(12px * var(--s));
-  color: var(--amber);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--muted);
 }
 
-/* The title link covers the whole card */
-.card__link::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
+.sitepage__items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 14px;
+  list-style: none;
 }
 
-.card__link:focus-visible {
-  outline: none;
-}
-
-.card:has(.card__link:focus-visible) {
-  outline: 2px solid var(--amber);
-  outline-offset: 4px;
-}
-
-.card__title {
-  margin-top: auto;
-  font-size: calc(44px * var(--s));
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1;
+.sitepage__name {
+  font-weight: 600;
   color: var(--text);
 }
 
-.card__desc {
-  min-height: 4.5em;
-  margin-top: 14px;
-  font-size: calc(16px * var(--s));
+.sitepage__name .mono {
+  margin-right: 6px;
+  font-size: 0.8em;
+  color: var(--amber);
+}
+
+.sitepage__text {
+  margin-top: 4px;
+  font-size: calc(14.5px * var(--s));
   line-height: 1.5;
   color: var(--muted);
 }
 
-.card__tags {
+/* ---- Your site: an example page for a local business ---- */
+.demo {
+  --demo-ink: #2b2620;
+  --demo-olive: #55613a;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 24px;
+  flex-direction: column;
+  height: 100%;
+  background: #f3ede2;
+  color: var(--demo-ink);
 }
 
-.card__tag {
-  padding: 6px 11px;
-  border: 1px solid var(--line-strong);
+.demo__nav {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 28px;
+  padding: 16px 4.5cqw;
+  border-bottom: 1px solid #e2d9c9;
+}
+
+.demo__brand {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 21px;
+  font-style: italic;
+}
+
+.demo__links {
+  display: flex;
+  gap: 22px;
+  font-size: 14px;
+  color: #6d6457;
+}
+
+.demo__label {
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px dashed #b9ad98;
+  border-radius: 999px;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a7e6c;
+}
+
+.demo__hero {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 4cqw;
+  min-height: 0;
+  padding: 3cqh 4.5cqw;
+}
+
+.demo__kicker {
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--demo-olive);
+}
+
+.demo__title,
+.demo__lead {
+  white-space: nowrap;
+}
+
+.demo__title {
+  margin-top: 2.4cqh;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 46px;
+  font-size: min(4.4cqw, 10cqh);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.demo__lead {
+  max-width: 28em;
+  margin-top: 2.6cqh;
+  font-size: 16px;
+  font-size: max(14px, min(1.45cqw, 3.4cqh));
+  line-height: 1.5;
+  color: #6d6457;
+}
+
+.demo__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4cqh;
+}
+
+.demo__button {
+  padding: 11px 18px;
+  border: 1px solid var(--demo-ink);
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.demo__button--primary {
+  background: var(--demo-ink);
+  color: #f3ede2;
+}
+
+/* The dish: where the client's own photos go */
+.demo__photo {
+  height: 100%;
+  max-height: 52cqh;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #e6dccb;
+}
+
+.demo__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- The carpenter: dark walnut, honey wood, the work in photos ---- */
+.carp {
+  --carp-honey: #d9a35b;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1c1612;
+  color: #f1e7da;
+}
+
+.carp__nav {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 28px;
+  padding: 16px 4.5cqw;
+  border-bottom: 1px solid #3a2e25;
+}
+
+.carp__brand {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.carp__links {
+  display: flex;
+  gap: 22px;
+  font-size: 14px;
+  color: #b9a896;
+}
+
+.carp__label {
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px dashed #6b5848;
+  border-radius: 999px;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #b9a896;
+}
+
+.carp__hero {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 4cqw;
+  min-height: 0;
+  padding: 3.5cqh 4.5cqw;
+}
+
+.carp figure {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #2a2119;
+}
+
+.carp figure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carp figcaption {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(28, 22, 18, 0.75);
+  font-size: 11px;
+  color: #f1e7da;
+}
+
+.carp__main {
+  min-height: 0;
+}
+
+.carp__copy {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.carp__kicker {
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--carp-honey);
+}
+
+.carp__title {
+  margin-top: 2cqh;
+  font-family: var(--display);
+  font-size: 40px;
+  font-size: min(3.7cqw, 8.4cqh);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+
+.carp__lead {
+  max-width: 30em;
+  margin-top: 2cqh;
+  font-size: 15px;
+  font-size: max(13.5px, min(1.35cqw, 3.2cqh));
+  line-height: 1.5;
+  color: #b9a896;
+}
+
+.carp__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 3cqh;
+}
+
+.carp__button {
+  padding: 10px 18px;
+  border: 1px solid #6b5848;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.carp__button--primary {
+  border-color: var(--carp-honey);
+  background: var(--carp-honey);
+  font-weight: 600;
+  color: #1c1612;
+}
+
+.carp__thumbs {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  min-height: 0;
+  margin-top: 3cqh;
+}
+
+.demo__info {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  gap: 10px 36px;
+  padding: 16px 4.5cqw;
+  border-top: 1px solid #e2d9c9;
+  font-size: 14px;
+  list-style: none;
+}
+
+.demo__info .mono {
+  margin-right: 6px;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--demo-olive);
+}
+
+/* ---- Beside the window: a card of paper per page, the same paper as the About print ---- */
+.picker {
+  --paper: #e4d9c8;
+  --ink: #1c1712;
+  --ink-soft: #5f564d;
+  --rust: #8a480a;
+  grid-area: picker;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+}
+
+.picker__item {
+  position: relative;
+  border-radius: 10px;
+  color: var(--ink);
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .24 0 0 0 0 .12 0 0 0 -.7 .42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"),
+    radial-gradient(90% 70% at 50% 0%, rgba(255, 244, 222, 0.5), transparent 70%),
+    var(--paper);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 240, 0.6),
+    0 2px 0 rgba(0, 0, 0, 0.25);
+  /* The cards not open lie a little in the shade */
+  filter: brightness(0.62) saturate(0.85);
+  transition:
+    filter 0.35s,
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.35s;
+}
+
+.picker__item:hover {
+  filter: brightness(0.8) saturate(0.9);
+}
+
+/* The open card: in full light, nudged toward the window it opens */
+.picker__item.is-active {
+  filter: none;
+  transform: translateX(8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 250, 240, 0.6),
+    0 2px 0 rgba(0, 0, 0, 0.25),
+    0 24px 50px -24px rgba(0, 0, 0, 0.9);
+}
+
+.picker__tab {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px 10px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* The whole card answers the click */
+.picker__tab::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.picker__tab:focus-visible {
+  outline: none;
+}
+
+.picker__item:has(.picker__tab:focus-visible) {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.picker__index {
+  font-size: calc(12px * var(--s));
+  color: var(--ink-soft);
+}
+
+.picker__item.is-active .picker__index {
+  color: var(--rust);
+}
+
+.picker__title {
+  font-family: var(--display);
+  font-size: calc(19px * var(--s));
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.picker__kind {
+  grid-column: 2;
+  font-size: calc(11.5px * var(--s));
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+/* The open card stretches to the bottom of the window, its link lined up with the window's
+   lower edge: room for a line about the page, and where it leads */
+.picker__item.is-active {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.picker__more {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: -4px;
+  padding: 0 16px 16px;
+}
+
+.picker__item.is-active .picker__more {
+  display: flex;
+}
+
+.picker__more .picker__action {
+  margin-top: auto;
+}
+
+.picker__desc {
+  font-size: calc(13.5px * var(--s));
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+
+/* Above the stretched tab, so the link stays a link */
+.picker__action {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid rgba(28, 23, 18, 0.3);
   border-radius: 999px;
   font-size: calc(12.5px * var(--s));
-  color: #cfc8be;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--ink);
+  transition:
+    border-color 0.3s,
+    background 0.3s,
+    color 0.3s;
+}
+
+.picker__action:hover {
+  border-color: var(--ink);
+  background: rgba(28, 23, 18, 0.06);
+}
+
+.picker__action--primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.picker__action--primary:hover {
+  background: var(--rust);
+  border-color: var(--rust);
+  color: #fff5ea;
+}
+
+.picker__action:focus-visible {
+  outline: 2px solid var(--rust);
+  outline-offset: 3px;
 }
 
 .decode__bits {
@@ -924,21 +1332,66 @@
   padding: 40px 0 160px;
 }
 
-.stage--static .work__head,
-.stage--static .card {
-  opacity: 1;
-  pointer-events: auto;
+.stage--static .work[data-index='1'] .rail {
+  transform: translateX(-25%);
 }
 
+.stage--static .work[data-index='2'] .rail {
+  transform: translateX(-50%);
+}
+
+.stage--static .work[data-index='3'] .rail {
+  transform: translateX(-75%);
+}
+
+.stage--static .work__head,
+.stage--static .browser,
+.stage--static .picker {
+  opacity: 1;
+}
+
+/* ---------- Tablets and phones ---------- */
 @media (max-width: 960px) {
-  /* A swipeable row: it runs to both screen edges, the cards snap to the left margin, and
-     the next one peeks in on the right so it's clear there is more. In a flex row the
-     cards all stretch to the tallest one. */
-  .work__cards {
-    display: flex;
-    gap: 12px;
-    margin: -10px calc(-1 * var(--pad));
-    padding: 10px var(--pad);
+  /* A little lower, clear of the nav; the caption stays above the phase line */
+  .work {
+    top: 51%;
+  }
+
+  .work__head {
+    margin-bottom: 10px;
+  }
+
+  .browser {
+    height: min(54vh, 600px);
+  }
+
+  .browser__dots {
+    display: none;
+  }
+
+  .browser__bar {
+    height: 38px;
+    padding: 0 10px;
+  }
+
+  .browser__url {
+    margin-left: 0;
+  }
+
+  /* One column: the window, then the cards as a carousel that runs to the screen edges */
+  .work {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'head'
+      'browser'
+      'picker';
+  }
+
+  .picker {
+    flex-direction: row;
+    gap: 10px;
+    margin: 10px calc(-1 * var(--pad)) 0;
+    padding: 4px var(--pad) 6px;
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
@@ -946,170 +1399,224 @@
     scrollbar-width: none;
   }
 
-  .work__cards::-webkit-scrollbar {
+  .picker::-webkit-scrollbar {
     display: none;
   }
 
-  .card {
-    flex: 0 0 84%;
-    min-height: 0;
+  /* Every card shows its line and its link, the open one in full light */
+  .picker__item,
+  .picker__item.is-active {
+    display: flex;
+    flex: 0 0 74%;
+    flex-direction: column;
     scroll-snap-align: start;
   }
 
-  /* No lift on tap: in a row it would only look like a stuck hover */
-  .card:hover {
+  .picker__item.is-active {
     transform: none;
   }
 
-  .card__front,
-  .card__back {
-    padding: 18px 20px;
+  /* A carousel card keeps to one short line */
+  .picker__story {
+    display: none !important;
   }
 
-  /* As on desktop, the back shares the front's grid cell, so a card is already as tall as
-     its turned side and doesn't grow when it flips; in the row every card stretches to the
-     tallest, the second one turned over */
-
-  .card__desc {
-    min-height: 0;
-    margin-top: 10px;
-    font-size: calc(15px * var(--s));
+  .picker__tab {
+    padding: 12px 14px;
   }
 
-  .card__tags {
-    margin-top: 14px;
+  .picker__title {
+    font-size: 16px;
   }
 
-  .card__actions {
-    min-height: 0;
-    margin-top: 14px;
+  .picker__more {
+    display: flex;
+    flex: 1;
+    gap: 10px;
+    padding: 0 14px 14px;
   }
 
-  .card__action {
-    padding: 7px 12px;
-  }
-
-  /* The back on a phone: no room for the heading, and the way back stays in view, top right */
-  .card__back-heading {
-    position: absolute;
-    width: 1px;
-    height: 1px;
+  .picker__desc {
+    display: -webkit-box;
     overflow: hidden;
-    clip-path: inset(50%);
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    font-size: 13px;
   }
 
-  .card__back .card__action {
-    position: absolute;
-    top: 12px;
-    right: 14px;
-    margin: 0;
+  .picker__action {
+    margin-top: auto;
   }
 
-  .card__back-intro {
-    margin-top: 0;
-    padding-right: 48px;
-  }
-
-  .card__secrets {
-    margin: 12px 0;
-  }
-
-  /* On a phone the way back is just the arrow (its words stay for screen readers),
-     so only the first line gives up a little room for it */
-  .card__back .card__action {
-    padding: 6px 10px;
-  }
-
-  .card__back .card__action-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
-  .card__secrets li:first-child .card__secret-name {
-    padding-right: 40px;
-  }
-
-  .project {
-    padding: 56px 16px 16px;
-  }
-
-  .project__body {
+  .folio__hero,
+  .demo__hero {
     grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 22px;
+    grid-template-rows: auto minmax(0, 1fr);
+    align-items: start;
+    gap: 3cqh;
+    padding: 4cqh 20px 3cqh;
   }
 
-  .project__title {
-    font-size: calc(30px * var(--s));
+  .folio__nav,
+  .demo__nav,
+  .demo__info {
+    padding-inline: 20px;
   }
 
-  .card__title {
-    margin-top: 18px;
-    font-size: calc(30px * var(--s));
+  .folio__title {
+    margin-top: 3cqh;
+    font-size: min(10.5cqw, 7cqh);
   }
 
-  .card__desc {
-    min-height: 0;
-    font-size: calc(14px * var(--s));
+  .folio__lead {
+    margin-top: 2cqh;
+    font-size: 15px;
   }
 
-  .card__tags {
-    margin-top: 14px;
+  .folio__drop {
+    display: none;
+  }
+
+  .folio__button {
+    margin-top: 2.4cqh;
+  }
+
+  .folio__shot {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    justify-self: start;
+  }
+
+  .sitepage__items {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .sitepage__panel {
+    padding: 10cqh 20px 20px;
+  }
+
+  .sitepage__heading {
+    font-size: 18px;
+  }
+
+  .sitepage__text {
+    font-size: 13.5px;
+  }
+
+  .demo__links,
+  .carp__links {
+    display: none;
+  }
+
+  .carp__hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 3cqh;
+    padding: 3cqh 20px;
+  }
+
+  .carp__nav {
+    padding-inline: 20px;
+  }
+
+  .carp__title {
+    font-size: min(8.4cqw, 5.4cqh);
+  }
+
+  .carp__lead {
+    font-size: 13.5px;
+  }
+
+  .carp__thumbs {
+    display: none;
+  }
+
+  .folio__try {
+    top: 10px;
+    right: 14px;
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .folio__brand {
+    font-size: 16px;
+  }
+
+  .demo__title {
+    font-size: min(9cqw, 6.4cqh);
+  }
+
+  .demo__lead {
+    font-size: 14.5px;
+  }
+
+  .demo__info {
+    gap: 6px 20px;
+    font-size: 13px;
+  }
+
+  .demo__info li:nth-child(n + 3) {
+    display: none;
   }
 }
 
-/* Short phones (SE-sized and below): smaller type on the cards, so they still fit
-   between the nav and the phase caption, in the longest language too */
+/* Phones: the example pages keep their photo, and drop what crowds it */
+@media (max-width: 600px) {
+  .demo__info,
+  .carp__button:not(.carp__button--primary) {
+    display: none;
+  }
+
+  .carp__brand {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+
+  .carp__lead {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .browser__badge {
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+}
+
+/* Short phones (SE-sized and below): a shorter window, so it still fits between the nav
+   and the phase caption with its caption under it */
 @media (max-width: 960px) and (max-height: 760px) {
-  .stage:not(.stage--static) .card__front {
-    padding: 14px 18px;
-  }
-
-  .stage:not(.stage--static) .card__title {
-    margin-top: 10px;
-    font-size: calc(25px * var(--s));
-  }
-
-  .stage:not(.stage--static) .card__desc {
-    margin-top: 6px;
-    font-size: calc(13.5px * var(--s));
-    line-height: 1.4;
-  }
-
-  .stage:not(.stage--static) .card__actions {
-    margin-top: 10px;
+  .stage:not(.stage--static) .browser {
+    height: 50vh;
   }
 
   .stage:not(.stage--static) .work__head {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
   }
 
-  .stage:not(.stage--static) .work__cards {
-    gap: 8px;
+  .stage:not(.stage--static) .picker__desc {
+    display: none;
   }
 
-  .stage:not(.stage--static) .card__desc {
-    font-size: calc(13px * var(--s));
+  /* Room for Folio's shelf: the badge and the bistro's opening hours step aside */
+  .stage:not(.stage--static) .folio__badge,
+  .stage:not(.stage--static) .demo__info {
+    display: none;
   }
 
-  .stage:not(.stage--static) .card__back {
-    padding: 14px 18px;
+  .stage:not(.stage--static) .folio__title {
+    margin-top: 0;
   }
+}
 
-  .stage:not(.stage--static) .card__secret-text {
-    font-size: calc(13px * var(--s));
-    line-height: 1.4;
-  }
-
-  .stage:not(.stage--static) .card__secrets {
-    gap: 8px;
-  }
-
-  .stage:not(.stage--static) .card__secret-name {
-    font-size: calc(14px * var(--s));
+/* Short laptop screens: the open card keeps to its first line, so the column still ends
+   with the window */
+@media (min-width: 961px) and (max-height: 700px) {
+  .picker__story {
+    display: none;
   }
 }

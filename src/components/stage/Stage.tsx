@@ -2,18 +2,18 @@ import { useEffect, useRef } from 'react'
 import { backstage, code, hero, terminal } from '../../content'
 import { enterBackstage } from '../../lib/backstage'
 import { openTerminal } from '../../lib/terminal'
-import { Decoder } from '../../lib/decoder'
 import { clamp, sstep } from '../../lib/math'
 import { Spotlight } from '../../lib/spotlight'
 import { useReducedMotion } from '../../lib/useReducedMotion'
-import { ParticleScene, type CardSpec } from '../../scene/ParticleScene'
-import { textLinesFromElement, textSpecFromElement } from '../../scene/sample'
-import { PHASES, T } from '../../scene/timeline'
+import { ParticleScene, type LandingText, type LineTarget } from '../../scene/ParticleScene'
+import { CODE_LINES } from '../../scene/code'
+import { textLinesFromElement, type Rect } from '../../scene/sample'
+import { BUILD, lineLanded, pageAt, PHASES, railAt, T } from '../../scene/timeline'
 import { PhaseIndicator } from '../PhaseIndicator'
 import { Bug } from '../backstage/Bug'
 import { PodiumLight } from '../PodiumLight'
 import { Hero } from './Hero'
-import { Work } from './Work'
+import { PAGE_COUNT, PICK_EVENT, Work, type WorkHandle } from './Work'
 import './Stage.css'
 
 /**
@@ -30,6 +30,7 @@ export function Stage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const codeWinRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef<HTMLDivElement>(null)
+  const workRef = useRef<WorkHandle>(null)
 
   useEffect(() => {
     if (reduced) return
@@ -51,12 +52,19 @@ export function Stage() {
       }
     }
     let parts = heroParts()
-    const workHead = sticky.querySelector<HTMLElement>('.work__head')!
-    const cardList = sticky.querySelector<HTMLElement>('.work__cards')!
-    const cards = [...cardList.querySelectorAll<HTMLElement>('.card')]
-    const cardDecoders = cards.map((card, i) =>
-      [...card.querySelectorAll<HTMLElement>('[data-decode]')].map((el, k) => new Decoder(el, i * 10 + k)),
-    )
+    const work = sticky.querySelector<HTMLElement>('.work')!
+    const workHead = work.querySelector<HTMLElement>('.work__head')!
+    const browser = work.querySelector<HTMLElement>('.browser')!
+    const pickers = [...work.querySelectorAll<HTMLElement>('.picker')]
+    const demo = work.querySelector<HTMLElement>('.rail__page--bistro')!
+    // Line i of the code lands on lineEls[i]; the parts marked data-draw come up after
+    const lineEls = CODE_LINES.map((_, i) => demo.querySelector<HTMLElement>(`[data-line="${i}"]`))
+    const drawEls = [...demo.querySelectorAll<HTMLElement>('[data-draw]')]
+    const rail = work.querySelector<HTMLElement>('.rail')!
+    /** The page the rail shows, as last told to the window */
+    let shownPage = 0
+    /** A card was clicked: the page the scroll is on its way to, and since when */
+    let picked: { page: number; at: number } | null = null
 
     const scene = new ParticleScene(canvasRef.current!)
     let current = 0
@@ -64,8 +72,8 @@ export function Stage() {
     let ready = false
     let alive = true
 
-    // The stage's last screen (Stage.css) is not part of the sequence: the cards hold
-    // still there while the "Chi sono" print slides over them. Measured against the pinned
+    // The stage's last screen (Stage.css) is not part of the sequence: the window holds
+    // still there while the "Chi sono" print slides over it. Measured against the pinned
     // scene (100vh), not window.innerHeight, which a phone's toolbar changes as it moves
     const sequenceLength = () => stage.offsetHeight - 2 * sticky.offsetHeight
     const progress = () => {
@@ -77,6 +85,9 @@ export function Stage() {
       clamp((-stage.getBoundingClientRect().top - sequenceLength()) / Math.max(1, sticky.offsetHeight))
 
     const build = () => {
+      // The code lands on the first page: measure it where it sits before the rail moves
+      const railShift = rail.style.transform
+      rail.style.transform = ''
       const previous = parts.title
       parts = heroParts()
       const { title } = parts
@@ -85,18 +96,27 @@ export function Stage() {
         resizeObserver.observe(title)
       }
       const origin = sticky.getBoundingClientRect()
-      // Phones show the cards in a swipeable row: the particles only build the cards that
-      // are fully on screen when they land (all three on desktop, the first on a phone)
-      cardList.scrollLeft = 0
-      const cardSpecs: CardSpec[] = cards.flatMap((card) => {
-        const r = card.getBoundingClientRect()
-        if (r.left < origin.left - 1 || r.right > origin.right + 1) return []
-        return {
-          rect: { x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height },
-          title: textSpecFromElement(card.querySelector<HTMLElement>('.card__title')!, origin),
-          radius: parseFloat(getComputedStyle(card).borderTopLeftRadius) || 0,
+      const rel = (r: DOMRect): Rect => ({ x: r.left - origin.left, y: r.top - origin.top, w: r.width, h: r.height })
+      // Where each line of code lands: the browser's own layout of its words on the page
+      // (font, size, colour included), and with data-box the outline drawn around them
+      const lines = lineEls.map((el): LineTarget | null => {
+        if (!el) return null
+        const cs = getComputedStyle(el)
+        const spec = el.textContent?.trim() ? textLinesFromElement(el, origin)[0] : undefined
+        const text: LandingText | undefined = spec && {
+          x: spec.x,
+          baseline: spec.baseline,
+          size: parseFloat(cs.fontSize),
+          style: `${cs.fontStyle === 'normal' ? '' : cs.fontStyle} ${cs.fontWeight}`.trim(),
+          family: cs.fontFamily,
+          letterSpacing: parseFloat(cs.letterSpacing) || 0,
+          color: (cs.color.match(/[\d.]+/g) ?? ['0', '0', '0']).slice(0, 3).map(Number) as [number, number, number],
         }
+        const box = el.dataset.box !== undefined ? { rect: rel(el.getBoundingClientRect()), radius: parseFloat(cs.borderTopLeftRadius) || 0 } : undefined
+        return { text, box }
       })
+      const frame = { rect: rel(browser.getBoundingClientRect()), radius: parseFloat(getComputedStyle(browser).borderTopLeftRadius) || 0 }
+      rail.style.transform = railShift
       scene.build({
         width: sticky.clientWidth,
         height: sticky.clientHeight,
@@ -108,7 +128,8 @@ export function Stage() {
           bottom: title.getBoundingClientRect().bottom - origin.top,
         },
         heroFontSize: parseFloat(getComputedStyle(title).fontSize),
-        cards: cardSpecs,
+        frame,
+        lines,
       })
       const code = scene.code!
       Object.assign(codeWin.style, {
@@ -140,32 +161,50 @@ export function Stage() {
 
       const winA = sstep(T.codeWindowIn[0], T.codeWindowIn[1], p) * (1 - sstep(T.codeWindowOut[0], T.codeWindowOut[1], p))
       codeWin.style.opacity = String(winA)
+      // The editor shrinks into the photo's place, as the canvas draws its code (scene.dock)…
+      const code = scene.code
+      const dock = scene.dock(p)
+      codeWin.style.transform =
+        code && dock.s !== 1 ? `translate(${(dock.x - code.x).toFixed(1)}px, ${(dock.y - code.y).toFixed(1)}px) scale(${dock.s.toFixed(4)})` : ''
+      // …and gives way from the top as its lines leave
+      const cut = scene.cut(p)
+      codeWin.style.clipPath = cut > 0 ? `inset(${cut.toFixed(1)}px 0 0 0 round 14px)` : ''
       codeWin.style.visibility = winA > 0.001 ? 'visible' : 'hidden'
 
       // The spotlight dims while the code is on screen and comes back up for the work
-      const light = 1 - 0.55 * sstep(0.12, 0.24, p) + 0.6 * sstep(0.66, 0.86, p)
+      const light = 1 - 0.55 * sstep(0.12 * BUILD, 0.24 * BUILD, p) + 0.6 * sstep(0.66 * BUILD, 0.86 * BUILD, p)
       sticky.style.setProperty('--light', light.toFixed(3))
 
-      workHead.style.opacity = String(sstep(T.cardsIn[0] - 0.04, T.cardsIn[1] - 0.04, p))
-      cards.forEach((card, i) => {
-        const o = sstep(T.cardsIn[0] + i * 0.015, T.cardsIn[1] + i * 0.015, p)
-        card.style.opacity = String(o)
-        card.style.pointerEvents = o > 0.95 ? 'auto' : 'none'
-        const d = sstep(T.decode[0] + i * 0.02, T.decode[1], p)
-        // Each line starts a little after the one before; the stretch makes sure the last
-        // one still ends fully readable, however many tags the card has
-        const lines = cardDecoders[i]
-        const stretch = 1 + Math.max(0.5, (lines.length - 1) * 0.2)
-        lines.forEach((decoder, k) => decoder.update(clamp(d * stretch - k * 0.2), p))
+      // The page fills in behind the editor; each line's words show up for real where that
+      // line lands; the rest of the page, the heading and the picker come up after
+      browser.style.opacity = String(sstep(T.pageBg[0], T.pageBg[1], p))
+      lineEls.forEach((el, i) => {
+        if (el) el.style.opacity = String(sstep(lineLanded(i), lineLanded(i) + T.land, p))
       })
+      const rest = String(sstep(T.pageRest[0], T.pageRest[1], p))
+      for (const el of drawEls) el.style.opacity = rest
+      workHead.style.opacity = String(sstep(T.heading[0], T.heading[1], p))
+      const pickerUp = sstep(T.pickerIn[0], T.pickerIn[1], p)
+      for (const el of pickers) {
+        el.style.opacity = String(pickerUp)
+        el.style.transform = pickerUp < 1 ? `translateY(${((1 - pickerUp) * 12).toFixed(1)}px)` : ''
+      }
+      // Clickable only once it is all there
+      work.style.pointerEvents = p >= T.pickerIn[1] ? '' : 'none'
 
-      // Before the cards land the row can't be swiped, and it is back at the first card,
-      // so the particles always gather where a card really is
-      const cardsUp = p >= T.cardsIn[1]
-      cardList.style.pointerEvents = cardsUp ? '' : 'none'
-      if (!cardsUp && cardList.scrollLeft !== 0) cardList.scrollLeft = 0
+      // Then the rail slides along the pages, a pause on each: the scroll alone decides
+      // which page is in the window, and the cards follow it
+      const at = railAt(p)
+      rail.style.transform = at > 0 ? `translateX(${((-at * 100) / PAGE_COUNT).toFixed(3)}%)` : ''
+      const page = Math.min(PAGE_COUNT - 1, Math.round(at))
+      // On the way to a clicked card the pages passed on the way don't light their cards
+      if (picked && (page === picked.page || performance.now() - picked.at > 2500)) picked = null
+      if (!picked && page !== shownPage) {
+        shownPage = page
+        workRef.current?.setIndex(page)
+      }
 
-      phase.style.opacity = String(sstep(0.08, 0.14, p))
+      phase.style.opacity = String(sstep(0.08 * BUILD, 0.14 * BUILD, p))
       phaseFill.style.transform = `scaleX(${p.toFixed(4)})`
       const label = PHASES.find(([end]) => p < end)![1]
       if (phaseLabel.textContent !== label) phaseLabel.textContent = label
@@ -188,11 +227,12 @@ export function Stage() {
     // Follow-spot: chases a real mouse; on touch screens it only leans toward the last finger
     const spotlight = new Spotlight({
       root: sticky,
+      // The window takes the quicker spring of the work, but isn't lit like a card
       cards: {
-        list: cardList,
-        items: cards,
+        list: work,
+        items: [],
         progress: () => current,
-        ready: T.cardsIn[1],
+        ready: T.pickerIn[1],
       },
     })
 
@@ -226,6 +266,16 @@ export function Stage() {
         ready = true
       })
 
+    // A card is a shortcut: it scrolls to where the rail shows its page
+    const onPick = (e: Event) => {
+      const page = (e as CustomEvent<number>).detail
+      picked = { page, at: performance.now() }
+      shownPage = page
+      const top = stage.getBoundingClientRect().top + window.scrollY + pageAt(page) * sequenceLength()
+      window.scrollTo({ top, behavior: 'smooth' })
+    }
+    work.addEventListener(PICK_EVENT, onPick)
+
     window.addEventListener('scroll', request, { passive: true })
     resizeObserver.observe(sticky)
     resizeObserver.observe(parts.title)
@@ -238,6 +288,7 @@ export function Stage() {
       cancelAnimationFrame(raf)
       window.clearTimeout(resizeTimer)
       window.removeEventListener('scroll', request)
+      work.removeEventListener(PICK_EVENT, onPick)
       spotlight.dispose()
       resizeObserver.disconnect()
       import.meta.hot?.off('vite:afterUpdate', rebuild)
@@ -259,7 +310,7 @@ export function Stage() {
             <span className="code-win__lang">{code.lang}</span>
           </div>
         </div>
-        <Work />
+        <Work ref={workRef} />
         <canvas className="stage__canvas" ref={canvasRef} aria-hidden="true" />
         {/* The two hero easter eggs sit above every layer of the stage, so nothing covers them:
             the race on the podium floor, the cipher terminal up in the dark top left */}

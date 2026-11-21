@@ -1,4 +1,4 @@
-import { contact, projects, stack } from '../../content'
+import { contact, stack, work } from '../../content'
 
 /**
  * The drawing on top of each layer, one per step of the method, at a fixed 520×240 design size
@@ -22,7 +22,7 @@ const C = {
   cardEdge: 'rgba(201, 143, 78, 0.5)',
 }
 
-const featured = projects[0]
+const featured = { title: work.folio.tab, tags: work.folio.tags }
 /** Two tags at most fit on the small card */
 const featuredTags = featured.tags.slice(0, 2)
 

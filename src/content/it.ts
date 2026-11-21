@@ -35,84 +35,98 @@ export const it: Content = {
   },
 
   code: {
-    file: 'tuo-sito.ts',
-    lang: 'TS',
-    lines: [
-      '// ogni dettaglio conta',
-      'class TuoSito extends Web {',
-      "  design = 'su misura'",
-      "  struttura = 'solida'",
-      '  veloce = true',
-      '  mobile = true',
-      '',
-      '  suGoogle() {',
-      "    return 'prima pagina'",
-      '  }',
-      '}',
-    ],
+    file: 'index.html',
+    lang: 'HTML',
   },
 
   work: {
     heading: '01 — Ultimi lavori',
-  },
-
-  projects: [
-    {
-      title: 'Folio',
+    tabsLabel: 'Progetti',
+    folio: {
+      tab: 'Folio',
+      kind: 'Strumento PDF',
+      url: 'folio.alessiomura.fr',
+      href: 'https://folio.alessiomura.fr',
       description: 'Unisci, dividi, comprimi e firma i tuoi PDF. Gratis, senza pubblicità, direttamente nel browser.',
       tags: ['Gratis', 'Senza pubblicità', 'Privato'],
-      href: 'https://folio.alessiomura.fr',
-      details: {
-        open: 'Scopri',
-        image: {
-          src: '/projects/folio.webp',
-          width: 2000,
-          height: 1050,
-          alt: 'La home di Folio: una libreria di strumenti PDF, con lo strumento Split estratto e aperto.',
-        },
-        story: [
-          'Uno dei miei ultimi progetti. L’ho pensato per avere sempre a portata di mano uno strumento facile per i PDF: gratis, senza pubblicità e senza registrazione.',
-          'Tutto succede nel tuo browser: i file non vengono mai caricati su un server, né visti da nessuno oltre a te. Se ti serve, usalo anche tu.',
-        ],
-        progress: 'Unisci · Dividi · Riordina · Comprimi · Firma · Proteggi con password',
-        cta: 'Usa Folio gratis',
-        href: 'https://folio.alessiomura.fr',
-        soon: 'Presto online',
-        close: 'Chiudi',
+      cta: 'Usa Folio gratis',
+      story: 'L’ho creato io, per avere sempre pronto uno strumento semplice per i PDF. Ora puoi usarlo anche tu: senza registrazione, e i file non lasciano mai il tuo dispositivo.',
+      page: {
+        badge: 'Your files never leave your device',
+        title: ['Everything your', 'PDFs need.'],
+        lead: ['Merge, split,', 'compress and sign.'],
+        drop: 'Drop your PDFs here',
+        button: 'Upload a PDF',
+        alt: 'Lo scaffale di strumenti PDF di Folio, con lo strumento Split estratto e aperto.',
       },
     },
-    {
-      title: 'Questo sito',
+    site: {
+      tab: 'Questo sito',
+      kind: 'Portfolio',
+      url: 'alessiomura.fr',
       description: 'Il sito che stai guardando, progettato e sviluppato da me, curato in ogni dettaglio.',
-      tags: ['Su misura', 'Veloce', 'Animato a mano'],
-      back: {
-        open: 'Dietro le quinte',
-        heading: 'Fatto su misura, fin nei dettagli.',
-        intro: 'Costruito con strumenti moderni, con animazioni disegnate a mano. E due sorprese:',
-        items: [
-          {
-            name: 'Un pixel fuori posto',
-            text: 'Cliccalo, vicino al faro nella prima schermata, per un giro di pista dietro le quinte. Batti il record.',
-          },
-          {
-            name: 'Un cursore smarrito',
-            text: 'Si nasconde in alto e in fondo alla pagina, e apre un terminale per messaggi segreti.',
-          },
+      alt: 'La prima schermata di questo sito.',
+      heading: 'Due sorprese nascoste qui',
+      items: [
+        {
+          name: 'Un pixel fuori posto',
+          text: 'Cliccalo, vicino al faro nella prima schermata, per un giro di pista dietro le quinte. Batti il record.',
+        },
+        {
+          name: 'Un pixel spento',
+          text: 'Grigio, in alto a destra nella prima schermata e in fondo alla pagina dopo il copyright. Apre un terminale per messaggi segreti.',
+        },
+      ],
+      note: '(solo su desktop)',
+    },
+    demo: {
+      tab: 'Bistrot',
+      kind: 'Esempio',
+      url: 'il-tuo-bistrot.fr',
+      status: 'Posto libero',
+      description: 'Un esempio di sito per un ristorante: menu, orari, prenotazioni. Il prossimo potrebbe essere il tuo.',
+      cta: { label: 'Prenota il posto', href: '#contact' },
+      page: {
+        label: 'Esempio',
+        brand: 'Il tuo bistrot',
+        links: ['Menu', 'Orari', 'Contatti'],
+        kicker: 'Cucina di stagione · Lione',
+        title: ['Cucina di casa,', 'a due passi da te.'],
+        lead: ['Prodotti del mercato,', 'menu che cambia spesso.'],
+        book: 'Prenota un tavolo',
+        menu: 'Vedi il menu',
+        alt: 'Un piatto di stagione su un tavolo di legno (foto d’esempio).',
+        photoFile: 'la-tua-foto.jpg',
+        info: [
+          { label: 'Aperto', value: 'Mar–Sab · 12–14 · 19–22' },
+          { label: 'Dove', value: 'La tua via, Lione' },
+          { label: 'Chiama', value: '04 00 00 00 00' },
         ],
-        outro: 'Ogni idea o desiderio per il tuo sito si può realizzare. Basta parlarne.',
-        cta: { label: 'Parliamone', href: '#contact' },
-        note: '(solo su desktop)',
-        close: 'Rigira',
       },
     },
-    {
-      title: 'Il tuo sito',
-      description: 'Il prossimo lavoro qui potrebbe essere il tuo. Raccontami la tua attività: ne parliamo insieme, senza impegno.',
-      tags: ['Su misura', 'Senza impegno'],
+    carpenter: {
+      tab: 'Falegname',
+      kind: 'Esempio',
+      url: 'la-tua-falegnameria.fr',
       status: 'Posto libero',
-      cta: { label: 'Prenota il posto', href: '#contact' },
+      description: 'Un esempio di sito per un artigiano: i lavori in primo piano e un modo semplice per chiedere un preventivo.',
+      page: {
+        label: 'Esempio',
+        brand: 'La tua falegnameria',
+        links: ['Lavori', 'Bottega', 'Contatti'],
+        kicker: 'Mobili su misura · Lione',
+        title: ['Fatto a mano,', 'pensato per casa tua.'],
+        lead: 'Tavoli, cucine e librerie in legno massello, disegnati e costruiti per lo spazio che li accoglie.',
+        quote: 'Chiedi un preventivo',
+        works: 'Vedi i lavori',
+        photos: [
+          { src: '/examples/workshop.jpg', alt: 'Un falegname pialla a mano una tavola di rovere sul banco (foto d’esempio).', caption: 'In bottega' },
+          { src: '/examples/bookcase.jpg', alt: 'Una libreria in rovere su misura in un soggiorno (foto d’esempio).', caption: 'Libreria in rovere' },
+          { src: '/examples/joint.jpg', alt: 'Mani che incastrano una coda di rondine in noce (foto d’esempio).', caption: 'Incastri a mano' },
+        ],
+      },
     },
-  ],
+  },
 
   about: {
     label: '02 — Chi sono',
@@ -329,7 +343,7 @@ export const it: Content = {
   },
 
   terminal: {
-    trigger: 'Un cursore smarrito',
+    trigger: 'Un pixel spento',
     title: 'cipher.sys',
     label: 'Terminale cifrato',
     intro: 'Scrivi un messaggio segreto, manda il codice a un amico, lui lo apre qui.',

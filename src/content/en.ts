@@ -38,128 +38,113 @@ export const hero = {
 }
 
 /**
- * The code window the title crumbles into: the client's website, written as a TypeScript
- * object. Keep the lines short (about 30 characters), the window is sized on the longest.
+ * The code window the title crumbles into: the example site's home page, written as HTML.
+ * Its lines are made from work.demo.page (scene/code.ts), so they always say what the page says.
  */
 export const code = {
-  file: 'your-site.ts',
-  lang: 'TS',
-  /** The client's website as a class, line by line (scene/code.ts colours it). Keep lines short: phones shrink the font to fit the longest */
-  lines: [
-    '// every detail counts',
-    'class YourSite extends Web {',
-    "  design = 'made to measure'",
-    "  build = 'solid'",
-    '  fast = true',
-    '  mobile = true',
-    '',
-    '  onGoogle() {',
-    "    return 'page one'",
-    '  }',
-    '}',
-  ],
+  file: 'index.html',
+  lang: 'HTML',
 }
 
-export type Project = {
-  title: string
-  description: string
-  tags: string[]
-  /** Shown on the card in place of the arrow, e.g. "In progress" */
-  status?: string
-  /** Where the card leads: leave it out and the card is not a link */
-  href?: string
-  /** A button on the card that leads somewhere on the page, e.g. the contact section */
-  cta?: { label: string; href: string }
-  /** A button on the card that opens a larger look at the project.
-   *  progress: one line under the story (for Folio, the list of its tools) */
-  details?: {
-    open: string
-    image: { src: string; width: number; height: number; alt: string }
-    story: string[]
-    progress: string
-    cta: string
-    /** The live app: while empty, the button waits with the "soon" line */
-    href: string
-    soon: string
-    close: string
-  }
-  /** A button on the card that flips it over, with something written on the back */
-  back?: {
-    open: string
-    heading: string
-    /** A line before the secrets */
-    intro: string
-    items: { name: string; text: string }[]
-    /** A line after the secrets, with a link (to the contact section) */
-    outro: string
-    cta: { label: string; href: string }
-    close: string
-    /** A note in brackets after the secrets, e.g. where they can be found */
-    note: string
-  }
-}
-
+/**
+ * The work: one browser window, and under it a picker with a block per page. The code
+ * writes the first one, an example site for a local business; then Folio and this site.
+ */
 export const work = {
   heading: '01 — Latest work',
-}
-
-export const projects: Project[] = [
-  {
-    title: 'Folio',
+  /** The picker under the window, for screen readers */
+  tabsLabel: 'Projects',
+  folio: {
+    tab: 'Folio',
+    kind: 'PDF tool',
+    url: 'folio.alessiomura.fr',
+    href: 'https://folio.alessiomura.fr',
     description: 'Merge, split, compress and sign your PDFs. Free, ad-free, right in your browser.',
     tags: ['Free', 'No ads', 'Private'],
-    href: 'https://folio.alessiomura.fr',
-    details: {
-      open: 'Discover',
-      image: {
-        src: '/projects/folio.webp',
-        width: 2000,
-        height: 1050,
-        alt: 'The Folio home page: a bookshelf of PDF tools, with the Split tool pulled out and open.',
-      },
-      story: [
-        'One of my latest projects. I built it to always have an easy PDF tool at hand: free, ad-free and with no sign-up.',
-        'Everything happens in your browser: your files are never uploaded to a server, never seen by anyone but you. If you need it, use it too.',
-      ],
-      progress: 'Merge · Split · Reorder · Compress · Sign · Password-protect',
-      cta: 'Use Folio for free',
-      href: 'https://folio.alessiomura.fr',
-      soon: 'Online soon',
-      close: 'Close',
+    cta: 'Use Folio for free',
+    /** A second line on its card: why it exists, and that it's free to use */
+    story: 'I built it to always have a simple PDF tool at hand. Now you can use it too: no sign-up, and your files never leave your device.',
+    /** Folio's own home page, in English like the app */
+    page: {
+      badge: 'Your files never leave your device',
+      title: ['Everything your', 'PDFs need.'],
+      lead: ['Merge, split,', 'compress and sign.'],
+      drop: 'Drop your PDFs here',
+      button: 'Upload a PDF',
+      alt: 'Folio’s bookshelf of PDF tools, with the Split tool pulled out and open.',
     },
   },
-  {
-    title: 'This site',
+  site: {
+    tab: 'This site',
+    kind: 'Portfolio',
+    url: 'alessiomura.fr',
     description: 'The site you are looking at, designed and built by me, with care in every detail.',
-    tags: ['Made to measure', 'Fast', 'Hand-animated'],
-    back: {
-      open: 'Behind the scenes',
-      heading: 'Made to measure, down to the details.',
-      intro: 'Built with modern tools, with hand-drawn animations. And two surprises:',
-      items: [
-        {
-          name: 'A pixel out of place',
-          text: 'Click it, near the spotlight on the first screen, for a one-lap race backstage. Beat the record.',
-        },
-        {
-          name: 'A stray cursor',
-          text: 'It hides at the top and bottom of the page, and opens a terminal for secret notes.',
-        },
+    alt: 'The first screen of this site.',
+    heading: 'Two surprises hidden here',
+    items: [
+      {
+        name: 'A pixel out of place',
+        text: 'Click it, near the spotlight on the first screen, for a one-lap race backstage. Beat the record.',
+      },
+      {
+        name: 'A dead pixel',
+        text: 'Grey, top right on the first screen and at the bottom of the page after the copyright. It opens a terminal for secret notes.',
+      },
+    ],
+    note: '(desktop only)',
+  },
+  demo: {
+    tab: 'Bistro',
+    kind: 'Example',
+    url: 'your-bistro.fr',
+    status: 'Open slot',
+    description: 'An example site for a restaurant: menu, opening hours, bookings. The next one could be yours.',
+    cta: { label: 'Book the slot', href: '#contact' },
+    /** An example page for a local business, made up to show the idea: not a real client.
+     *  The code window writes brand, title, lead, book and photoFile: keep each title and lead
+     *  line short (about 22 characters), phones shrink the code to fit the longest */
+    page: {
+      label: 'Example',
+      brand: 'Your bistro',
+      links: ['Menu', 'Hours', 'Contact'],
+      kicker: 'Seasonal cooking · Lyon',
+      title: ['Home cooking,', 'around the corner.'],
+      lead: ['Market produce and', 'a weekly menu.'],
+      book: 'Book a table',
+      menu: 'See the menu',
+      alt: 'A seasonal lunch plate on a wooden table (example photo).',
+      photoFile: 'your-photo.jpg',
+      info: [
+        { label: 'Open', value: 'Tue–Sat · 12–2 pm · 7–10 pm' },
+        { label: 'Where', value: 'Your street, Lyon' },
+        { label: 'Call', value: '04 00 00 00 00' },
       ],
-      outro: 'Any idea or wish for your website can be built. We just need to talk about it.',
-      cta: { label: 'Let’s talk', href: '#contact' },
-      note: '(desktop only)',
-      close: 'Flip back',
     },
   },
-  {
-    title: 'Your site',
-    description: 'The next project here could be yours. Tell me about your business and we’ll talk it over, no strings attached.',
-    tags: ['Made to measure', 'No commitment'],
+  carpenter: {
+    tab: 'Carpenter',
+    kind: 'Example',
+    url: 'your-workshop.fr',
     status: 'Open slot',
-    cta: { label: 'Book the slot', href: '#contact' },
+    description: 'An example site for a craftsman: the work up front, and an easy way to ask for a quote.',
+    /** A second example, for a craftsman: the work in photos up front */
+    page: {
+      label: 'Example',
+      brand: 'Your workshop',
+      links: ['Work', 'Workshop', 'Contact'],
+      kicker: 'Made-to-measure furniture · Lyon',
+      title: ['Made by hand,', 'made for your home.'],
+      lead: 'Tables, kitchens and bookcases in solid wood, drawn and built for the room they live in.',
+      quote: 'Ask for a quote',
+      works: 'See the work',
+      photos: [
+        { src: '/examples/workshop.jpg', alt: 'A carpenter hand-planing an oak board on the workbench (example photo).', caption: 'In the workshop' },
+        { src: '/examples/bookcase.jpg', alt: 'A made-to-measure oak bookcase in a living room (example photo).', caption: 'Oak bookcase' },
+        { src: '/examples/joint.jpg', alt: 'Hands fitting a dovetail joint in walnut (example photo).', caption: 'Dovetail, by hand' },
+      ],
+    },
   },
-]
+}
 
 export const about = {
   label: '02 — About',
@@ -423,10 +408,10 @@ export const race = {
   again: 'Race again',
 }
 
-/** The cipher terminal, opened by a stray cursor: somewhere in the hero, and after the copyright in the footer. */
+/** The cipher terminal, opened by a dead pixel: top right in the hero, and after the copyright in the footer. */
 export const terminal = {
   /** Accessible name of the hidden trigger */
-  trigger: 'A stray cursor',
+  trigger: 'A dead pixel',
   title: 'cipher.sys',
   label: 'Cipher terminal',
   intro: 'Write a secret message, send the code to a friend, they open it here.',

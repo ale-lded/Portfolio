@@ -13,7 +13,7 @@ import { PhaseIndicator } from '../PhaseIndicator'
 import { Bug } from '../backstage/Bug'
 import { PodiumLight } from '../PodiumLight'
 import { Hero } from './Hero'
-import { PAGE_COUNT, PICK_EVENT, Work, type WorkHandle } from './Work'
+import { PAGE_COUNT, PICK_EVENT, SWIPE, Work, type WorkHandle } from './Work'
 import './Stage.css'
 
 /**
@@ -55,7 +55,10 @@ export function Stage() {
     const work = sticky.querySelector<HTMLElement>('.work')!
     const workHead = work.querySelector<HTMLElement>('.work__head')!
     const browser = work.querySelector<HTMLElement>('.browser')!
-    const pickers = [...work.querySelectorAll<HTMLElement>('.picker')]
+    const pickers = [...work.querySelectorAll<HTMLElement>('.picker, .work__dots, .work__info')]
+    const pages = work.querySelector<HTMLElement>('.browser__pages')!
+    /** Phones: the pages are swiped by hand, so the stage is only as long as the build */
+    const swipe = window.matchMedia(SWIPE)
     const demo = work.querySelector<HTMLElement>('.rail__page--bistro')!
     // Line i of the code lands on lineEls[i]; the parts marked data-draw come up after
     const lineEls = CODE_LINES.map((_, i) => demo.querySelector<HTMLElement>(`[data-line="${i}"]`))
@@ -76,9 +79,12 @@ export function Stage() {
     // still there while the "Chi sono" print slides over it. Measured against the pinned
     // scene (100vh), not window.innerHeight, which a phone's toolbar changes as it moves
     const sequenceLength = () => stage.offsetHeight - 2 * sticky.offsetHeight
+    // On phones the stage (Stage.css) holds just the build: its scroll maps onto the build's
+    // share of the timeline, and the slides never come
     const progress = () => {
       const total = sequenceLength()
-      return total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0
+      const at = total > 0 ? clamp(-stage.getBoundingClientRect().top / total) : 0
+      return swipe.matches ? at * BUILD : at
     }
     /** 0 → 1 over that last screen, as the print covers the pinned view */
     const coverProgress = () =>
@@ -88,6 +94,8 @@ export function Stage() {
       // The code lands on the first page: measure it where it sits before the rail moves
       const railShift = rail.style.transform
       rail.style.transform = ''
+      const swiped = pages.scrollLeft
+      pages.scrollLeft = 0
       const previous = parts.title
       parts = heroParts()
       const { title } = parts
@@ -117,6 +125,7 @@ export function Stage() {
       })
       const frame = { rect: rel(browser.getBoundingClientRect()), radius: parseFloat(getComputedStyle(browser).borderTopLeftRadius) || 0 }
       rail.style.transform = railShift
+      pages.scrollLeft = swiped
       scene.build({
         width: sticky.clientWidth,
         height: sticky.clientHeight,
@@ -189,6 +198,9 @@ export function Stage() {
         el.style.opacity = String(pickerUp)
         el.style.transform = pickerUp < 1 ? `translateY(${((1 - pickerUp) * 12).toFixed(1)}px)` : ''
       }
+      // Phones: back before the page is built, the window is back on its first page
+      if (swipe.matches && p < T.pickerIn[0] && pages.scrollLeft > 0) pages.scrollLeft = 0
+
       // Clickable only once it is all there
       work.style.pointerEvents = p >= T.pickerIn[1] ? '' : 'none'
 
@@ -204,7 +216,9 @@ export function Stage() {
         workRef.current?.setIndex(page)
       }
 
-      phase.style.opacity = String(sstep(0.08 * BUILD, 0.14 * BUILD, p))
+      // On phones the window takes the whole screen once built: the phase line steps aside
+      const phaseOut = swipe.matches ? sstep(T.pageRest[0], T.pickerIn[0], p) : 0
+      phase.style.opacity = String(sstep(0.08 * BUILD, 0.14 * BUILD, p) * (1 - phaseOut))
       phaseFill.style.transform = `scaleX(${p.toFixed(4)})`
       const label = PHASES.find(([end]) => p < end)![1]
       if (phaseLabel.textContent !== label) phaseLabel.textContent = label

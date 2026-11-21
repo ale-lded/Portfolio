@@ -13,6 +13,12 @@ export type WorkHandle = { setIndex(i: number): void }
 /** Fired on .work when a visitor picks a page: the stage scrolls to where it shows */
 export const PICK_EVENT = 'work:pick'
 
+/**
+ * Phones and tablets: the window's pages are swiped by hand, with dots and the open page's
+ * line under the window, instead of sliding with the scroll (Stage.css has the same width)
+ */
+export const SWIPE = '(max-width: 960px)'
+
 const copyOf = (pick: Pick) =>
   pick === 'bistro' ? work.demo : pick === 'carpenter' ? work.carpenter : pick === 'folio' ? work.folio : work.site
 
@@ -27,7 +33,28 @@ export const Work = forwardRef<WorkHandle>(function Work(_, ref) {
   const root = useRef<HTMLDivElement>(null)
   const tabs = useRef<(HTMLButtonElement | null)[]>([])
   const picker = useRef<HTMLDivElement>(null)
+  const pagesRef = useRef<HTMLDivElement>(null)
   useImperativeHandle(ref, () => ({ setIndex }), [])
+
+  // Phones: the page swiped into the window is the open one
+  useEffect(() => {
+    const pages = pagesRef.current
+    if (!pages) return
+    const onScroll = () => {
+      if (!window.matchMedia(SWIPE).matches || !pages.clientWidth) return
+      setIndex(Math.min(PICKS.length - 1, Math.round(pages.scrollLeft / pages.clientWidth)))
+    }
+    pages.addEventListener('scroll', onScroll, { passive: true })
+    return () => pages.removeEventListener('scroll', onScroll)
+  }, [])
+
+  /** Phones: a dot swipes the window to its page */
+  const swipeTo = (i: number) => {
+    const pages = pagesRef.current
+    if (!pages) return
+    setIndex(i)
+    pages.scrollTo({ left: i * pages.clientWidth, behavior: 'smooth' })
+  }
 
   const active = PICKS[index]
 
@@ -85,7 +112,8 @@ export const Work = forwardRef<WorkHandle>(function Work(_, ref) {
     ),
     folio: (
       <>
-        <p className="picker__desc">{folio.description}</p>
+        {/* On phones the window already says what it does: the card keeps the story */}
+        <p className="picker__desc picker__what">{folio.description}</p>
         <p className="picker__desc picker__story">{folio.story}</p>
         {action(folio.href, folio.cta, true)}
       </>
@@ -117,7 +145,7 @@ export const Work = forwardRef<WorkHandle>(function Work(_, ref) {
         </div>
 
         <div className="browser__view">
-          <div id="work-pages" role="tabpanel" aria-labelledby={`tab-${active}`} className="browser__pages">
+          <div ref={pagesRef} id="work-pages" role="tabpanel" aria-labelledby={`tab-${active}`} className="browser__pages">
             {/* The rail: Stage.tsx slides it with the scroll (data-index does it without motion) */}
             <div className="rail">
               {pages.map((page, i) => (
@@ -128,6 +156,32 @@ export const Work = forwardRef<WorkHandle>(function Work(_, ref) {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Phones: dots for the swiped pages, and the open page's name, line and link, large.
+          Every page's text shares one cell, so the block keeps the height of the longest */}
+      <div className="work__dots">
+        {PICKS.map((pick, i) => (
+          <button
+            key={pick}
+            type="button"
+            className={index === i ? 'is-on' : ''}
+            aria-label={copyOf(pick).tab}
+            aria-current={index === i}
+            onClick={() => swipeTo(i)}
+          />
+        ))}
+      </div>
+      <div className="work__info">
+        {PICKS.map((pick, i) => (
+          <div key={pick} className={`work__info-item${index === i ? ' is-on' : ''}`} inert={index !== i}>
+            <p className="work__info-title">
+              <span className="work__info-index mono">{String(i + 1).padStart(2, '0')}</span> {copyOf(pick).tab}
+              <span className="work__info-kind mono">{copyOf(pick).kind}</span>
+            </p>
+            <div className="work__info-more">{more[pick]}</div>
+          </div>
+        ))}
       </div>
 
       {/* Cards of paper, like the "About" print: the whole card answers the click (the tab's

@@ -261,6 +261,8 @@ export type Step = {
  */
 export const stack = {
   label: '04 — How I work',
+  /** Bottom right while the stack plays: straight down to the contact section */
+  skip: 'Skip the animation',
   intro: {
     heading: 'Four steps, no surprises.',
     text: 'From our first call to launch day, you always know where we are and what comes next.',

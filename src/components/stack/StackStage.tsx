@@ -31,6 +31,18 @@ const DEG = Math.PI / 180
  * The 3D is plain CSS (preserve-3d). Opacity, filters and clip-paths only ever go on
  * leaf faces: on a preserve-3d container they would flatten the scene.
  */
+/**
+ * Past the stack to the contact section, without playing it: one jump. The stage sees
+ * itself finished and left behind, so its latch freezes it on the last frame and collapses
+ * it, keeping the contact section in place (scrolling back up passes the finished stack).
+ * A smooth scroll here would be cut short by that collapse.
+ */
+function skipToContact() {
+  const contact = document.getElementById('contact')
+  if (!contact) return
+  window.scrollTo({ top: contact.getBoundingClientRect().top + window.scrollY, behavior: 'instant' })
+}
+
 export function StackStage() {
   const reduced = useReducedMotion()
   const stageRef = useRef<HTMLElement>(null)
@@ -38,6 +50,7 @@ export function StackStage() {
   const sceneRef = useRef<HTMLDivElement>(null)
   const groupRef = useRef<HTMLDivElement>(null)
   const phaseRef = useRef<HTMLDivElement>(null)
+  const skipRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     if (reduced) return
@@ -48,6 +61,7 @@ export function StackStage() {
     const phase = phaseRef.current!
     const phaseLabel = phase.querySelector<HTMLElement>('.phase__label')!
     const phaseFill = phase.querySelector<HTMLElement>('.phase__fill')!
+    const skip = skipRef.current!
     const introOutro = [...sticky.querySelectorAll<HTMLElement>('.stack__panel--intro, .stack__panel--outro')]
     const panels = [...sticky.querySelectorAll<HTMLElement>('.stack__panel--layer')].map((el) => new LayerPanel(el))
     const shadow = group.querySelector<HTMLElement>('.stack__shadow')!
@@ -215,6 +229,10 @@ export function StackStage() {
       sticky.style.setProperty('--light', light.toFixed(3))
 
       phase.style.opacity = String(sstep(0.03, 0.08, p))
+      // The way out: there once the stack starts moving, gone as it completes
+      const skipA = sstep(0.03, 0.08, p) * (1 - sstep(0.9, 0.96, p))
+      skip.style.opacity = skipA.toFixed(3)
+      skip.style.visibility = skipA > 0.01 ? 'visible' : 'hidden'
       phaseFill.style.transform = `scaleX(${p.toFixed(4)})`
       const label = STACK_PHASES.find(([end]) => p < end)![1]
       if (phaseLabel.textContent !== label) phaseLabel.textContent = label
@@ -535,6 +553,11 @@ export function StackStage() {
         </div>
 
         <PhaseIndicator ref={phaseRef} label={STACK_PHASES[0][1]} />
+        {!reduced && (
+          <button type="button" className="stack__skip mono" ref={skipRef} onClick={skipToContact}>
+            {stack.skip} <span aria-hidden="true">↓</span>
+          </button>
+        )}
       </div>
 
     </section>

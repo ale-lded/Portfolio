@@ -212,6 +212,7 @@ export const it: Content = {
 
   stack: {
     label: '04 — Come lavoro',
+    skip: 'Salta l’animazione',
     intro: {
       heading: 'Quattro passi, nessuna sorpresa.',
       text: 'Dalla prima chiamata al giorno del lancio, sai sempre a che punto siamo e cosa viene dopo.',

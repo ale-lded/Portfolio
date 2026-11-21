@@ -212,6 +212,7 @@ export const fr: Content = {
 
   stack: {
     label: '04 — Ma méthode',
+    skip: 'Passer l’animation',
     intro: {
       heading: 'Quatre étapes, aucune surprise.',
       text: 'Du premier appel au jour du lancement, vous savez toujours où en est le projet et ce qui vient ensuite.',

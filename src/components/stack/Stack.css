@@ -543,3 +543,47 @@
   color: var(--muted);
   white-space: normal;
 }
+
+/* ---------- The way out, bottom right, across from the phase line ---------- */
+.stack__skip {
+  position: absolute;
+  z-index: 6;
+  right: var(--pad);
+  bottom: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(10, 10, 11, 0.5);
+  font-family: var(--mono);
+  font-size: calc(12.5px * var(--s));
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    color 0.3s,
+    border-color 0.3s;
+}
+
+.stack__skip:hover {
+  border-color: var(--amber);
+  color: var(--text);
+}
+
+.stack__skip:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+/* Phones: the phase line takes the whole bottom edge, so the way out waits up top, under the nav */
+@media (max-width: 960px) {
+  .stack__skip {
+    top: 78px;
+    bottom: auto;
+    padding: 5px 11px;
+    font-size: 12px;
+  }
+}

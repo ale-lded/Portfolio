@@ -130,8 +130,10 @@ export function About() {
     let raf = 0
     const update = () => {
       raf = 0
-      // The film runs from the first stop's frame (top of the list) to the last one's
-      const length = last.offsetTop
+      // The film runs from the first stop's frame (top of the list) down past the last
+      // stop's text, its leader ending level with the last line
+      const lead = parseFloat(getComputedStyle(route).getPropertyValue('--lead')) || 0
+      const length = Math.max(last.offsetTop, last.offsetTop + last.offsetHeight - lead)
       route.style.setProperty('--route-length', `${length}px`)
       const top = route.getBoundingClientRect().top
       const p = reduced ? 1 : clamp((window.innerHeight * PEN - top) / Math.max(1, length))

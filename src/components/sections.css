@@ -169,12 +169,12 @@
   background:
     linear-gradient(90deg, rgba(255, 222, 170, 0.14), transparent 28% 72%, rgba(0, 0, 0, 0.3)),
     repeating-linear-gradient(0deg, rgba(14, 8, 3, 0.6) 0 3px, transparent 3px 46px) 50% 100% / 14px 100% no-repeat,
-    linear-gradient(90deg, #4a2b0f, #70451a 50%, #4a2b0f);
+    linear-gradient(90deg, #45291a, #634129 50%, #45291a);
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Cpath fill-rule='evenodd' d='M0 0H28V10H0ZM3 3h3.5v4.5H3ZM21.5 3H25v4.5h-3.5Z'/%3E%3C/svg%3E") 0 100% / 28px 10px repeat-y;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='10'%3E%3Cpath fill-rule='evenodd' d='M0 0H28V10H0ZM3 3h3.5v4.5H3ZM21.5 3H25v4.5h-3.5Z'/%3E%3C/svg%3E") 0 100% / 28px 10px repeat-y;
   /* The leader: the film's cut tip, a narrower tongue with an angled end */
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), 54% calc(100% - 16px), 54% calc(100% - 7px), 38% 100%, 0 100%);
-  box-shadow: 0 0 22px rgba(255, 138, 31, 0.18);
+  box-shadow: 0 0 22px rgba(230, 130, 40, 0.1);
 }
 
 .route__stops {

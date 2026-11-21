@@ -40,7 +40,7 @@ export const it: Content = {
   },
 
   work: {
-    heading: '01 — Ultimi lavori',
+    heading: '01 — Lavori ed esempi',
     tabsLabel: 'Progetti',
     folio: {
       tab: 'Folio',

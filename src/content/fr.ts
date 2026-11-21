@@ -41,7 +41,7 @@ export const fr: Content = {
   },
 
   work: {
-    heading: '01 — Derniers projets',
+    heading: '01 — Réalisations et exemples',
     tabsLabel: 'Projets',
     folio: {
       tab: 'Folio',

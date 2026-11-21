@@ -51,7 +51,7 @@ export const code = {
  * writes the first one, an example site for a local business; then Folio and this site.
  */
 export const work = {
-  heading: '01 — Latest work',
+  heading: '01 — Work and examples',
   /** The picker under the window, for screen readers */
   tabsLabel: 'Projects',
   folio: {

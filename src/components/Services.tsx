@@ -29,6 +29,11 @@ function ServiceCard({ item, index }: { item: Service; index: number }) {
         <h3 className="service__name">{item.name}</h3>
         <p className="service__text">{item.text}</p>
         <p className="service__price mono">{item.price}</p>
+        <ul className="service__scope">
+          {item.scope.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
         {item.note && <p className="service__note">{item.note}</p>}
         <button
           type="button"

@@ -198,8 +198,10 @@ export const about = {
 export type Service = {
   name: string
   text: string
-  /** Where the price starts, on the front of the card: "From €900" */
+  /** The fixed price, on the front of the card: "€900" */
   price: string
+  /** What that price buys, in a few short lines under it: no "from", no surprises */
+  scope: string[]
   /** A smaller line under the text */
   note?: string
   /** Where the offer is available, for search engines (src/lib/structuredData.ts):
@@ -225,7 +227,8 @@ export const services = {
     {
       name: 'Redesign',
       text: 'Your current site, rebuilt to be modern, fast and easy to find. Same business, a much better first impression.',
-      price: 'From €900',
+      price: '€900',
+      scope: ['A complete one-page site', 'Legal notice page included', 'Hosting and domain not included'],
       note: 'Remotely too, anywhere in France.',
       area: 'country',
       ideal: 'Businesses that already have a site, but it is slow, dated or hard to find.',
@@ -234,20 +237,22 @@ export const services = {
     {
       name: 'Showcase websites',
       text: 'A clear, beautiful home for your business online: who you are, what you do, and how to reach you.',
-      price: 'From €1,100',
+      price: '€1,100',
+      scope: ['A complete one-page site', 'Legal notice page included', 'Hosting and domain not included'],
       note: 'Remotely too, anywhere in France.',
       area: 'country',
       ideal: 'A new business, or one that has no website yet.',
-      includes: ['A custom design, no templates', 'Clear pages: who you are, what you do, contact', 'Copy and photos, polished together', 'Online with your domain and hosting'],
+      includes: ['A custom design, no templates', 'One clear page: who you are, what you do, contact', 'Copy and photos, polished together', 'Put online on your domain (hosting and domain paid by you)'],
     },
     {
       name: 'Photo & video',
       text: 'I come to you to photograph and film your business: real images for your website, your ads and your social media.',
-      price: 'From €250',
+      price: '€250',
+      scope: ['Half a day on location (3 h)', '20 edited photos', 'Video quoted separately'],
       note: 'On location anywhere in the Rhône.',
       area: 'region',
       ideal: 'Businesses that want to show themselves as they really are, not with stock photos.',
-      includes: ['On-location photo shoots', 'Video for your website and ads', 'Short edits for social media', 'Professional cameras, mics and lights'],
+      includes: ['A 3-hour photo shoot at your business', '20 edited photos, ready for the web', 'Video and social media edits: quoted separately', 'Professional cameras and lights'],
     },
   ] satisfies Service[],
 }

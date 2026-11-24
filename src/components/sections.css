@@ -498,12 +498,25 @@
   color: #bdb7af;
 }
 
-/* Where the price starts: a clear figure, so nobody has to ask to get an idea */
+/* A fixed price, so nobody has to ask to get an idea, and what it buys right under it */
 .service__price {
   margin-top: 18px;
-  font-size: calc(14px * var(--s));
+  font-size: calc(20px * var(--s));
   font-weight: 500;
   letter-spacing: 0.02em;
+  color: var(--amber);
+}
+
+.service__scope {
+  margin-top: 6px;
+  list-style: none;
+  font-size: calc(13.5px * var(--s));
+  line-height: 1.6;
+  color: #bdb7af;
+}
+
+.service__scope li::before {
+  content: '· ';
   color: var(--amber);
 }
 

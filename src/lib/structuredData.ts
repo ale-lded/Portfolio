@@ -44,10 +44,10 @@ export function structuredData(site: string, description: string) {
           name: services.heading,
           itemListElement: services.items.map((item) => ({
             '@type': 'Offer',
-            // The "from" price on the card, as a figure: "À partir de 900 €" → 900
+            // The fixed price on the card, as a figure: "1 100 €" → 1100
             priceSpecification: {
               '@type': 'PriceSpecification',
-              minPrice: Number(item.price.replace(/\D/g, '')),
+              price: Number(item.price.replace(/\D/g, '')),
               priceCurrency: 'EUR',
             },
             itemOffered: {

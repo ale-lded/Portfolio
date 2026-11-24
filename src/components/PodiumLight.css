@@ -180,7 +180,10 @@
       #000 60%,
       transparent 100%
     );
-    filter: blur(40px);
+    /* No live blur here: on a 3x phone this box is thousands of pixels across, and blurring
+       it (redone whenever Safari's toolbar changes the height) ran iOS out of memory and
+       crashed the tab. The wide gradient fade above is already soft enough on its own. */
+    filter: none;
   }
 
   /* The bright core is what made it look like a tube: just a faint, wide warmth in the middle */
@@ -197,11 +200,13 @@
       rgba(255, 214, 150, 0.06) 352deg,
       rgba(255, 214, 150, 0.12) 360deg
     );
-    filter: blur(44px);
+    filter: none;
   }
 
+  /* The drifting dust kept the beam's huge layer repainting every frame: on phones it
+     cost more memory than everything else on the page put together */
   .podium__mote {
-    left: calc(var(--x) * var(--y) * 40vh);
+    display: none;
   }
 
   /* A wider stage: it may run off both sides of the screen */

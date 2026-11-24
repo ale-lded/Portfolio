@@ -47,6 +47,19 @@ export class Spotlight {
   private litCard: HTMLElement | null = null
   /** No real mouse: the light leans gently toward the last touch and stays there. */
   private touch = !window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  /**
+   * Off screen the light rests: there are two stages, each with its own follow-spot, and
+   * without this both ran on every scroll and touch while at most one can be seen.
+   */
+  private visible = true
+  private observer = new IntersectionObserver(([entry]) => {
+    this.visible = entry.isIntersecting
+    if (this.visible) this.wake()
+    else {
+      cancelAnimationFrame(this.raf)
+      this.raf = 0
+    }
+  })
 
   constructor(options: Options) {
     this.o = options
@@ -58,11 +71,13 @@ export class Spotlight {
     document.documentElement.addEventListener('pointerleave', this.onLeave)
     window.addEventListener('scroll', this.wake, { passive: true })
     window.addEventListener('resize', this.wake)
+    this.observer.observe(options.root)
     this.apply()
   }
 
   dispose() {
     cancelAnimationFrame(this.raf)
+    this.observer.disconnect()
     window.removeEventListener('pointermove', this.onMove)
     window.removeEventListener('pointerdown', this.onMove)
     document.documentElement.removeEventListener('pointerleave', this.onLeave)
@@ -103,7 +118,7 @@ export class Spotlight {
   }
 
   private wake = () => {
-    if (this.raf) return
+    if (this.raf || !this.visible) return
     this.last = performance.now()
     this.raf = requestAnimationFrame(this.tick)
   }
